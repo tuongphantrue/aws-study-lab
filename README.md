@@ -16,6 +16,10 @@ Nine small, dependency-free, interactive AWS visualizers. The project follows th
 | `cloudwatch.html` | M-out-of-N alarm evaluation and state transitions |
 | `dynamodb.html` | Partition-key cardinality, distribution, hot keys, write sharding |
 
+## Interface
+
+The project uses a Rework-inspired application dashboard: persistent sidebar navigation, compact top bar, app tiles, search, and browser-local completion tracking.
+
 ## Run locally
 
 Open `index.html` in a browser. There is no build step, package install, backend, AWS account, or credentials.
