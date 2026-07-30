@@ -14,7 +14,9 @@ The site maps interactive learning modules to the current official exam domains:
 ## Included
 
 - 14 interactive architecture labs
-- Randomized 15-question scenario practice sessions from an original 20-question bank
+- Randomized 15-question scenario practice sessions
+- Two timed 65-question mock exams plus a 20-question diagnostic from an original 80-question bank
+- Flag-for-review navigation, autosave/resume, domain scoring, attempt history, and full explanations
 - Browser-local completion tracking and domain progress
 - Rework-style dashboard, sidebar, search, and responsive layout
 - No AWS account, credentials, backend, dependencies, or build step
@@ -35,7 +37,7 @@ Push the folder to a repository and enable **Settings → Pages → Deploy from 
 
 ## Exam note
 
-The dashboard currently reflects SAA-C03: 65 questions, 130 minutes, a scaled passing score of 720, and four weighted domains. AWS can update exam details; verify the official guide before booking.
+The dashboard currently reflects SAA-C03: 65 questions, 130 minutes, 50 scored questions plus 15 unscored questions, a scaled passing score of 720, and four weighted domains. Mock-exam percentages are study metrics and are not conversions to AWS scaled scores. AWS can update exam details; verify the official guide before booking.
 
 Official guide: `https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03.html`
 
