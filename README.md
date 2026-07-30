@@ -48,3 +48,7 @@ The simulators teach architectural mental models. They intentionally simplify se
 ## License
 
 MIT.
+
+## Course-style study guide
+
+Open `study-guide.html` for a structured original curriculum with 27 sections, short lessons, key architecture rules, common exam traps, one checkpoint per section, local progress tracking, and links to the interactive labs. The curriculum is inspired by the logical topic-by-topic flow common in popular SAA courses, but all lesson text and questions in this repository are original.
