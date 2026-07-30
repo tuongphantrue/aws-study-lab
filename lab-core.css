@@ -8,3 +8,7 @@
 :root{--good:#5c856c;--good-soft:#f1f6f3;--bad:#8e6a74;--bad-soft:#f8f1f3;--warn:#8a7555;--warn-soft:#f8f4ec;--info:#5d7789;--info-soft:#f0f4f7}
 .btn.primary{background:#2f8f88;color:#fff}.btn.secondary{background:#173645;color:#fff}.btn.ghost{border-color:#d8e1e4;color:#516975}
 .panel,.metric{border-color:#d9e1e4}.code{background:#173645}
+
+/* Enterprise SaaS density pass — almost monochrome */
+:root{--good:#62776a;--good-soft:#f3f5f3;--bad:#78666d;--bad-soft:#f5f2f3;--warn:#776f61;--warn-soft:#f5f4f1;--info:#65747c;--info-soft:#f2f4f5}
+.panel{border-radius:6px;padding:14px}.panel h2{font-size:13px}.panel h3{font-size:11px}.controls{gap:10px}.control{gap:5px}.row{gap:6px}.btn{border-radius:4px;padding:7px 10px;font-size:9px}.btn.primary{background:#405e66}.btn.secondary{background:#243c47}.btn.ghost{border-color:#d8dddf}.stage{min-height:390px}.metrics{gap:6px;margin-bottom:9px}.metric{border-radius:4px;padding:8px}.metric .k{font-size:7.5px}.metric .v{font-size:17px}.metric .s{font-size:8px}.note{border-radius:3px;padding:8px 9px;font-size:9px;border-left-width:2px}.explain{gap:10px;margin-top:10px}.explain p,.explain li{font-size:10px}.code{border-radius:4px;padding:10px;font-size:9px}.switch{border-radius:4px;padding:7px 8px}.pill{border-radius:3px;padding:3px 6px;font-size:8px}
