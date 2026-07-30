@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interactive AWS learning lab: Age an object and apply lifecycle rules to see when automatic transitions help—and when they conflict with the access pattern.">
+<title>S3 storage classes &amp; lifecycle — aws://study-lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fffaf3; --bg-soft:#fff7eb; --card:#ffffff; --border:#eadfce;
+  --text:#1d2433; --muted:#667085; --dim:#98a2b3;
+  --accent:#ff9900; --accent-dark:#cc7a00; --accent-soft:#fff0d2;
+  --navy:#232f3e; --navy-soft:#e9edf2;
+  --good:#16803c; --good-soft:#e8f7ed;
+  --bad:#c92343; --bad-soft:#fdecef;
+  --warn:#b75d00; --warn-soft:#fff1df;
+  --info:#1769aa; --info-soft:#e9f3fb;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Consolas,monospace;
+  --sans:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --shadow:0 1px 2px rgba(35,47,62,.05),0 14px 36px rgba(35,47,62,.08);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg-soft);color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+button,input,select,textarea{font:inherit}
+nav{max-width:1120px;margin:0 auto;padding:24px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none;font-weight:800;letter-spacing:-.02em}
+.logo .cube{width:18px;height:18px;border-radius:5px;background:var(--accent);box-shadow:inset -5px -5px 0 rgba(35,47,62,.13);transform:rotate(8deg)}
+.back{font-size:14px;font-weight:700;text-decoration:none;color:var(--muted);padding:9px 15px;border-radius:999px;border:1px solid transparent}
+.back:hover{background:#fff;border-color:var(--border);color:var(--navy)}
+header{max-width:1120px;margin:0 auto;padding:34px 24px 18px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font:600 12px var(--mono);color:var(--accent-dark);background:var(--accent-soft);padding:7px 12px;border-radius:999px;margin-bottom:18px}
+h1{font-size:clamp(34px,6vw,58px);line-height:1.04;letter-spacing:-.04em;margin:0 0 16px;color:var(--navy)}
+h1 span{color:var(--accent-dark)}
+.lede{font-size:18px;line-height:1.65;color:var(--muted);max-width:72ch;margin:0}
+main{max-width:1120px;margin:0 auto;padding:20px 24px 80px}
+.lab{display:grid;grid-template-columns:minmax(260px,340px) 1fr;gap:20px;align-items:start}
+@media(max-width:840px){.lab{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:22px;box-shadow:var(--shadow)}
+.panel h2,.panel h3{margin:0 0 14px;color:var(--navy);letter-spacing:-.02em}
+.panel h2{font-size:20px}.panel h3{font-size:16px}
+.controls{display:grid;gap:15px}
+.control{display:grid;gap:7px}
+.control label{font-size:13px;font-weight:700;color:var(--navy)}
+.control small{font-size:12px;line-height:1.45;color:var(--muted)}
+input[type=range]{width:100%;accent-color:var(--accent-dark)}
+input[type=text],input[type=number],select,textarea{width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:11px;background:#fff;color:var(--text);outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.row>*{flex:1}
+.btn{border:0;border-radius:999px;padding:11px 17px;font-weight:800;cursor:pointer;transition:.15s ease;display:inline-flex;justify-content:center;align-items:center;gap:7px}
+.btn.primary{background:var(--accent);color:var(--navy);box-shadow:0 8px 20px rgba(255,153,0,.22)}
+.btn.primary:hover{background:#ffad29;transform:translateY(-1px)}
+.btn.secondary{background:var(--navy);color:#fff}.btn.secondary:hover{background:#34465d}
+.btn.ghost{background:#fff;border:1px solid var(--border);color:var(--navy)}
+.btn.ghost:hover{border-color:var(--accent)}
+.btn.danger{background:var(--bad-soft);color:var(--bad)}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border:1px solid var(--border);border-radius:12px;background:#fff}
+.switch input{width:19px;height:19px;accent-color:var(--accent-dark)}
+.stage{min-height:440px;overflow:hidden}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:560px){.metrics{grid-template-columns:1fr}}
+.metric{padding:13px;border:1px solid var(--border);border-radius:14px;background:#fff}
+.metric .k{font:600 11px var(--mono);color:var(--dim);text-transform:uppercase;letter-spacing:.05em}
+.metric .v{font-size:24px;font-weight:800;color:var(--navy);margin-top:5px}
+.metric .s{font-size:11px;color:var(--muted);margin-top:2px}
+.note{padding:14px 15px;border-radius:14px;background:var(--navy-soft);color:var(--navy);font-size:13px;line-height:1.55;border-left:4px solid var(--navy)}
+.note.good{background:var(--good-soft);border-color:var(--good);color:#115c2e}.note.bad{background:var(--bad-soft);border-color:var(--bad);color:#8f1830}.note.warn{background:var(--warn-soft);border-color:var(--warn);color:#7f4300}.note.info{background:var(--info-soft);border-color:var(--info);color:#124f80}
+.explain{margin-top:20px;display:grid;grid-template-columns:1.15fr .85fr;gap:20px}
+@media(max-width:780px){.explain{grid-template-columns:1fr}}
+.explain p,.explain li{color:var(--muted);line-height:1.65;font-size:14px}
+.explain ul{padding-left:20px;margin:8px 0}
+.code{font:13px/1.6 var(--mono);background:var(--navy);color:#f8fafc;border-radius:14px;padding:15px;overflow:auto;white-space:pre-wrap}
+.pill{display:inline-flex;padding:5px 9px;border-radius:999px;font:600 11px var(--mono);background:var(--accent-soft);color:var(--accent-dark)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:10px 0}.legend span{display:flex;align-items:center;gap:6px}.dot{width:10px;height:10px;border-radius:3px;display:inline-block}
+footer{max-width:1120px;margin:0 auto;padding:32px 24px 54px;color:var(--dim);font-size:13px;line-height:1.7;border-top:1px solid var(--border)}
+footer a{color:var(--muted);text-underline-offset:3px}
+hr{border:0;border-top:1px solid var(--border);margin:18px 0}
+.visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+.timeline{height:100px;display:flex;align-items:center;margin:18px 0}.segment{height:26px;position:relative;border-right:2px solid #fff;display:flex;align-items:center;justify-content:center;font:700 10px var(--mono);color:var(--navy);min-width:10px}.segment.standard{background:#ffd384}.segment.ia{background:#a9d5ef}.segment.glacier{background:#b8c1cf}.marker{position:absolute;top:-18px;width:3px;height:62px;background:var(--bad);z-index:3}.marker:after{content:'now';position:absolute;top:-17px;left:-12px;font:700 10px var(--mono);color:var(--bad)}.object-card{display:flex;align-items:center;gap:15px;padding:16px;border:1px solid var(--border);border-radius:15px;background:#fff}.bucket{width:54px;height:54px;border-radius:15px;background:var(--accent);display:grid;place-items:center;font:800 13px var(--mono);color:var(--navy)}.object-card small{display:block;color:var(--muted);margin-top:5px}</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="index.html"><span class="cube"></span>aws://study-lab</a>
+  <a class="back" href="index.html">← All labs</a>
+</nav>
+<header>
+  <div class="eyebrow">LAB 05 · INTERACTIVE SIMULATOR</div>
+  <h1>S3 storage classes &amp; lifecycle</h1>
+  <p class="lede">Age an object and apply lifecycle rules to see when automatic transitions help—and when they conflict with the access pattern.</p>
+</header>
+<main>
+  <section class="lab">
+    <aside class="panel"><h2>Controls</h2><div class="controls"><div class="control"><label>Object age: <span id="ageLabel">45 days</span></label><input id="age" type="range" min="0" max="365" value="45"></div><div class="control"><label>Access frequency</label><select id="access"><option value="daily">Daily</option><option value="monthly" selected>Monthly</option><option value="rare">Rarely</option><option value="unknown">Unpredictable</option></select></div><label class="switch"><span>Lifecycle: Standard-IA after 30 days</span><input id="toIa" type="checkbox" checked></label><label class="switch"><span>Lifecycle: Glacier Flexible after 90 days</span><input id="toGlacier" type="checkbox" checked></label><label class="switch"><span>Expire after 365 days</span><input id="expire" type="checkbox"></label><button class="btn primary" id="applyLife">Apply lifecycle</button></div></aside>
+    <section class="panel stage"><h2>Object lifecycle</h2><div class="metrics"><div class="metric"><div class="k">Current class</div><div class="v" id="storageClass" style="font-size:19px">S3 Standard</div></div><div class="metric"><div class="k">Age</div><div class="v" id="objectAge">45d</div></div><div class="metric"><div class="k">Status</div><div class="v" id="objectStatus" style="font-size:19px">Active</div></div></div><div id="timeline" class="timeline"></div><div id="object" class="object-card"><div class="bucket">S3</div><div><b>study-notes.zip</b><small id="objectMeta">128 MB · monthly access</small></div></div><div id="s3Note" class="note info" style="margin-top:16px"></div></section>
+  </section>
+  <section class="explain">
+    <article class="panel"><h2>What to learn</h2><p>S3 Lifecycle rules automate transitions and expiration based on object age and filters. They do not understand your business value or retrieval requirements.</p><ul><li>Storage classes differ in access assumptions, retrieval behavior, and minimum-duration rules.</li><li>Lifecycle transitions can have request costs.</li><li>Objects smaller than 128 KB have special default transition behavior in current S3 Lifecycle rules.</li></ul></article>
+    <aside class="panel"><h2>Official AWS docs</h2><p>This simulator is intentionally simplified. Verify production decisions in the AWS documentation.</p><p><a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html" target="_blank" rel="noopener">Open the relevant AWS guide ↗</a></p></aside>
+  </section>
+</main>
+<footer>Built as a dependency-free companion to <a href="https://github.com/tuongphantrue/study-lab">study://lab</a>. No AWS account, credentials, SDK, or charges required.</footer>
+<script>
+const $=id=>document.getElementById(id);
+function apply(){let age=Number($('age').value),access=$('access').value,toIa=$('toIa').checked,toG=$('toGlacier').checked,expire=$('expire').checked;let cls='S3 Standard',status='Active';if(expire&&age>=365){cls='—';status='Expired'}else if(toG&&age>=90)cls='S3 Glacier Flexible Retrieval';else if(toIa&&age>=30)cls='S3 Standard-IA';else if(access==='unknown')cls='Consider Intelligent-Tiering';$('storageClass').textContent=cls;$('objectAge').textContent=age+'d';$('objectStatus').textContent=status;$('objectStatus').style.color=status==='Expired'?'var(--bad)':'var(--good)';let total=365,ia=toIa?30:total,g=toG?90:total;let parts=[];parts.push(`<div class="segment standard" style="width:${Math.min(ia,total)/total*100}%">Standard</div>`);if(toIa&&ia<g)parts.push(`<div class="segment ia" style="width:${(g-ia)/total*100}%">Standard-IA</div>`);if(toG)parts.push(`<div class="segment glacier" style="width:${(total-g)/total*100}%">Glacier</div>`);$('timeline').innerHTML=parts.join('')+`<div class="marker" style="left:${Math.min(100,age/total*100)}%"></div>`;$('objectMeta').textContent=`128 MB · ${access} access`;let note=status==='Expired'?'The expiration action removes the eligible object.':access==='daily'&&cls.includes('Glacier')?'This lifecycle rule conflicts with the stated access pattern: frequent retrieval from an archive class can be slow and costly.':cls.includes('IA')?'Infrequent-access classes trade lower storage price for retrieval charges and minimum-duration considerations.':cls.includes('Glacier')?'Archive classes are designed for rarely accessed data and have retrieval behavior to plan for.':'The object remains in the frequent-access class.';$('s3Note').className='note '+(note.includes('conflicts')?'warn':'info');$('s3Note').textContent=note}
+$('age').oninput=()=>{$('ageLabel').textContent=$('age').value+' days';apply()};['access','toIa','toGlacier','expire'].forEach(id=>$(id).onchange=apply);$('applyLife').onclick=apply;apply();
+</script>
+</body>
+</html>
