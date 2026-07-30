@@ -3,3 +3,27 @@
 @media(max-width:1200px){.course-layout{grid-template-columns:330px minmax(0,1fr)}.course-main{padding-left:18px;padding-right:18px}.course-hero h1{font-size:31px}}
 @media(max-width:980px){.course-main{margin-left:0;padding-top:76px}.course-hero{grid-template-columns:1fr}.course-progress-card{max-width:440px}.course-layout{grid-template-columns:1fr}.curriculum-panel{position:relative;top:auto;max-height:none}.course-curriculum{max-height:480px}.course-stats{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:650px){.course-main{padding:70px 10px 24px}.course-hero{padding:23px 18px}.course-hero h1{font-size:27px}.course-progress-card{align-items:flex-start}.course-progress-ring{width:84px;height:84px;flex-basis:84px}.course-progress-ring:before{inset:8px}.course-progress-ring b{top:23px;font-size:20px}.course-progress-ring small{top:49px}.course-stats{grid-template-columns:1fr 1fr}.reader-body{padding:23px 18px}.reader-body h2{font-size:25px}.knowledge-grid,.decision-grid,.check-options{grid-template-columns:1fr}.course-lab-card{align-items:flex-start;flex-direction:column}.course-hero-actions{flex-direction:column;align-items:stretch}.course-primary,.course-secondary{width:100%}.reader-top{align-items:flex-start}.reader-complete b{display:none}.reader-nav span{display:none}}
+
+
+/* Rework-style muted palette refresh */
+.course-page{background:#f5f7f8}
+.course-hero{background:linear-gradient(125deg,#173645,#1d4855 58%,#2b6f6c);box-shadow:0 16px 34px rgba(17,52,70,.13)}
+.course-eyebrow{color:#c2dbdc}.course-hero-copy>p{color:#cad9de}
+.course-primary{background:#2f8f88;color:#fff}.course-secondary{background:rgba(255,255,255,.06)}
+.course-progress-card{background:rgba(7,30,40,.22)}
+.course-progress-ring{background:conic-gradient(#76a6a1 var(--course-progress),rgba(255,255,255,.12) 0)}
+.curriculum-head small,.reader-category,.decision-card span,.check-head span{color:#3f726f}
+.curriculum-progress em{background:#5f8f8a}
+.section-index{background:#eef3f4;color:#3f5f6c}
+.lesson-link.active{background:#f2f7f7;color:#1f4f58}
+.lesson-link.complete .lesson-state,.reader-complete.complete span{background:#5f8f8a;border-color:#5f8f8a}
+.reader-section{background:#edf3f3;color:#3f726f}
+.reader-complete.complete{background:#f2f7f7;border-color:#b7cfcb;color:#356964}
+.lesson-note{border-left-color:#5f8f8a;background:#f4f8f8}.lesson-note span{color:#3f726f}
+.knowledge-item span{background:#edf3f3;color:#3f726f}
+.decision-card{background:#f3f7f7;border-color:#dce6e7}
+.trap-card{background:#f8f4ec;border-color:#e5dccd}.trap-card span{color:#7b6644}
+.course-lab-card{background:#173645}.course-lab-card span{color:#c1dadb}.course-lab-card a{background:#e7edef;color:#173645}
+.check-option:hover{border-color:#aec6c2}.check-option.selected{border-color:#5f8f8a;background:#f2f7f7}
+.check-option.correct{border-color:#a7c0b0;background:#f2f6f3}.check-option.wrong{border-color:#c6acb4;background:#f8f1f3}
+.check-feedback.show{background:#f2f7f7;color:#395e5a}
