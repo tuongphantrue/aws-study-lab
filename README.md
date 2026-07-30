@@ -1,30 +1,27 @@
-# aws://study-lab
+# AWS SAA-C03 Study Lab
 
-Nine small, dependency-free, interactive AWS visualizers. The project follows the same single-file approach as [`study-lab`](https://github.com/tuongphantrue/study-lab): each topic is a standalone HTML file with its CSS and JavaScript inline.
+A dependency-free, Rework-inspired study workspace for **AWS Certified Solutions Architect – Associate (SAA-C03)**.
 
-## Labs
+The site maps interactive learning modules to the current official exam domains:
 
-| Page | Covers |
-|---|---|
-| `iam.html` | IAM implicit deny, Allow, explicit Deny, boundaries, and SCP guardrails |
-| `vpc.html` | IPv4 CIDR splitting, subnet count, total and usable addresses |
-| `autoscaling.html` | Target tracking, min/max capacity, scale out/in, warmup |
-| `load-balancing.html` | Request routing, outstanding load, target health |
-| `s3-lifecycle.html` | Storage classes, lifecycle transitions, expiration |
-| `lambda-concurrency.html` | Concurrency estimation, provisioned concurrency, throttling |
-| `sqs.html` | Visibility timeout, deletion, retry, redrive to DLQ |
-| `cloudwatch.html` | M-out-of-N alarm evaluation and state transitions |
-| `dynamodb.html` | Partition-key cardinality, distribution, hot keys, write sharding |
+| Domain | Weight |
+|---|---:|
+| Design Secure Architectures | 30% |
+| Design Resilient Architectures | 26% |
+| Design High-Performing Architectures | 24% |
+| Design Cost-Optimized Architectures | 20% |
 
-## Interface
+## Included
 
-The project uses a Rework-inspired application dashboard: persistent sidebar navigation, compact top bar, app tiles, search, and browser-local completion tracking.
+- 14 interactive architecture labs
+- Randomized 15-question scenario practice sessions from an original 20-question bank
+- Browser-local completion tracking and domain progress
+- Rework-style dashboard, sidebar, search, and responsive layout
+- No AWS account, credentials, backend, dependencies, or build step
 
-## Run locally
+## Run
 
-Open `index.html` in a browser. There is no build step, package install, backend, AWS account, or credentials.
-
-For a local web server (optional):
+Open `index.html`, or start a simple local server:
 
 ```bash
 python -m http.server 8000
@@ -34,20 +31,18 @@ Then open `http://localhost:8000`.
 
 ## Deploy with GitHub Pages
 
-1. Create a new GitHub repository, for example `aws-study-lab`.
-2. Add these files and push to the `main` branch.
-3. Open **Settings → Pages**.
-4. Choose **Deploy from a branch**, then `main` and `/ (root)`.
-5. Open `https://<username>.github.io/aws-study-lab/`.
+Push the folder to a repository and enable **Settings → Pages → Deploy from a branch → main / root**.
 
-## Accuracy and scope
+## Exam note
 
-These are learning simulators, not production calculators. Each page links to the relevant official AWS documentation. AWS behavior includes additional service-specific rules, quotas, pricing, regional availability, and edge cases that the visualizers intentionally omit.
+The dashboard currently reflects SAA-C03: 65 questions, 130 minutes, a scaled passing score of 720, and four weighted domains. AWS can update exam details; verify the official guide before booking.
 
-## Attribution
+Official guide: `https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03.html`
 
-Inspired by and designed to sit alongside [`tuongphantrue/study-lab`](https://github.com/tuongphantrue/study-lab).
+## Scope
+
+The simulators teach architectural mental models. They intentionally simplify service quotas, pricing, regional availability, policy exceptions, and production edge cases. Always verify implementation details in official AWS documentation.
 
 ## License
 
-MIT. See `LICENSE`.
+MIT.
