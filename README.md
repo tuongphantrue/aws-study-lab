@@ -52,3 +52,7 @@ MIT.
 ## Course-style study guide
 
 Open `study-guide.html` for a structured original curriculum with 27 sections, short lessons, key architecture rules, common exam traps, one checkpoint per section, local progress tracking, and links to the interactive labs. The curriculum is inspired by the logical topic-by-topic flow common in popular SAA courses, but all lesson text and questions in this repository are original.
+
+## Rework-style interface
+
+The current interface follows Rework's product conventions: a narrow dark platform rail, a light contextual sidebar, a compact toolbar, flat list/detail workspaces, thin dividers, and restrained status/action colors.

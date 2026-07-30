@@ -15,3 +15,6 @@
 
 /* Rework product convention: flat operational panels */
 .panel,.metric{box-shadow:none!important;border-radius:2px!important}.panel{border-color:#dfe3e5!important}.metric{background:#fafbfb!important}.btn{border-radius:2px!important}.note,.code,input,select,textarea,.switch{border-radius:2px!important}
+
+/* Readability pass for standalone lab content */
+body{font-size:14px}.panel h2{font-size:16px!important}.panel h3{font-size:14px!important}.control label{font-size:12px!important}.control small{font-size:11px!important}.metric .k{font-size:9.5px!important}.metric .v{font-size:20px!important}.metric .s{font-size:10px!important}.note{font-size:12px!important;line-height:1.6!important}.explain p,.explain li{font-size:12.5px!important;line-height:1.65!important}.code{font-size:11.5px!important;line-height:1.65!important}.btn{font-size:11.5px!important}.switch{font-size:12px!important}input[type=text],input[type=number],select,textarea{font-size:12.5px!important}.pill{font-size:10px!important}

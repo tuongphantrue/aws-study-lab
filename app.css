@@ -249,3 +249,48 @@ body.app-page>main{padding:9px 14px 26px!important;background:#fff!important}bod
 .app-tile small{grid-column:2!important;grid-row:1!important;font-size:6.5px!important;color:#8b969b!important}.app-tile h3{grid-column:2!important;grid-row:2!important;font-size:9px!important;margin:2px 0 2px!important}.app-tile p{grid-column:2!important;grid-row:3!important;font-size:7.5px!important;line-height:1.35!important;margin:0!important;max-width:480px!important}.tile-foot{grid-column:3!important;grid-row:1/4!important;align-self:center!important;border:0!important;padding:0!important;display:block!important}.tile-foot>span:first-child{display:none!important}.open-lab{font-size:7px!important;color:#277ca4!important;white-space:nowrap!important}.app-tile.completed:after{right:5px!important;top:5px!important;width:13px!important;height:13px!important;border-radius:50%!important;font-size:7px!important}
 @media(max-width:1100px){.app-grid{grid-template-columns:1fr!important}}
 @media(max-width:980px){.global-rail{display:none!important}.app-sidebar{left:0!important;transform:translateX(-100%);transition:.2s}.sidebar-open .app-sidebar{transform:translateX(0)}.app-topbar{left:0!important}.landing-shell,body.app-page>header:not(.app-topbar),body.app-page>.hero,body.app-page>main,body.app-page>footer{margin-left:0!important}.dashboard-layout{grid-template-columns:1fr!important}.right-column{border-left:0!important;border-top:1px solid #e0e4e6!important;padding-left:0!important}}
+
+/* Readability pass: retain Rework density without sub-10px body text */
+html{font-size:16px!important}
+.app-sidebar{width:240px!important}
+.app-brand{font-size:13px!important;height:48px!important;padding:0 13px!important}
+.brand-mark{width:25px!important;height:25px!important}
+.workspace-switcher{min-height:56px!important;padding:9px 11px!important;grid-template-columns:30px 1fr auto!important}
+.workspace-icon{width:29px!important;height:29px!important;font-size:9px!important}
+.workspace-switcher small{font-size:9px!important}.workspace-switcher b{font-size:12px!important}.chev{font-size:9px!important}
+.side-scroll{padding:7px 7px 12px!important}.side-group{margin-bottom:10px!important}
+.side-label{padding:8px 8px 5px!important;font-size:9.5px!important;line-height:1.25!important}
+.side-link{min-height:34px!important;padding:7px 8px!important;gap:8px!important;font-size:12px!important;line-height:1.3!important}
+.side-icon,.side-icon svg{width:15px!important;height:15px!important;flex-basis:15px!important}
+.side-footer{padding:9px 10px!important;grid-template-columns:27px 1fr auto!important;font-size:10.5px!important}
+.profile-dot{width:27px!important;height:27px!important;font-size:9px!important}.side-footer small{font-size:9px!important}
+.app-topbar{left:282px!important;height:48px!important;padding:0 14px!important}
+.crumb{font-size:11px!important}.global-search{height:31px!important;width:205px!important}.global-search input{font-size:11.5px!important}
+.top-status{height:29px!important;font-size:10px!important}.complete-btn{height:31px!important;font-size:10.5px!important}.check-ring{width:17px!important;height:17px!important;font-size:9px!important}
+body.app-page>header:not(.app-topbar),body.app-page>.hero,body.app-page>main,body.app-page>footer{margin-left:282px!important}
+.landing-shell{margin-left:282px!important;padding-top:48px!important}
+body.app-page>header:not(.app-topbar),body.app-page>.hero{padding:66px 18px 13px!important}
+body.app-page>header:not(.app-topbar) h1,body.app-page>.hero h1{font-size:25px!important;line-height:1.25!important;margin-bottom:6px!important}
+body.app-page .eyebrow{font-size:10px!important;padding:4px 7px!important}.lede,body.app-page .lede{font-size:13.5px!important;line-height:1.6!important}
+body.app-page>main{padding:12px 18px 32px!important}body.app-page>footer{padding:15px 18px 22px!important;font-size:11px!important}
+.welcome-card{padding:17px 7px 16px!important}.welcome-card .kicker{font-size:10px!important}.welcome-card h1{font-size:27px!important;line-height:1.24!important}.welcome-card p{font-size:13.5px!important;line-height:1.6!important}
+.welcome-actions{margin-top:13px!important}.welcome-actions a{height:34px!important;padding:0 12px!important;font-size:11.5px!important}
+.exam-fact{padding:8px 13px!important}.exam-fact b{font-size:17px!important}.exam-fact small{font-size:9px!important}
+.section-head{padding:0 6px 11px!important}.section-head h2{font-size:15px!important}.section-head p{font-size:11px!important;line-height:1.45!important}
+.mini-search,.filter-btn{height:32px!important;font-size:11px!important}.mini-search input{font-size:11px!important}
+.app-tile{grid-template-columns:34px minmax(0,1fr) auto!important;column-gap:10px!important;min-height:92px!important;padding:11px 12px!important}
+.app-icon,.app-icon.teal,.app-icon.blue,.app-icon.purple,.app-icon.cyan,.app-icon.orange,.app-icon.pink,.app-icon.yellow,.app-icon.red,.app-icon.green{width:30px!important;height:30px!important}.app-icon svg{width:16px!important;height:16px!important}
+.app-tile small{font-size:8.5px!important}.app-tile h3{font-size:12.5px!important;line-height:1.35!important;margin:3px 0!important}.app-tile p{font-size:10.5px!important;line-height:1.5!important}.open-lab{font-size:10px!important}
+.right-column{padding-top:14px!important;padding-left:12px!important}.right-card{padding:12px 9px 14px!important}.right-card h3{font-size:12.5px!important}.right-card p,.tip-card p{font-size:10.5px!important;line-height:1.55!important}.tip-card a{font-size:10.5px!important}
+.progress-copy b{font-size:12px!important}.progress-copy small{font-size:10px!important}.path-item b{font-size:11px!important}.path-item small{font-size:9.5px!important}
+body.app-page .panel{padding:17px!important}.panel h2,body.app-page .panel h2{font-size:16px!important}.panel h3,body.app-page .panel h3{font-size:14px!important}
+body.app-page .lab{grid-template-columns:minmax(260px,310px) 1fr!important;gap:14px!important}
+body.app-page .metric{padding:11px!important}.metric .k{font-size:9.5px!important}.metric .v{font-size:20px!important}.metric .s{font-size:10px!important}
+body.app-page input[type=text],body.app-page input[type=number],body.app-page select,body.app-page textarea{padding:9px 10px!important;font-size:12.5px!important}
+.control label{font-size:12px!important}.control small{font-size:11px!important;line-height:1.45!important}.controls{gap:13px!important}
+body.app-page .switch{padding:9px 10px!important;font-size:12px!important}
+body.app-page .btn{padding:9px 12px!important;font-size:11.5px!important}
+body.app-page .note{font-size:12px!important;line-height:1.55!important;padding:10px 11px!important}.code{font-size:11.5px!important;line-height:1.6!important}
+.explain p,.explain li,body.app-page .explain p,body.app-page .explain li{font-size:12.5px!important;line-height:1.65!important}
+body.app-page .pill{font-size:10px!important;padding:4px 7px!important}
+@media(max-width:980px){.app-sidebar{left:0!important;width:240px!important}.app-topbar{left:0!important}.landing-shell,body.app-page>header:not(.app-topbar),body.app-page>.hero,body.app-page>main,body.app-page>footer{margin-left:0!important}}
