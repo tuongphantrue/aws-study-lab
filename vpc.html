@@ -82,7 +82,7 @@ hr{border:0;border-top:1px solid var(--border);margin:18px 0}
 .visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
 .subnet-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}@media(max-width:560px){.subnet-grid{grid-template-columns:repeat(2,1fr)}}.subnet{border:1px solid #ffc45f;background:var(--accent-soft);border-radius:13px;padding:12px;min-height:76px}.subnet b{font:700 12px var(--mono);color:var(--navy)}.subnet small{display:block;color:var(--muted);margin-top:8px}.subnet.empty{background:var(--navy-soft);border-color:#d4dae2}</style>
-<link href="app.css" rel="stylesheet"/><link href="saa.css" rel="stylesheet"/><link href="rework-ui.css" rel="stylesheet"/></head>
+<link href="css/app.css" rel="stylesheet"/><link href="css/saa.css" rel="stylesheet"/><link href="css/rework-ui.css" rel="stylesheet"/></head>
 <body class="lab-page app-page"><aside class="app-sidebar" id="appSidebar">
 <a class="app-brand" href="index.html"><span class="brand-mark"><i></i><i></i><i></i></span><span><b>AWS SAA</b> Lab</span></a>
 <button class="workspace-switcher" type="button"><span class="workspace-icon">ST</span><span><small>Workspace</small><b>Study &amp; labs</b></span><span class="chev">AWS</span></button>
@@ -107,7 +107,7 @@ hr{border:0;border-top:1px solid var(--border);margin:18px 0}
 <section class="panel stage"><h2>Address plan</h2><div class="metrics"><div class="metric"><div class="k">Possible subnets</div><div class="v" id="possible">—</div><div class="s">inside the VPC block</div></div><div class="metric"><div class="k">Addresses / subnet</div><div class="v" id="addresses">—</div><div class="s">total IPv4 addresses</div></div><div class="metric"><div class="k">Usable / subnet</div><div class="v" id="usable">—</div><div class="s">after AWS reservations</div></div></div><div class="legend"><span><i class="dot" style="background:var(--accent)"></i>shown subnet</span><span><i class="dot" style="background:var(--navy-soft)"></i>remaining address space</span></div><div class="subnet-grid" id="subnets"></div><div class="note info" id="vpcNote" style="margin-top:15px"></div></section>
 </section>
 <section class="teaching-section">
-<div class="teaching-head"><span class="teaching-kicker">Guided explanation</span><h2>How VPC address planning works</h2><p>A VPC is your private network boundary in AWS. The CIDR block is the total address space, and subnets divide that space into smaller networks that each belong to exactly one Availability Zone.</p></div>
+<div class="teaching-head"><span class="teaching-kicker">Guided explanation</span><h2>How VPC address planning works</h2><p>A VPC is your private network boundary in AWS. The CIDR block is the total address space, and subnets divide that space into smaller networks that each belong to exactly one Availability Zone.</p></div><figure class="teaching-figure teaching-figure-static"><img alt="Public and private VPC design. Keep internet-facing components public and application/data tiers private." loading="lazy" src="images/diagrams/vpc-subnets.svg"/><figcaption>Keep internet-facing components public and application/data tiers private.</figcaption></figure>
 <div class="teaching-grid">
 <article class="teaching-card teaching-wide"><span class="teaching-label">1 · Start here</span><h3>The big idea: plan the network before placing resources</h3><p>A CIDR such as <code>10.0.0.0/16</code> describes a range of private IPv4 addresses. A subnet with a larger prefix number is smaller: a <code>/24</code> has 256 total addresses, while a <code>/28</code> has only 16.</p><p>AWS reserves five IPv4 addresses in every subnet, so the number of usable addresses is lower than the mathematical total.</p></article>
 <article class="teaching-card"><span class="teaching-label">2 · Step by step</span><h3>What AWS does</h3><ol class="teaching-list"><li>Choose a VPC CIDR that does not overlap with networks you may connect later.</li><li>Divide it into subnets sized for expected growth, not only today’s resources.</li><li>Place matching public, application, and database subnets across at least two Availability Zones.</li><li>Attach route tables. A public subnet has a route to an internet gateway; private outbound internet normally uses a NAT gateway.</li></ol></article>
@@ -137,5 +137,5 @@ function plan(){try{
  }catch(e){$('subnets').innerHTML='';$('vpcNote').className='note bad';$('vpcNote').textContent=e.message}}
 $('prefix').addEventListener('input',()=>{$('prefixLabel').textContent='/'+$('prefix').value;plan()}); $('count').addEventListener('input',plan); $('plan').addEventListener('click',plan); plan();
 </script>
-<script src="app-shell.js"></script></body>
+<script src="js/app-shell.js"></script></body>
 </html>

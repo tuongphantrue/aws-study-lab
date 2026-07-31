@@ -1,42 +1,53 @@
 # AWS SAA-C03 Study Lab
 
-A dependency-free, Rework-inspired study workspace for **AWS Certified Solutions Architect – Associate (SAA-C03)**.
-
-## Beginner study course
-
-The Study workspace starts from zero and is separate from exam preparation. It now follows the **33-section public syllabus order** of Stéphane Maarek’s current SAA-C03 course, from course orientation and AWS setup through IAM, EC2, storage, databases, S3, messaging, containers, serverless, security, networking, recovery, architecture review, and exam preparation.
-
-The website does **not** reproduce his videos, slides, wording, diagrams, or questions. It uses original plain-language lessons, examples, checks, and simulators arranged in the same high-level sequence.
-
-Recommended order: open `study.html`, then begin Section 1 in `study-guide.html`.
+A dependency-free study workspace for **AWS Certified Solutions Architect – Associate (SAA-C03)**. It separates beginner learning from exam practice and includes original visual diagrams, lessons, labs, quizzes, and mock exams.
 
 ## Links
 
-- **Live study lab:** [https://tuongphantrue.github.io/aws-study-lab/](https://tuongphantrue.github.io/aws-study-lab/)
-- **GitHub repository:** [https://github.com/tuongphantrue/aws-study-lab](https://github.com/tuongphantrue/aws-study-lab)
+- **Live site:** https://tuongphantrue.github.io/aws-study-lab/
+- **Repository:** https://github.com/tuongphantrue/aws-study-lab
 
-The site maps interactive learning modules to the current official exam domains:
+## Project structure
 
-| Domain | Weight |
-|---|---:|
-| Design Secure Architectures | 30% |
-| Design Resilient Architectures | 26% |
-| Design High-Performing Architectures | 24% |
-| Design Cost-Optimized Architectures | 20% |
+```text
+aws-study-lab/
+├── index.html
+├── study.html
+├── study-guide.html
+├── exam.html
+├── *.html                  # Interactive labs and exams
+├── css/
+│   ├── app.css
+│   ├── lab-core.css
+│   ├── rework-ui.css
+│   ├── saa.css
+│   └── study-guide.css
+├── js/
+│   ├── app-shell.js
+│   ├── beginner-course-data.js
+│   └── study-guide.js
+├── images/
+│   └── diagrams/           # Directly embedded SVG study figures
+├── .nojekyll
+├── LICENSE
+└── README.md
+```
 
-## Included
+The diagrams are embedded directly in the HTML lab pages, so they do not depend on JavaScript injection.
 
-- 14 interactive architecture labs
-- Randomized 15-question scenario practice sessions
-- Two timed 65-question mock exams plus a 20-question diagnostic from an original 80-question bank
-- Flag-for-review navigation, autosave/resume, domain scoring, attempt history, and full explanations
-- Browser-local completion tracking and domain progress
-- Rework-style dashboard, sidebar, search, and responsive layout
-- No AWS account, credentials, backend, dependencies, or build step
+## Upload the complete site to GitHub
 
-## Run
+1. Extract this ZIP.
+2. Open the extracted `aws-study-lab-github-ready` folder.
+3. Delete the old files in the root of your GitHub repository.
+4. Upload **everything inside the extracted folder**, including the `css`, `js`, and `images` folders.
+5. Commit the changes.
+6. In **Settings → Pages**, use **Deploy from a branch → main / root**.
+7. Wait for deployment, then hard-refresh the live site with `Ctrl + F5`.
 
-Open `index.html`, or start a simple local server:
+Do not upload the parent folder as a nested folder inside the repository. `index.html` must remain at the repository root.
+
+## Run locally
 
 ```bash
 python -m http.server 8000
@@ -44,39 +55,10 @@ python -m http.server 8000
 
 Then open `http://localhost:8000`.
 
-## Deploy with GitHub Pages
+## Course content
 
-This repository is intended to be published at:
-
-[https://tuongphantrue.github.io/aws-study-lab/](https://tuongphantrue.github.io/aws-study-lab/)
-
-In GitHub, open **Settings → Pages**, select **Deploy from a branch**, and choose **main / root**.
-
-## Exam note
-
-The dashboard currently reflects SAA-C03: 65 questions, 130 minutes, 50 scored questions plus 15 unscored questions, a scaled passing score of 720, and four weighted domains. Mock-exam percentages are study metrics and are not conversions to AWS scaled scores. AWS can update exam details; verify the official guide before booking.
-
-Official guide: `https://docs.aws.amazon.com/aws-certification/latest/solutions-architect-associate-03/solutions-architect-associate-03.html`
-
-## Scope
-
-The simulators teach architectural mental models. They intentionally simplify service quotas, pricing, regional availability, policy exceptions, and production edge cases. Always verify implementation details in official AWS documentation.
+The Study workspace follows the publicly visible high-level order of a popular SAA-C03 course, while all explanations, diagrams, examples, quizzes, labs, and mock questions in this repository are original. It is not affiliated with or endorsed by the instructor, Udemy, or AWS.
 
 ## License
 
 MIT.
-
-## Course-style study guide
-
-Open `study-guide.html` for a 33-section beginner curriculum following the public topic order of the current Stéphane Maarek SAA-C03 course. All lesson text, examples, checks, and simulations in this repository are original and the project is not affiliated with or endorsed by the instructor or Udemy.
-
-## Rework-style interface
-
-The current interface follows Rework's product conventions: a narrow dark platform rail, a light contextual sidebar, a compact toolbar, flat list/detail workspaces, thin dividers, and restrained status/action colors.
-
-
-## Workspace structure
-
-- `index.html` — choose Study or Exam.
-- `study.html` — course and interactive labs only.
-- `exam.html` — scenario practice and timed mock exams only.

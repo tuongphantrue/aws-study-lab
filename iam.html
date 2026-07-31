@@ -82,7 +82,7 @@ hr{border:0;border-top:1px solid var(--border);margin:18px 0}
 .visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
 .flow{display:grid;gap:10px;margin:16px 0}.flow-step{display:grid;grid-template-columns:36px 1fr auto;gap:12px;align-items:center;border:1px solid var(--border);border-radius:14px;padding:12px;background:#fff}.flow-step .n{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:var(--navy-soft);font:700 12px var(--mono)}.flow-step.pass{border-color:#abd9b8;background:var(--good-soft)}.flow-step.fail{border-color:#f1b1bf;background:var(--bad-soft)}.flow-step .state{font:700 11px var(--mono)}</style>
-<link href="app.css" rel="stylesheet"/><link href="saa.css" rel="stylesheet"/><link href="rework-ui.css" rel="stylesheet"/></head>
+<link href="css/app.css" rel="stylesheet"/><link href="css/saa.css" rel="stylesheet"/><link href="css/rework-ui.css" rel="stylesheet"/></head>
 <body class="lab-page app-page"><aside class="app-sidebar" id="appSidebar">
 <a class="app-brand" href="index.html"><span class="brand-mark"><i></i><i></i><i></i></span><span><b>AWS SAA</b> Lab</span></a>
 <button class="workspace-switcher" type="button"><span class="workspace-icon">ST</span><span><small>Workspace</small><b>Study &amp; labs</b></span><span class="chev">AWS</span></button>
@@ -115,7 +115,7 @@ hr{border:0;border-top:1px solid var(--border);margin:18px 0}
 <div class="flow" id="flow"></div><div class="note info" id="iamNote">Press Evaluate to walk through the simplified decision.</div></section>
 </section>
 <section class="teaching-section">
-<div class="teaching-head"><span class="teaching-kicker">Guided explanation</span><h2>How IAM decides whether a request is allowed</h2><p>IAM is easier when you stop thinking of policies as separate documents and see them as one decision process. Every AWS API request is checked against all policies that apply to the caller and the resource.</p></div>
+<div class="teaching-head"><span class="teaching-kicker">Guided explanation</span><h2>How IAM decides whether a request is allowed</h2><p>IAM is easier when you stop thinking of policies as separate documents and see them as one decision process. Every AWS API request is checked against all policies that apply to the caller and the resource.</p></div><figure class="teaching-figure teaching-figure-static"><img alt="IAM policy evaluation. Temporary credentials and policy evaluation decide whether the request is allowed." loading="lazy" src="images/diagrams/iam-policy-evaluation.svg"/><figcaption>Temporary credentials and policy evaluation decide whether the request is allowed.</figcaption></figure>
 <div class="teaching-grid">
 <article class="teaching-card teaching-wide"><span class="teaching-label">1 · Start here</span><h3>The big idea: access starts denied</h3><p>AWS begins with an implicit deny. A matching Allow can open access, but any matching explicit Deny closes it again. This is why a single deny in an SCP, permissions boundary, identity policy, or resource policy can override several allows.</p><p>Roles are the normal choice for workloads because they provide temporary credentials. Users are mainly for people or special cases that cannot use federation.</p></article>
 <article class="teaching-card"><span class="teaching-label">2 · Step by step</span><h3>What AWS does</h3><ol class="teaching-list"><li>A principal—such as a user, role, or AWS service—makes an API request.</li><li>AWS gathers the relevant identity policies, resource policies, session policies, permissions boundaries, and organization guardrails.</li><li>AWS checks whether a matching explicit Deny exists. If it does, the request is denied immediately.</li><li>If there is no explicit Deny, AWS looks for a matching Allow. Without one, the implicit deny remains.</li></ol></article>
@@ -151,5 +151,5 @@ function render(){
 }
 $('evaluate').addEventListener('click',render); ['action','identity','resource','boundary','scp','deny'].forEach(id=>$(id).addEventListener('change',render)); render();
 </script>
-<script src="app-shell.js"></script></body>
+<script src="js/app-shell.js"></script></body>
 </html>
