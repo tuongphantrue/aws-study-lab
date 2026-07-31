@@ -56,3 +56,10 @@ Open `study-guide.html` for a structured original curriculum with 27 sections, s
 ## Rework-style interface
 
 The current interface follows Rework's product conventions: a narrow dark platform rail, a light contextual sidebar, a compact toolbar, flat list/detail workspaces, thin dividers, and restrained status/action colors.
+
+
+## Workspace structure
+
+- `index.html` — choose Study or Exam.
+- `study.html` — course and interactive labs only.
+- `exam.html` — scenario practice and timed mock exams only.
