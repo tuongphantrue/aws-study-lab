@@ -225,3 +225,28 @@ body.app-page > nav.global-rail{display:flex!important}
 .teaching-section{margin-top:24px}.teaching-section .teaching-head{padding:15px 20px}.teaching-section .teaching-head h2{font-size:16px!important}.teaching-section .teaching-head p{font-size:12px;line-height:1.5}
 @media(max-width:1000px){.simple-architecture{grid-template-columns:1fr}.simple-architecture .diagram-explanation{border-left:0;border-top:1px solid var(--rw-line)}.simple-takeaways{grid-template-columns:1fr}.simple-takeaway{border-right:0;border-bottom:1px solid var(--rw-line)}.simple-takeaway:last-child{border-bottom:0}}
 @media(max-width:650px){.simple-first-head{padding:18px}.simple-first-head h2{font-size:22px!important}.simple-answer,.simple-analogy{font-size:14px}.simple-architecture .diagram-stage{padding:17px;justify-content:flex-start}.simple-architecture .diagram-node{min-width:145px}.simple-takeaway{padding:15px 17px}.try-it-title h2{font-size:19px}}
+
+/* Simplified main navigation: Home / Study / Exam only */
+:root{--simple-nav-width:176px;--rw-offset:var(--simple-nav-width)!important}
+.app-sidebar{display:none!important}
+.global-rail.simple-global-nav{position:fixed!important;inset:0 auto 0 0!important;width:var(--simple-nav-width)!important;height:100vh!important;background:#20282d!important;border-right:1px solid #151b1f!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;padding:12px 10px!important;z-index:100!important;color:#dce2e4!important}
+.simple-brand{height:46px;display:flex;align-items:center;gap:9px;padding:0 8px 12px;margin-bottom:8px;border-bottom:1px solid rgba(255,255,255,.09);color:#fff;text-decoration:none;font-size:13px;font-weight:750;white-space:nowrap}
+.simple-brand-mark{width:30px;height:30px;border-radius:5px;display:grid;place-items:center;background:#f2f4f4;color:#273137;font-size:9px;font-weight:900;letter-spacing:.03em}
+.simple-global-nav .rail-main{display:grid!important;gap:3px!important;width:100%!important;margin:0!important;padding:0!important}
+.simple-global-nav .rail-item{width:100%!important;height:40px!important;min-height:40px!important;border:0!important;border-radius:5px!important;display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;gap:10px!important;padding:0 10px!important;margin:0!important;color:#bdc7cb!important;text-decoration:none!important;background:transparent!important;font-size:13px!important;font-weight:650!important}
+.simple-global-nav .rail-item svg{width:18px!important;height:18px!important;stroke:currentColor!important;fill:none!important;stroke-width:1.7!important;flex:0 0 18px!important}
+.simple-global-nav .rail-label{display:block!important;position:static!important;opacity:1!important;visibility:visible!important;background:transparent!important;color:inherit!important;padding:0!important;transform:none!important;font-size:13px!important;white-space:nowrap!important}
+.simple-global-nav .rail-item:hover{background:rgba(255,255,255,.06)!important;color:#fff!important}
+.simple-global-nav .rail-item.active{background:rgba(255,255,255,.10)!important;color:#fff!important;box-shadow:none!important}
+.app-topbar{left:var(--simple-nav-width)!important}
+.landing-shell,body.app-page>header:not(.app-topbar),body.app-page>.hero,body.app-page>main,body.app-page>footer,.course-main,.course-index-main,.course-section-main,.beginner-main{margin-left:var(--simple-nav-width)!important}
+.menu-button{display:none!important}.top-status,.avatar{display:none!important}
+@media(max-width:800px){
+  :root{--rw-offset:0px!important;--simple-nav-width:0px}
+  .global-rail.simple-global-nav{inset:auto 0 0 0!important;width:100%!important;height:58px!important;padding:5px 8px!important;display:block!important;border-right:0!important;border-top:1px solid #151b1f!important}
+  .simple-brand{display:none!important}.simple-global-nav .rail-main{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:4px!important;height:100%!important}
+  .simple-global-nav .rail-item{height:48px!important;min-height:48px!important;justify-content:center!important;flex-direction:column!important;gap:2px!important;padding:3px 8px!important;font-size:10px!important}
+  .simple-global-nav .rail-item svg{width:18px!important;height:18px!important}.simple-global-nav .rail-label{font-size:10px!important}
+  .app-topbar{left:0!important}.landing-shell,body.app-page>header:not(.app-topbar),body.app-page>.hero,body.app-page>main,body.app-page>footer,.course-main,.course-index-main,.course-section-main,.beginner-main{margin-left:0!important}
+  body{padding-bottom:58px!important}
+}
