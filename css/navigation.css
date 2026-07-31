@@ -19,7 +19,7 @@
 body.rw-shell-on{padding-left:var(--rw-platform-w)!important}
 body.rw-study-shell,body.rw-exam-shell{padding-left:var(--rw-shell-offset)!important}
 
-.rw-platform-rail{position:fixed;z-index:1000;inset:0 auto 0 0;width:var(--rw-platform-w);background:var(--rw-nav-rail);border-right:1px solid #151b1e;display:flex;align-items:center;flex-direction:column;padding:9px 6px;gap:5px}
+.rw-platform-rail{position:fixed!important;z-index:1000;inset:0 auto 0 0;width:var(--rw-platform-w);background:var(--rw-nav-rail);border-right:1px solid #151b1e;display:flex;align-items:center;flex-direction:column;padding:9px 6px;gap:5px}
 .rw-app-mark{width:34px;height:34px;display:grid;place-items:center;text-decoration:none;color:#243036;background:#fff;border-radius:5px;margin-bottom:3px}
 .rw-app-mark span{font-size:8px;font-weight:900;letter-spacing:.04em}
 .rw-rail-divider{width:26px;height:1px;background:rgba(255,255,255,.11);margin:3px 0 5px}

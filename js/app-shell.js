@@ -33,9 +33,10 @@
 
   document.body.classList.add('rw-shell-on',`rw-${area}-shell`);
 
-  const rail=document.createElement('nav');
+  const rail=document.createElement('aside');
   rail.className='rw-platform-rail';
-  rail.setAttribute('aria-label','Workspace');
+  rail.setAttribute('role','navigation');
+  rail.setAttribute('aria-label','Master navigation');
   rail.innerHTML=`
     <a class="rw-app-mark" href="${rootPrefix}index.html" aria-label="AWS Study Lab"><span>AWS</span></a>
     <div class="rw-rail-divider"></div>
