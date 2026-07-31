@@ -10,8 +10,16 @@
     if(h)h.textContent=node.dataset.title||node.textContent.trim();
     if(p)p.textContent=node.dataset.explain||'';
   }
+  function initialize(root=document){
+    root.querySelectorAll('.interactive-architecture, .lesson-figure').forEach(diagram=>{
+      const first=diagram.querySelector(nodeSelector);
+      if(first)activate(first);
+    });
+  }
   document.addEventListener('mouseover',e=>{const n=e.target.closest(nodeSelector);if(n)activate(n)});
   document.addEventListener('focusin',e=>{const n=e.target.closest(nodeSelector);if(n)activate(n)});
   document.addEventListener('click',e=>{const n=e.target.closest(nodeSelector);if(n)activate(n)});
   document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches(nodeSelector)){e.preventDefault();activate(e.target)}});
+  document.addEventListener('DOMContentLoaded',()=>initialize());
+  window.AWSStudyDiagrams={initialize,activate};
 })();

@@ -199,3 +199,29 @@ body.app-page > nav.global-rail{display:flex!important}
 .teaching-section>.teaching-head{padding-bottom:15px}.teaching-section>.teaching-head p{margin-bottom:0}
 @media(max-width:920px){.interactive-architecture{grid-template-columns:1fr}.diagram-explanation{border-left:0;border-top:1px solid var(--rw-line)}}
 @media(max-width:650px){.concept-first-head{padding:16px}.diagram-stage{padding:16px}.diagram-node{min-width:138px}.diagram-explanation{padding:17px}.concept-first-head h2{font-size:19px!important}}
+
+/* Simple-first learning flow */
+.simple-first{margin:0 0 22px;border:1px solid var(--rw-line-strong);background:#fff}
+.simple-first-head{padding:22px 24px 18px;border-bottom:1px solid var(--rw-line)}
+.simple-kicker{display:block;font-size:10px;font-weight:800;letter-spacing:.1em;color:#65767d;margin-bottom:7px}
+.simple-first-head h2{font-size:25px!important;line-height:1.25!important;margin:0 0 10px!important;color:#243239!important;letter-spacing:-.025em!important}
+.simple-answer,.simple-analogy{font-size:15px;line-height:1.6;margin:0;max-width:920px;color:#4c5e66}
+.simple-answer b,.simple-analogy b{color:#26353c}
+.simple-analogy{margin-top:7px;color:#61727a}
+.simple-architecture{grid-template-columns:minmax(0,1fr) 330px;min-height:190px}
+.simple-architecture .diagram-stage{padding:24px;gap:10px;justify-content:center;background:#fafbfb}
+.simple-architecture .diagram-node{min-width:135px;min-height:66px;padding:11px 12px 11px 42px}
+.simple-architecture .diagram-node b{font-size:13px}
+.simple-architecture .diagram-explanation{padding:25px 23px;background:#f6f8f8}
+.simple-architecture .diagram-explanation h3{font-size:18px;margin-top:7px}
+.simple-architecture .diagram-explanation p{font-size:14px;line-height:1.65}
+.simple-takeaways{display:grid;grid-template-columns:1.25fr 1fr 1fr;border-top:1px solid var(--rw-line)}
+.simple-takeaway{padding:17px 19px;border-right:1px solid var(--rw-line);min-height:105px}
+.simple-takeaway:last-child{border-right:0}
+.simple-takeaway small{display:block;font-size:10px;font-weight:800;letter-spacing:.09em;color:#6c7b82;margin-bottom:7px}
+.simple-takeaway p{font-size:13.5px;line-height:1.55;color:#43535a;margin:0}
+.simple-takeaway.remember{background:#f4f7f7}.simple-takeaway.exam{background:#faf8f3}
+.try-it-title{margin:26px 0 10px}.try-it-title span{display:block;font-size:10px;font-weight:800;letter-spacing:.1em;color:#65767d}.try-it-title h2{font-size:21px;margin:5px 0 0;color:#26343a}
+.teaching-section{margin-top:24px}.teaching-section .teaching-head{padding:15px 20px}.teaching-section .teaching-head h2{font-size:16px!important}.teaching-section .teaching-head p{font-size:12px;line-height:1.5}
+@media(max-width:1000px){.simple-architecture{grid-template-columns:1fr}.simple-architecture .diagram-explanation{border-left:0;border-top:1px solid var(--rw-line)}.simple-takeaways{grid-template-columns:1fr}.simple-takeaway{border-right:0;border-bottom:1px solid var(--rw-line)}.simple-takeaway:last-child{border-bottom:0}}
+@media(max-width:650px){.simple-first-head{padding:18px}.simple-first-head h2{font-size:22px!important}.simple-answer,.simple-analogy{font-size:14px}.simple-architecture .diagram-stage{padding:17px;justify-content:flex-start}.simple-architecture .diagram-node{min-width:145px}.simple-takeaway{padding:15px 17px}.try-it-title h2{font-size:19px}}

@@ -1,14 +1,15 @@
 (function(){
+  const rootPrefix=document.documentElement.dataset.rootPrefix||'';
   if(!document.querySelector('.global-rail')){
     const rail=document.createElement('nav');
     rail.className='global-rail';
     rail.setAttribute('aria-label','Platform navigation');
     rail.innerHTML=`
-      <a class="rail-logo" href="index.html" aria-label="AWS workspace"><span></span><span></span><span></span><span></span></a>
+      <a class="rail-logo" href="${rootPrefix}index.html" aria-label="AWS workspace"><span></span><span></span><span></span><span></span></a>
       <div class="rail-main">
-        <a class="rail-item" data-rail-section="home" href="index.html" aria-label="Home" title="Home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 11 8-7 8 7v8a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1v-8Z"/></svg><span class="rail-label">Home</span></a>
-        <a class="rail-item" data-rail-section="study" href="study.html" aria-label="Study" title="Study"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4Z"/><path d="M8 8h7M8 12h7M8 16h4"/></svg><span class="rail-label">Study</span></a>
-        <a class="rail-item" data-rail-section="exam" href="exam.html" aria-label="Exam" title="Exam"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10v4H7z"/><path d="M5 5h14v16H5zM8 11h8M8 15h5"/></svg><span class="rail-label">Exam</span></a>
+        <a class="rail-item" data-rail-section="home" href="${rootPrefix}index.html" aria-label="Home" title="Home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 11 8-7 8 7v8a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1v-8Z"/></svg><span class="rail-label">Home</span></a>
+        <a class="rail-item" data-rail-section="study" href="${rootPrefix}study.html" aria-label="Study" title="Study"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4Z"/><path d="M8 8h7M8 12h7M8 16h4"/></svg><span class="rail-label">Study</span></a>
+        <a class="rail-item" data-rail-section="exam" href="${rootPrefix}exam.html" aria-label="Exam" title="Exam"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10v4H7z"/><path d="M5 5h14v16H5zM8 11h8M8 15h5"/></svg><span class="rail-label">Exam</span></a>
         <button class="rail-item" type="button" aria-label="Search" title="Search" data-focus-search><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg><span class="rail-label">Search</span></button>
       </div>
       <div class="rail-bottom">
@@ -18,9 +19,10 @@
     document.body.prepend(rail);
     rail.querySelector('[data-focus-search]')?.addEventListener('click',()=>document.getElementById('globalSearch')?.focus());
     const current=(location.pathname.split('/').pop()||'index.html').toLowerCase();
+    const inCourse=location.pathname.includes('/course/');
     const studyPages=new Set(['study.html','study-guide.html','iam.html','vpc.html','autoscaling.html','load-balancing.html','sqs.html','cloudwatch.html','disaster-recovery.html','lambda-concurrency.html','dynamodb.html','storage-selector.html','database-selector.html','route53-delivery.html','s3-lifecycle.html','cost-optimizer.html']);
     const examPages=new Set(['exam.html','architecture-practice.html','mock-exams.html']);
-    const section=studyPages.has(current)?'study':examPages.has(current)?'exam':'home';
+    const section=(inCourse||studyPages.has(current))?'study':examPages.has(current)?'exam':'home';
     rail.querySelectorAll('[data-rail-section]').forEach(a=>a.classList.toggle('active',a.dataset.railSection===section));
   }
 
