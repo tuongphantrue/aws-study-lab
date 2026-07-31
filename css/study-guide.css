@@ -21,3 +21,7 @@
 .figure-col .figure-box + .figure-box{margin-left:8px}
 .figure-arrow{font-size:18px;color:#90a0a7;font-weight:700}
 @media(max-width:620px){.figure-canvas{flex-direction:column;gap:10px}.figure-col{flex-wrap:wrap}.figure-arrow{transform:rotate(90deg)}}
+
+.lesson-figure .diagram-explanation{margin:14px -18px -16px;border-left:0;border-top:1px solid var(--beginner-line);padding:15px 18px;background:#fff}
+.lesson-figure .figure-box{min-width:120px;min-height:54px;padding-left:12px;text-align:center}
+.lesson-figure .figure-box b{font-size:12px}

@@ -62,3 +62,7 @@ The Study workspace follows the publicly visible high-level order of a popular S
 ## License
 
 MIT.
+
+## Interactive visual explanations
+
+Each learning lab now starts with an interactive architecture diagram. Hover with a mouse, focus with the keyboard, or tap on mobile to display a short explanation for each component. The longer notes are collapsed below the simulator.

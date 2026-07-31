@@ -170,3 +170,32 @@ body.app-page > nav.global-rail{display:flex!important}
 .teaching-figure-static img{display:block;width:100%;height:auto;max-height:340px;object-fit:contain;border:1px solid var(--rw-line-strong);background:#fafbfb}
 .teaching-figure-static figcaption{margin-top:9px;font-size:12px;line-height:1.5;color:#66757c}
 @media(max-width:760px){.teaching-figure-static{padding:15px}.teaching-figure-static img{min-width:720px}.teaching-figure-static{overflow-x:auto}}
+
+
+/* Visual explanation shown before every simulator */
+.concept-first{margin:0 0 18px;border:1px solid var(--rw-line-strong);background:#fff}
+.concept-first-head{padding:18px 20px 15px;border-bottom:1px solid var(--rw-line)}
+.concept-first-kicker{font-size:10px;font-weight:800;letter-spacing:.09em;color:#67777e}
+.concept-first-head h2{margin:6px 0 6px!important;font-size:21px!important;line-height:1.3!important;color:#28343a!important}
+.concept-first-head p{margin:0;max-width:850px;font-size:14px;line-height:1.6;color:#596970}
+.concept-first-hint{display:block;margin-top:9px;font-size:11px;font-weight:700;color:#356b68}
+.interactive-architecture{display:grid;grid-template-columns:minmax(0,1fr) 290px;min-height:180px}
+.diagram-stage{display:flex;align-items:center;gap:10px;padding:22px;overflow-x:auto;background:#fafbfb}
+.diagram-group{display:grid;gap:8px;flex:0 0 auto}
+.diagram-node{appearance:none;position:relative;min-width:126px;min-height:58px;padding:10px 12px 10px 39px;border:1px solid #cfd8dc;border-radius:4px;background:#fff;color:#34434a;text-align:left;font:inherit;cursor:pointer;transition:border-color .12s,background .12s,box-shadow .12s}
+.diagram-node b{display:block;font-size:12px;line-height:1.35}
+.diagram-step{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:#edf1f2;color:#63747b;font-size:10px;font-weight:800}
+.diagram-node:hover,.diagram-node:focus-visible,.diagram-node.active{outline:0;border-color:#648f8b;background:#f1f6f5;box-shadow:inset 3px 0 #4f7775}
+.diagram-node:hover .diagram-step,.diagram-node:focus-visible .diagram-step,.diagram-node.active .diagram-step{background:#4f7775;color:#fff}
+.diagram-arrow{flex:0 0 auto;color:#929da2;font-size:20px;font-weight:700}
+.diagram-explanation{border-left:1px solid var(--rw-line);padding:22px;background:#fff;display:flex;flex-direction:column;justify-content:center}
+.diagram-explanation>span{font-size:9px;letter-spacing:.09em;font-weight:800;color:#78868c}
+.diagram-explanation h3{font-size:17px!important;line-height:1.35!important;margin:6px 0 7px!important;color:#27343a!important}
+.diagram-explanation p{font-size:13px;line-height:1.65;color:#56676e;margin:0}
+.deep-dive{border-top:1px solid var(--rw-line);background:#fff}
+.deep-dive>summary{padding:14px 20px;cursor:pointer;font-size:13px;font-weight:700;color:#3f5058;list-style:none}
+.deep-dive>summary::-webkit-details-marker{display:none}.deep-dive>summary:after{content:'+';float:right;color:#75858c}.deep-dive[open]>summary:after{content:'−'}
+.deep-dive[open]>summary{border-bottom:1px solid var(--rw-line)}
+.teaching-section>.teaching-head{padding-bottom:15px}.teaching-section>.teaching-head p{margin-bottom:0}
+@media(max-width:920px){.interactive-architecture{grid-template-columns:1fr}.diagram-explanation{border-left:0;border-top:1px solid var(--rw-line)}}
+@media(max-width:650px){.concept-first-head{padding:16px}.diagram-stage{padding:16px}.diagram-node{min-width:138px}.diagram-explanation{padding:17px}.concept-first-head h2{font-size:19px!important}}
