@@ -4,9 +4,11 @@ A dependency-free, Rework-inspired study workspace for **AWS Certified Solutions
 
 ## Beginner study course
 
-The Study workspace now starts from zero and is separate from exam preparation. It contains 12 chapters and 36 plain-language lessons. Every lesson includes an analogy, a simple request flow, key ideas, a worked example, beginner definitions, one short knowledge check, and an optional related simulator.
+The Study workspace starts from zero and is separate from exam preparation. It now follows the **33-section public syllabus order** of Stéphane Maarek’s current SAA-C03 course, from course orientation and AWS setup through IAM, EC2, storage, databases, S3, messaging, containers, serverless, security, networking, recovery, architecture review, and exam preparation.
 
-Recommended order: open `study.html`, then begin Chapter 1 in `study-guide.html`.
+The website does **not** reproduce his videos, slides, wording, diagrams, or questions. It uses original plain-language lessons, examples, checks, and simulators arranged in the same high-level sequence.
+
+Recommended order: open `study.html`, then begin Section 1 in `study-guide.html`.
 
 ## Links
 
@@ -66,7 +68,7 @@ MIT.
 
 ## Course-style study guide
 
-Open `study-guide.html` for a structured original curriculum with 27 sections, short lessons, key architecture rules, common exam traps, one checkpoint per section, local progress tracking, and links to the interactive labs. The curriculum is inspired by the logical topic-by-topic flow common in popular SAA courses, but all lesson text and questions in this repository are original.
+Open `study-guide.html` for a 33-section beginner curriculum following the public topic order of the current Stéphane Maarek SAA-C03 course. All lesson text, examples, checks, and simulations in this repository are original and the project is not affiliated with or endorsed by the instructor or Udemy.
 
 ## Rework-style interface
 
