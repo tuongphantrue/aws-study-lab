@@ -2,6 +2,12 @@
 
 A dependency-free, Rework-inspired study workspace for **AWS Certified Solutions Architect – Associate (SAA-C03)**.
 
+## Beginner study course
+
+The Study workspace now starts from zero and is separate from exam preparation. It contains 12 chapters and 36 plain-language lessons. Every lesson includes an analogy, a simple request flow, key ideas, a worked example, beginner definitions, one short knowledge check, and an optional related simulator.
+
+Recommended order: open `study.html`, then begin Chapter 1 in `study-guide.html`.
+
 ## Links
 
 - **Live study lab:** [https://tuongphantrue.github.io/aws-study-lab/](https://tuongphantrue.github.io/aws-study-lab/)
