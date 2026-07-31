@@ -2,6 +2,11 @@
 
 A dependency-free, Rework-inspired study workspace for **AWS Certified Solutions Architect – Associate (SAA-C03)**.
 
+## Links
+
+- **Live study lab:** [https://tuongphantrue.github.io/aws-study-lab/](https://tuongphantrue.github.io/aws-study-lab/)
+- **GitHub repository:** [https://github.com/tuongphantrue/aws-study-lab](https://github.com/tuongphantrue/aws-study-lab)
+
 The site maps interactive learning modules to the current official exam domains:
 
 | Domain | Weight |
@@ -33,7 +38,11 @@ Then open `http://localhost:8000`.
 
 ## Deploy with GitHub Pages
 
-Push the folder to a repository and enable **Settings → Pages → Deploy from a branch → main / root**.
+This repository is intended to be published at:
+
+[https://tuongphantrue.github.io/aws-study-lab/](https://tuongphantrue.github.io/aws-study-lab/)
+
+In GitHub, open **Settings → Pages**, select **Deploy from a branch**, and choose **main / root**.
 
 ## Exam note
 
