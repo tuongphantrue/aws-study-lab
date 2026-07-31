@@ -2,10 +2,6 @@
 
 A dependency-free, Rework-inspired study workspace for **AWS Certified Solutions Architect – Associate (SAA-C03)**.
 
-## Guided lab explanations
-
-Every interactive lab now includes an original, beginner-friendly teaching section with the big idea, a step-by-step request flow, an architecture example, use cases, exam clues, common mistakes, and a short memory rule. Official AWS documentation remains available as follow-up reading rather than being the only explanation.
-
 ## Beginner study course
 
 The Study workspace starts from zero and is separate from exam preparation. It now follows the **33-section public syllabus order** of Stéphane Maarek’s current SAA-C03 course, from course orientation and AWS setup through IAM, EC2, storage, databases, S3, messaging, containers, serverless, security, networking, recovery, architecture review, and exam preparation.

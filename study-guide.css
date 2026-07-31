@@ -7,3 +7,17 @@
 @media(max-width:1100px){.beginner-layout{grid-template-columns:320px minmax(0,1fr)}.beginner-hero{grid-template-columns:1fr}.beginner-progress-card{max-width:400px}.term-grid{grid-template-columns:1fr}.term-grid article{border-right:0;border-bottom:1px solid var(--beginner-line)}.term-grid article:last-child{border-bottom:0}}
 @media(max-width:980px){.beginner-main{margin-left:0}.beginner-layout{grid-template-columns:1fr}.chapter-pane{position:relative;top:0;height:auto;max-height:620px}.lesson-body{padding:28px 22px}.beginner-hero{padding:24px 22px}.beginner-notice{padding:12px 22px}}
 @media(max-width:620px){.beginner-hero h1{font-size:27px}.beginner-hero p{font-size:14px}.beginner-progress-card{align-items:flex-start}.beginner-notice{align-items:flex-start;flex-direction:column}.lesson-body h2{font-size:25px}.lesson-lead{font-size:15px}.concept-flow{flex-direction:column}.concept-flow>i{transform:rotate(90deg)}.optional-lab{align-items:flex-start;flex-direction:column}.lesson-toolbar{padding:0 15px}.lesson-nav{padding:0 15px}.lesson-nav span{display:none}}
+
+/* Visual-first study update */
+.lesson-body{max-width:960px}
+.lesson-lead{margin-bottom:18px}
+.plain-card p,.analogy-card p,.example-card p,.point-list p{font-size:13px;line-height:1.62}
+.term-grid p{font-size:11.5px;line-height:1.5}
+.lesson-figure{border:1px solid var(--beginner-line);background:#fafbfb;padding:16px 18px;margin:0 0 22px}
+.figure-head{margin-bottom:14px}.figure-head small{font-size:10px;letter-spacing:.09em;font-weight:800;color:#5f7782}.figure-head h3{font-size:19px;margin:6px 0 6px}.figure-head p{font-size:13px;color:#677880;line-height:1.55;margin:0}
+.figure-canvas{display:flex;align-items:stretch;gap:14px;overflow:auto;padding:6px 0 2px}
+.figure-col{display:flex;align-items:center;gap:14px;flex:0 0 auto}
+.figure-box{min-width:120px;padding:12px 14px;border:1px solid #d9e0e2;background:#fff;border-radius:4px;font-size:12px;font-weight:700;color:#33444c;text-align:center;box-shadow:0 1px 0 rgba(0,0,0,.02)}
+.figure-col .figure-box + .figure-box{margin-left:8px}
+.figure-arrow{font-size:18px;color:#90a0a7;font-weight:700}
+@media(max-width:620px){.figure-canvas{flex-direction:column;gap:10px}.figure-col{flex-wrap:wrap}.figure-arrow{transform:rotate(90deg)}}

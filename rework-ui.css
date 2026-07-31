@@ -154,3 +154,12 @@ body.app-page > nav.global-rail{display:flex!important}
 .official-reference a{flex:0 0 auto;color:var(--rw-link);font-size:11.5px;font-weight:600;text-decoration:none}
 .official-reference a:hover{text-decoration:underline}
 @media(max-width:760px){.teaching-grid{grid-template-columns:1fr}.teaching-card,.teaching-card:nth-child(2n),.teaching-card:nth-last-child(-n+2){border-right:0;border-bottom:1px solid var(--rw-line)}.teaching-card:last-child{border-bottom:0}.teaching-card.teaching-wide{grid-column:auto}.teaching-head{padding:19px 18px}.teaching-card{padding:17px 18px}.official-reference{align-items:flex-start;flex-direction:column}.memory-rule{align-items:flex-start;flex-direction:column;gap:8px}}
+
+/* Visual-first lab explanations */
+.teaching-head p{max-width:760px}
+.teaching-figure{padding:18px 22px;border-top:1px solid var(--rw-line);border-bottom:1px solid var(--rw-line);background:#fafbfb}
+.teaching-figure-head small{font-size:10px;letter-spacing:.08em;font-weight:800;color:#6f7e85}.teaching-figure-head h3{margin:5px 0 6px;font-size:18px;color:#292f33}.teaching-figure-head p{margin:0 0 14px;color:#66747b;font-size:13px;line-height:1.55}
+.teaching-figure-canvas{display:flex;align-items:stretch;gap:12px;overflow:auto;padding-bottom:2px}
+.tf-col{display:flex;align-items:center;gap:12px;flex:0 0 auto}.tf-box{min-width:120px;padding:11px 13px;border:1px solid var(--rw-line-strong);background:#fff;border-radius:3px;font-size:12px;font-weight:700;color:#344049;text-align:center}.tf-arrow{font-size:18px;color:#97a1a6;font-weight:700}
+.teaching-card p,.teaching-card li{line-height:1.64!important}
+@media(max-width:760px){.teaching-figure{padding:17px 18px}.teaching-figure-canvas{flex-direction:column;gap:10px}.tf-col{flex-wrap:wrap}.tf-arrow{transform:rotate(90deg)}}
