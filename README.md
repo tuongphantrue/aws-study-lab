@@ -103,3 +103,7 @@ This project is not affiliated with or endorsed by AWS, Udemy, or any course ins
 ## License
 
 MIT.
+
+## Interface shell
+
+The current interface uses a Rework-inspired application hierarchy: a thin global utility bar, a light primary app sidebar, an optional contextual Study/Exam sidebar, blue selected states, and a flat white workspace. Branding remains AWS Study Lab.
