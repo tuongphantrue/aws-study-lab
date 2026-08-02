@@ -4528,6 +4528,35 @@
 
   sectionNineteenLectures.forEach(lecture=>Object.assign(lecture,sectionNineteenSlideOverrides[lecture.title]||{}));
 
+  const sectionTwentySlideOverrides={
+    'Design a serverless mobile to-do application':{
+      sourcePages:'491–497',summary:'Assemble API Gateway, Lambda, DynamoDB, Cognito, S3, DAX, and API caching from the mobile app’s authentication, file, and throughput requirements.',
+      explanation:['MyTodoList needs HTTPS REST APIs, a serverless design, user authentication, per-user data access, and the ability to read and write to-dos. The base flow authenticates with Cognito, calls API Gateway, invokes Lambda, and reads or writes DynamoDB.','For direct file access, Cognito Identity Pools issue temporary credentials restricted to the user’s S3 prefix. DAX accelerates repeated reads of dynamic DynamoDB data; static data can move to S3. API Gateway caching reduces repeated backend calls, and usage plans/API keys can meter customers.'],
+      slideTopics:[{heading:'Core API',bullets:['Cognito authenticates mobile users.','API Gateway exposes HTTPS REST endpoints.','Lambda implements CRUD logic.','DynamoDB stores to-do items.']},{heading:'Files and read performance',bullets:['Identity Pools grant scoped temporary S3 access.','IAM policy restricts each user’s S3 prefix.','DAX caches frequent DynamoDB reads.','Static content can be stored directly in S3.']},{heading:'API controls',bullets:['API Gateway cache reduces Lambda/DynamoDB calls.','Usage plans and API keys meter customer access.','Throttling protects the backend.']}],
+      takeaways:['Cognito handles identity.','API Gateway and Lambda form the serverless API.','Identity Pools enable direct scoped S3 access.','DAX and API caching operate at different layers.'],examTip:'Use DAX for DynamoDB-compatible caching and API Gateway cache for repeated full API responses.'
+    },
+    'Build a globally scalable serverless website':{
+      sourcePages:'498–505',summary:'Serve a global blog with private S3 plus CloudFront, a serverless API, DynamoDB Global Tables, and asynchronous SNS/S3/Lambda workflows.',
+      explanation:['MyBlog.com is read-heavy, globally accessed, partly static, and partly dynamic. CloudFront distributes static S3 content while Origin Access Control and a bucket policy keep the bucket private. API Gateway and Lambda provide the public REST API for dynamic requests.','DynamoDB Global Tables give multi-Region reads and writes. A new user record in DynamoDB Streams invokes Lambda, which publishes a welcome message to SNS. Image uploads to S3 trigger Lambda thumbnail generation, with separate S3 prefixes and CloudFront cache behavior for images.'],
+      slideTopics:[{heading:'Global content and API',bullets:['CloudFront caches private S3 static content.','OAC and bucket policy restrict direct S3 access.','API Gateway routes dynamic REST calls to Lambda.','Lambda reads/writes DynamoDB.']},{heading:'Global and event-driven data',bullets:['Global Tables replicate active-active across Regions.','DynamoDB Streams trigger welcome-email Lambda.','Lambda publishes email through SNS.','S3 uploads trigger thumbnail generation.']}],
+      takeaways:['CloudFront and S3 serve global static content.','API Gateway/Lambda serve dynamic APIs.','Global Tables provide active-active regional data.','Streams and S3 events decouple side effects.'],examTip:'Separate the static read path from dynamic API calls, then add event-driven workflows for asynchronous email and media processing.'
+    },
+    'Compose independently designed microservices':{
+      sourcePages:'506–508',summary:'Let each microservice choose its own compute and data stack while using synchronous APIs or asynchronous queues for communication.',
+      explanation:['The microservices diagram combines API Gateway, Lambda, ALB, EC2 Auto Scaling, ECS, RDS, ElastiCache, and DynamoDB. Each service can scale and be implemented independently, and DNS names provide stable endpoints as infrastructure changes.','Synchronous integration uses API Gateway or load balancers, but traffic spikes can amplify through downstream services. Asynchronous integration through SQS, Kinesis, SNS, Lambda triggers, or S3 events provides decoupling and sudden-load resistance. API cloning and Swagger/OpenAPI support help reproduce API environments.'],
+      slideTopics:[{heading:'Independent stacks',bullets:['Lambda + DynamoDB for one service.','EC2/ALB + RDS/ElastiCache for another.','ECS behind load balancing for a containerized service.','Each service scales and deploys independently.']},{heading:'Communication styles',bullets:['Synchronous: API Gateway and load balancers.','Asynchronous: SQS, Kinesis, SNS, S3 events, and Lambda triggers.','Asynchronous buffers reduce spike propagation.']}],
+      takeaways:['Microservices can use different AWS stacks.','Stable DNS/API endpoints hide implementation changes.','Synchronous calls couple latency and availability.','Asynchronous events improve decoupling.'],examTip:'Choose asynchronous messaging between services when downstream capacity must be protected from bursty callers.'
+    },
+    'Offload software distribution with CloudFront':{
+      sourcePages:'509–512',summary:'Place CloudFront before an existing EC2/EFS software-download architecture to cache immutable updates and absorb global download spikes.',
+      explanation:['The original application runs on a Multi-AZ EC2 Auto Scaling fleet and stores software updates on EFS. A release causes a sudden wave of downloads, forcing expensive EC2 and EFS scaling even though every user requests the same static file.','Adding CloudFront requires no application redesign. The first request reaches the origin, then edge caches serve repeated downloads. Because software update files are static and never change, they are ideal for long cache lifetimes, reducing origin load, EC2/EFS cost, and user latency.'],
+      slideTopics:[{heading:'Original bottleneck',bullets:['EC2 fleet serves every download.','EFS supplies the same update file repeatedly.','Release spikes force both tiers to scale.','Global users traverse the public path to the origin.']},{heading:'CloudFront offload',bullets:['Distribution sits in front of the existing origin.','Edge locations cache the static update.','Repeated requests avoid EC2 and EFS.','AWS backbone and local edges improve global delivery.']}],
+      takeaways:['Static immutable files cache well.','CloudFront absorbs repeated downloads.','Origin capacity and cost decline.','Existing architecture can remain unchanged.'],examTip:'When many global users download the same static file, cache it at CloudFront instead of scaling the origin for every request.'
+    }
+  };
+
+  sectionTwentyLectures.forEach(lecture=>Object.assign(lecture,sectionTwentySlideOverrides[lecture.title]||{}));
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
