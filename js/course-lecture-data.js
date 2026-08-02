@@ -2911,6 +2911,65 @@
     }
   ];
 
+  const sectionThirtyTwoLectures=[
+    {
+      ready:true,title:'Measure readiness against the SAA-C03 blueprint',
+      summary:'Use the official domains and task statements to turn broad study into a focused gap analysis.',
+      explanation:['The current SAA-C03 guide weights secure architectures at 30%, resilient architectures at 26%, high-performing architectures at 24%, and cost-optimized architectures at 20% of scored content. It also publishes task statements and non-exhaustive in-scope service lists.','Rate each task by whether you can explain the tradeoff, recognize it in a scenario, and eliminate plausible alternatives without notes. Spend remaining time on weak high-weight tasks rather than rereading every lecture equally, and recheck the official guide in case AWS changes exam scope.'],
+      takeaways:['The blueprint has four weighted domains.','Task statements are better checkpoints than service-name recall.','Official scope can change.'],
+      examTip:'Build the final study plan from domain tasks and evidence of weakness, not from whichever topic feels most familiar.'
+    },
+    {
+      ready:true,title:'Turn service knowledge into architecture decisions',
+      summary:'Practice mapping requirements to constraints, failure modes, and managed-service tradeoffs.',
+      explanation:['Exam questions rarely ask for a definition alone. Translate each scenario into functional need, scale, latency, consistency, security, resilience, operations, migration, and cost constraints, then identify which phrases distinguish otherwise valid services.','Hands-on work makes these distinctions concrete: launch a small VPC, inspect IAM evaluation, configure an S3 lifecycle, build an SQS consumer, test an alarm, and restore a backup. The objective is not memorizing console clicks but predicting behavior and recognizing dependencies.'],
+      takeaways:['Requirements drive service choice.','Tradeoffs distinguish plausible answers.','Hands-on practice exposes hidden dependencies.'],
+      examTip:'Underline qualifiers such as least operational overhead, most cost-effective, minimal downtime, and highly available before comparing answers.'
+    },
+    {
+      ready:true,title:'Eliminate scenario distractors methodically',
+      summary:'Remove answers that violate explicit requirements before choosing among technically possible designs.',
+      explanation:['Read the final question first, then identify mandatory constraints and the requested optimization. Reject options with a wrong service capability, unsupported integration, single point of failure, excessive management, inconsistent data behavior, or cost model that conflicts with the prompt.','Among remaining answers, prefer the simplest AWS-native design that satisfies every stated requirement. Do not invent requirements or optimize one dimension the scenario does not prioritize. For multiple-response questions, evaluate each option independently and confirm the requested number of selections.'],
+      takeaways:['Explicit constraints eliminate distractors.','Possible is not the same as best.','Multiple-response options should be judged independently.'],
+      examTip:'If two answers work, the one meeting the named objective with fewer operational components is often stronger.'
+    },
+    {
+      ready:true,title:'Study authoritative service boundaries',
+      summary:'Use official exam guides, documentation, decision guides, and FAQs to resolve confusing overlaps.',
+      explanation:['The official SAA-C03 guide is the source for domains, task statements, response types, and current in-scope services. AWS documentation explains actual behavior, while decision guides and FAQs are useful for comparisons such as SQS versus SNS, storage classes, load balancers, databases, and connectivity options.','Prioritize boundaries that generate distractors: stateful versus stateless controls, Multi-AZ versus read replicas, queues versus streams, backup versus replication, gateway versus interface endpoints, and CloudWatch versus CloudTrail versus Config. Avoid treating old course limits or retired service names as current implementation guidance.'],
+      takeaways:['The exam guide defines current scope.','Official docs resolve service behavior.','Comparison boundaries are high-value study targets.'],
+      examTip:'When notes and current AWS documentation disagree, learn the exam-recognition term but use the current supported behavior.'
+    },
+    {
+      ready:true,title:'Use practice exams as diagnostic tools',
+      summary:'Review the reasoning behind every uncertain answer instead of chasing a score through repetition.',
+      explanation:['Take timed mixed-domain practice only after enough study to make the result meaningful. For each wrong or guessed response, record the missed constraint, incorrect assumption, relevant service boundary, and a short rule that would produce the correct decision next time.','Retaking the same questions quickly measures memory, not readiness. Use new scenarios, revisit weak-domain labs, and explain why every distractor fails. A stable score across unfamiliar questions and the ability to articulate tradeoffs are stronger signals than one high result.'],
+      takeaways:['Guesses deserve review even when correct.','An error log reveals recurring gaps.','Fresh scenarios measure transfer of knowledge.'],
+      examTip:'After a practice test, spend more time analyzing reasoning errors than reading the score report.'
+    },
+    {
+      ready:true,title:'Manage time and uncertainty during the exam',
+      summary:'Keep momentum, flag costly questions, and reserve a deliberate review window.',
+      explanation:['SAA-C03 currently contains multiple-choice and multiple-response items; 50 questions are scored and 15 are unscored, but unscored items are not identified. There is no penalty for guessing, so every question should receive an answer.','Set a rough pace, make the best supported choice, flag uncertainty, and move on before one dense scenario consumes several questions worth of time. During review, change an answer only for a concrete overlooked constraint or corrected fact, not because the original choice merely feels uncomfortable.'],
+      takeaways:['Scored and unscored questions are mixed.','Unanswered questions are incorrect.','Flagging preserves time for later review.'],
+      examTip:'Never leave an item blank; eliminate what you can, choose the best remaining response, and flag it.'
+    },
+    {
+      ready:true,title:'Prepare exam-day logistics from official sources',
+      summary:'Verify registration, identification, delivery, language, and accommodation requirements before test day.',
+      explanation:['AWS exam logistics, pricing, delivery vendors, policies, and available languages can change, so confirm them in the AWS Certification account and official policies rather than relying on a screenshot or old course slide. Make the appointment in the correct time zone and verify the name matches accepted identification.','For online proctoring, test the computer, camera, microphone, network, room, and permitted software in advance. For a test center, plan travel and arrival. Handle accommodations before scheduling when required, and avoid last-minute rescheduling or identification surprises.'],
+      takeaways:['Official Certification pages control logistics.','Identity details must match requirements.','Environment checks should happen before exam day.'],
+      examTip:'Treat registration and system checks as part of preparation; technical readiness cannot compensate for failed admission requirements.'
+    },
+    {
+      ready:true,title:'Run a final readiness checklist',
+      summary:'Consolidate patterns, rest appropriately, and enter the exam with a repeatable decision process.',
+      explanation:['In the final days, review architecture comparisons, personal error notes, critical service limits that affect design, and the four domain tasks. Confirm you can reason through security, resilience, performance, and cost together for storage, compute, database, networking, and event-driven scenarios.','Stop adding large new topic areas at the last minute. Prepare logistics, sleep, and use a simple exam loop: identify the requested outcome, extract constraints, eliminate violations, compare tradeoffs, answer, and flag if needed. Certification validates a snapshot of knowledge; continue building and reviewing real systems afterward.'],
+      takeaways:['Review personal weaknesses and core comparisons.','Use one consistent scenario-solving loop.','Certification is a milestone, not the end of learning.'],
+      examTip:'The day before the exam, favor concise recall and rest over an exhausting full-course reread.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -2951,4 +3010,5 @@
   window.AWS_COURSE_CURRICULUM[28].lectures=sectionTwentyNineLectures;
   window.AWS_COURSE_CURRICULUM[29].lectures=sectionThirtyLectures;
   window.AWS_COURSE_CURRICULUM[30].lectures=sectionThirtyOneLectures;
+  window.AWS_COURSE_CURRICULUM[31].lectures=sectionThirtyTwoLectures;
 })();
