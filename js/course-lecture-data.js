@@ -2734,6 +2734,44 @@
     }
   ];
 
+  const sectionTwentyNineLectures=[
+    {
+      ready:true,title:'Combine Lambda, SNS, and SQS safely',
+      summary:'Separate synchronous notification, durable buffering, retries, and failure isolation in event-driven systems.',
+      explanation:['SNS pushes one published message to multiple subscribers, while SQS stores messages until consumers poll and delete them. Subscribing separate queues to a topic creates durable fan-out: each consumer progresses, retries, and scales independently without forcing the publisher to call every destination.','Lambda polls SQS through an event source mapping and can report partial batch failures so successful messages are not retried. Configure visibility timeout longer than processing, an appropriate redrive count, and a dead-letter queue for diagnosis. FIFO components preserve supported ordering and deduplication but require consistent message-group design.'],
+      takeaways:['SNS fans out messages.','SQS buffers work durably.','DLQs isolate repeatedly failing messages.'],
+      examTip:'One event must reach several independently retryable consumers: publish to SNS with one SQS queue per consumer.'
+    },
+    {
+      ready:true,title:'Route S3 and API events without application glue',
+      summary:'Use native notifications, EventBridge, CloudTrail, and direct service integrations to reduce custom code.',
+      explanation:['S3 Event Notifications can match object-created, removed, restored, and replication events by key prefix or suffix and send them to supported Lambda, SQS, or SNS destinations. Notifications are at least once, so consumers should be idempotent; overlapping rules and same-bucket writes can create duplicate work or loops.','Enabling S3 events through EventBridge provides broader rule filtering, multiple targets, archives, and cross-service orchestration. CloudTrail-originated events let EventBridge react to supported API calls, while API Gateway AWS service integrations can validate and transform client requests directly into services such as SQS or Kinesis without a Lambda proxy.'],
+      takeaways:['S3 notifications are at least once.','EventBridge adds richer routing.','API Gateway can call AWS services directly.'],
+      examTip:'If API Gateway only needs to place a request onto SQS, use a direct AWS service integration instead of Lambda.'
+    },
+    {
+      ready:true,title:'Place caching and IP controls at the right layer',
+      summary:'Reduce latency at multiple tiers and block unwanted clients at the earliest meaningful enforcement point.',
+      explanation:['CloudFront caches near viewers, API Gateway caches method responses, ElastiCache or DAX accelerates application data access, and local caches avoid repeated network calls. Each layer needs a TTL and invalidation strategy that matches freshness, consistency, cardinality, and cost.','For HTTP applications, WAF on CloudFront or an ALB can block IP sets and application patterns. NACLs can deny CIDRs at a subnet boundary, while security groups allow traffic but cannot express denies. Network Load Balancers can now use security groups when assigned at creation, so do not rely on older assumptions that every NLB must expose targets directly.'],
+      takeaways:['Cache closest to repeated demand.','WAF provides Layer 7 IP and request filtering.','NACLs support subnet-level deny rules.'],
+      examTip:'Block an abusive public IP before it reaches a global web origin: use AWS WAF on CloudFront.'
+    },
+    {
+      ready:true,title:'Assemble high-performance computing on AWS',
+      summary:'Match tightly coupled compute, low-latency networking, parallel storage, and schedulers to HPC workloads.',
+      explanation:['HPC fleets use compute- or accelerator-optimized EC2 instances, Spot capacity for interruption-tolerant jobs, and cluster placement groups for low-latency east-west communication. Elastic Fabric Adapter provides OS-bypass networking for supported tightly coupled MPI and machine-learning workloads.','FSx for Lustre supplies high-throughput parallel file storage and can link to S3 data sets, while EBS and instance store address block and temporary local I/O patterns. AWS Batch schedules container jobs and supports multi-node parallel work; ParallelCluster helps provision traditional schedulers and clusters.'],
+      takeaways:['EFA targets tightly coupled workloads.','FSx for Lustre provides parallel file access.','Batch or ParallelCluster orchestrates compute fleets.'],
+      examTip:'A tightly coupled MPI job needs low-latency node communication: use EFA-capable instances in a cluster placement group.'
+    },
+    {
+      ready:true,title:'Replace and restore a stateful EC2 instance',
+      summary:'Automate failure detection while separating persistent identity and data from disposable compute.',
+      explanation:['A CloudWatch alarm can recover an impaired EC2 instance for supported system-status failures while retaining key instance properties. For broader failure replacement, an Auto Scaling group with desired capacity one launches a new instance, but bootstrap configuration must recreate application state and attach any required identity or storage.','Elastic IP addresses can be reassociated and EBS data volumes can be detached and attached through automation, though attachment constraints, fencing, crash consistency, and AZ placement must be handled. Whenever possible, move state into managed multi-AZ data services and place stateless instances behind a load balancer instead of engineering a fragile singleton.'],
+      takeaways:['EC2 recovery and ASG replacement solve different failures.','Persistent data should be externalized.','Automation must prevent two writers to one stateful volume.'],
+      examTip:'For one replaceable instance, an ASG with minimum and desired capacity one restores compute automatically; protect state separately.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -2771,4 +2809,5 @@
   window.AWS_COURSE_CURRICULUM[25].lectures=sectionTwentySixLectures;
   window.AWS_COURSE_CURRICULUM[26].lectures=sectionTwentySevenLectures;
   window.AWS_COURSE_CURRICULUM[27].lectures=sectionTwentyEightLectures;
+  window.AWS_COURSE_CURRICULUM[28].lectures=sectionTwentyNineLectures;
 })();
