@@ -2654,6 +2654,86 @@
     }
   ];
 
+  const sectionTwentyEightLectures=[
+    {
+      ready:true,title:'Define recovery with RPO and RTO',
+      summary:'Translate business impact into acceptable data loss and service-restoration time.',
+      explanation:['Recovery point objective is the maximum acceptable age of recovered data, measured backward from disruption to the latest usable recovery point. Recovery time objective is the target duration for restoring service after the event. Neither is the same as actual achieved recovery performance.','Lower targets require more frequent replication, pre-provisioned capacity, automation, and testing, which increase cost and complexity. Define objectives per workload and dependency, then prove them with exercises that include data integrity, DNS, identity, network, secrets, and operational decision time.'],
+      takeaways:['RPO measures tolerable data loss.','RTO measures tolerable downtime.','Business impact should drive both targets.'],
+      examTip:'A requirement of no more than five minutes of lost transactions is an RPO requirement.'
+    },
+    {
+      ready:true,title:'Choose a disaster-recovery strategy',
+      summary:'Balance recovery speed and cost across backup, pilot light, warm standby, and multi-site designs.',
+      explanation:['Backup and restore keeps no live application stack, pilot light keeps only critical core services active, warm standby runs a complete reduced-capacity environment, and multi-site operates production capacity in more than one location. Moving along this spectrum generally lowers RTO and RPO while raising steady-state cost.','The strategy is not a label alone: specify which data is copied, how infrastructure is recreated, what triggers failover, how capacity scales, and how clients are redirected. Dependencies with weaker recovery capability set the effective objective for the whole application.'],
+      takeaways:['Backup and restore costs least but recovers slowest.','Warm standby runs a scaled-down full stack.','Multi-site provides the fastest recovery at highest cost.'],
+      examTip:'Select the least expensive strategy that can demonstrably meet both stated RPO and RTO.'
+    },
+    {
+      ready:true,title:'Recover from backups',
+      summary:'Rebuild infrastructure and restore protected data when longer recovery objectives permit.',
+      explanation:['Backup-and-restore architectures copy databases, volumes, files, and configuration into durable storage, often across accounts or Regions. During a disaster, automation creates the network and compute stack, restores data, validates it, and changes traffic routing.','Backups need encryption keys, immutable retention, cataloging, and restore testing. A successful backup job does not prove recovery: large restores, missing dependencies, quota limits, and inaccessible KMS keys can dominate RTO, so measure full application restoration rather than object durability alone.'],
+      takeaways:['Backups minimize idle recovery infrastructure.','Cross-account copies improve isolation.','Restore testing validates real recoverability.'],
+      examTip:'Long RTO and RPO with a strong cost constraint favor backup and restore.'
+    },
+    {
+      ready:true,title:'Maintain a pilot-light environment',
+      summary:'Keep critical data and core services alive while recreating the remaining application during recovery.',
+      explanation:['A pilot light continuously replicates essential data and runs the minimal core required to preserve application state. Most web, application, and supporting capacity remains stopped or represented as infrastructure templates until disaster declaration.','Recovery launches the missing tiers, scales the core, restores configuration, validates dependencies, and redirects traffic. Compared with backup and restore it reduces recovery time, but it remains slower than warm standby because important components still need provisioning and integration.'],
+      takeaways:['Critical core services remain active.','Other tiers are created during failover.','Data replication reduces potential loss.'],
+      examTip:'Only the database and essential core run continuously in the recovery Region: this is pilot light.'
+    },
+    {
+      ready:true,title:'Run a warm standby',
+      summary:'Operate a complete but reduced-capacity recovery stack that can scale rapidly after failure.',
+      explanation:['Warm standby keeps every application layer deployed and functional in the recovery location at minimum capacity. Data replicates continuously, health is monitored, and the environment can serve validation traffic before a disaster.','Failover scales resources to production demand and shifts users through Route 53, Global Accelerator, or another traffic-control layer. This costs more than pilot light but avoids creating missing tiers during the incident, typically improving RTO and confidence.'],
+      takeaways:['The full stack is always running.','Capacity is below production scale.','Failover mainly scales and redirects traffic.'],
+      examTip:'A fully functional secondary environment runs at reduced capacity: choose warm standby.'
+    },
+    {
+      ready:true,title:'Operate active-active multi-site recovery',
+      summary:'Serve production traffic from multiple locations for the lowest recovery time and highest complexity.',
+      explanation:['A multi-site design runs production-scale environments concurrently across Regions or between AWS and on premises. Global routing sends users to healthy endpoints, while application and data layers manage replication, conflicts, consistency, and regional isolation.','This approach can achieve very low RTO and RPO, but only if dependencies support regional failure and automation avoids split-brain behavior. Test evacuation under realistic load and consider correlated deployment, identity, DNS, and control-plane failures rather than assuming two active stacks are independent.'],
+      takeaways:['Multiple sites serve live traffic.','Data conflict strategy is essential.','Operational complexity and cost are highest.'],
+      examTip:'Near-zero downtime with both Regions serving normal production traffic describes an active-active multi-site strategy.'
+    },
+    {
+      ready:true,title:'Recover servers with AWS Elastic Disaster Recovery',
+      summary:'Continuously replicate block-level server data into a low-cost staging area and launch recovery instances on demand.',
+      explanation:['AWS Elastic Disaster Recovery installs an agent on supported source servers and continuously replicates their disks to staging resources in AWS. During a drill or disaster, it converts the replicated state and launches recovery EC2 instances according to configured launch settings.','The staging area uses inexpensive resources until recovery, supporting low RPO without a fully running duplicate fleet. Configure network, security, instance sizing, post-launch actions, licensing, and failback, then run non-disruptive drills to verify bootability and application dependencies.'],
+      takeaways:['DRS uses continuous block replication.','Recovery compute launches on demand.','Drills validate launch configuration and dependencies.'],
+      examTip:'Physical or virtual servers need low-RPO recovery into EC2 without a full warm stack: use Elastic Disaster Recovery.'
+    },
+    {
+      ready:true,title:'Migrate databases with AWS DMS and schema conversion',
+      summary:'Move data with full load and change replication while converting incompatible database objects separately.',
+      explanation:['AWS Database Migration Service connects a source and target and performs a full load, ongoing change data capture, or both. The source can remain available while DMS applies changes to reduce cutover downtime; Multi-AZ replication instances improve migration-task availability but do not replace source and target resilience.','Homogeneous migrations may need little schema change. For heterogeneous engines, use DMS Schema Conversion, the current recommended workflow, to assess and convert schemas and code, then manually resolve unsupported objects before DMS moves data. The older desktop AWS Schema Conversion Tool remains recognizable in course material.'],
+      takeaways:['DMS moves database data.','CDC keeps targets synchronized before cutover.','Schema conversion handles engine differences.'],
+      examTip:'Oracle must migrate to Aurora PostgreSQL with minimal downtime: convert the schema, then use DMS full load plus CDC.'
+    },
+    {
+      ready:true,title:'Rehost servers with Application Migration Service',
+      summary:'Continuously replicate source machines and automate lift-and-shift launches into EC2.',
+      explanation:['AWS Application Migration Service installs a replication agent on supported physical, virtual, and cloud servers and copies block-level data into an AWS staging area. Test and cutover launches create EC2 instances using the latest synchronized state and configured launch templates.','MGN is the current rehosting evolution of CloudEndure Migration and replaced the older Server Migration Service pattern. For VMware-specific environments, older course references to VMware Cloud on AWS describe a commercial managed VMware path whose current availability and terms must be confirmed; native rehosting commonly uses MGN.'],
+      takeaways:['MGN is the AWS lift-and-shift server service.','Continuous replication reduces cutover data loss.','Test launches should precede cutover.'],
+      examTip:'Rehost many existing servers into EC2 with minimal application modification: choose Application Migration Service.'
+    },
+    {
+      ready:true,title:'Centralize protection with AWS Backup',
+      summary:'Apply policy-driven backup schedules, retention, copies, immutability, and restore testing across services.',
+      explanation:['AWS Backup creates plans that select supported resources by tags or assignments and define frequency, lifecycle, retention, and cross-account or cross-Region copies. Organizations backup policies can standardize protection across member accounts, while centralized monitoring reports job and compliance status.','Backup Vault Lock enforces write-once-read-many retention; compliance mode becomes intentionally irreversible after its grace period, preventing even privileged deletion before expiration. Logically air-gapped vaults and restore testing strengthen ransomware resilience, but service-specific restore behavior and KMS permissions still need validation.'],
+      takeaways:['Backup plans automate supported service protection.','Copies provide account and Region isolation.','Vault Lock enforces immutable retention.'],
+      examTip:'Centrally enforce retention that administrators cannot shorten after lock: use AWS Backup Vault Lock in compliance mode.'
+    },
+    {
+      ready:true,title:'Discover workloads and move bulk data',
+      summary:'Assess dependencies with current discovery tooling and choose online or offline transfer by deadline and bandwidth.',
+      explanation:['The course uses AWS Application Discovery Service for agent-based and agentless inventory, utilization, and dependency mapping. It closed to new customers on November 7, 2025; AWS recommends AWS Transform for new discovery and assessment projects, including migration wave planning and enhanced VMware analysis.','For data movement, estimate transfer time before selecting a path. DataSync or Direct Connect fits repeatable online transfers, Storage Gateway supports hybrid access patterns, and Snow Family offline devices fit large migrations constrained by WAN bandwidth. Include export, shipping, import, verification, and incremental synchronization in the deadline.'],
+      takeaways:['Discovery informs migration grouping and sizing.','AWS Transform is the current new-project path.','Transfer choice depends on volume, bandwidth, and deadline.'],
+      examTip:'If network transfer cannot meet the migration window, use an offline Snow Family workflow and synchronize final changes separately.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -2690,4 +2770,5 @@
   window.AWS_COURSE_CURRICULUM[24].lectures=sectionTwentyFiveLectures;
   window.AWS_COURSE_CURRICULUM[25].lectures=sectionTwentySixLectures;
   window.AWS_COURSE_CURRICULUM[26].lectures=sectionTwentySevenLectures;
+  window.AWS_COURSE_CURRICULUM[27].lectures=sectionTwentyEightLectures;
 })();
