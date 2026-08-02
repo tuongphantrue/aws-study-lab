@@ -5587,6 +5587,58 @@
   };
   sectionThirtyOneLectures.forEach(lecture=>Object.assign(lecture,sectionThirtyOneSlideOverrides[lecture.title]||{}));
 
+  const sectionThirtyTwoSlideOverrides={
+    'Measure readiness against the SAA-C03 blueprint':{
+      sourcePages:'859–860',summary:'Pause at the course checkpoint and compare what you can explain and design with the certification objectives.',
+      explanation:['The slide begins the Exam Review & Tips section with a learning checkpoint and directs learners to the AWS Certified Solutions Architect – Associate page. Its purpose is to assess progress before rushing into the exam.','Use the current official exam guide as the detailed blueprint because domains and policies can change after this deck. For each objective, require evidence that you can select a design and explain why alternatives fail.'],
+      slideTopics:['Exam Review & Tips','State of learning checkpoint','AWS certification page','Readiness self-assessment'],
+      takeaways:['Readiness is more than completing the videos.','Compare knowledge with the official objectives.','Explain architecture decisions, not just service names.'],examTip:'Treat an objective as ready only when you can solve an unfamiliar scenario about it without relying on recognition alone.'
+    },
+    'Turn service knowledge into architecture decisions':{
+      sourcePages:'861–862',summary:'Build hands-on familiarity and answer scenarios by selecting the simplest feasible design that satisfies the stated requirements.',
+      explanation:['The slides recommend practical AWS experience and another course pass when the volume of material feels overwhelming. Practice turns isolated service facts into a usable mental model.','Most exam questions are scenario based. Remove clearly wrong options, compare the remaining answers with the actual requirements, avoid overthinking, and be suspicious of a feasible but unnecessarily complicated solution.'],
+      slideTopics:['Practice makes perfect','Hands-on AWS experience','Scenario questions','Elimination','Avoid unnecessary complexity'],
+      takeaways:['Practice connects facts to architecture.','Requirements decide between plausible services.','The simplest complete solution is often strongest.'],examTip:'After checking feasibility, prefer the answer that meets every requirement with the least operational complexity.'
+    },
+    'Eliminate scenario distractors methodically':{
+      sourcePages:'862',summary:'Rule out answers that violate the scenario, then compare the remaining choices without inventing requirements.',
+      explanation:['The slide says most questions are scenario based and recommends first eliminating answers known to be wrong. For the survivors, determine which makes the most sense in the stated context.','There are few intentional trick questions. Do not overthink or reward complexity by itself; an elaborate design is usually wrong when a simpler managed approach fulfills the same constraints.'],
+      slideTopics:['Scenario-based questions','Rule out wrong answers','Compare remaining choices','Few trick questions','Complexity as a warning sign'],
+      takeaways:['Elimination reduces decision load.','Every answer must satisfy the written constraints.','Do not add unstated problems to the scenario.'],examTip:'Cross out choices with one decisive contradiction before debating small advantages among the survivors.'
+    },
+    'Study authoritative service boundaries':{
+      sourcePages:'863–864',summary:'Use AWS whitepapers and service FAQs to confirm architecture principles, disaster recovery concepts, and exact service behavior.',
+      explanation:['The deck recommends Architecting for the Cloud: AWS Best Practices, the AWS Well-Architected Framework, and AWS disaster-recovery resources. It notes that the course has already introduced the most important concepts, so these readings deepen rather than replace the course.','Service FAQ pages—VPC is the slide example—help confirm capabilities, constraints, and common questions. Because these sources evolve, use their current official versions when preparing.'],
+      slideTopics:['AWS best-practice whitepapers','Well-Architected Framework','Disaster recovery resources','Service FAQs','VPC FAQ example'],
+      takeaways:['Whitepapers explain cross-service principles.','FAQs clarify service-specific behavior.','Current official sources resolve dated course details.'],examTip:'When two answers depend on a precise service limitation, verify that boundary in the current AWS documentation or FAQ.'
+    },
+    'Use practice exams as diagnostic tools':{
+      sourcePages:'861, 865',summary:'Practice repeatedly, review course and community questions, and turn every missed item into a specific learning action.',
+      explanation:['The slides emphasize that practice makes perfect, especially for learners without substantial AWS experience, and recommend reviewing the material again when necessary. They also point to the practice test in the course.','Community Q&A, forums, blogs, local meetups, and AWS re:Invent videos can expose more scenarios. Evaluate outside material critically and return to official AWS sources when a claim conflicts.'],
+      slideTopics:['Hands-on practice','Course repetition','Practice test','Course Q&A and forums','Meetups and re:Invent videos'],
+      takeaways:['Practice should reveal weak topics.','Review why each wrong option fails.','Use official material to settle conflicting advice.'],examTip:'After a practice test, classify misses by concept, misread requirement, or time pressure and address the cause before retesting.'
+    },
+    'Manage time and uncertainty during the exam':{
+      sourcePages:'862, 866',summary:'Use elimination, flags, and a final review pass so uncertain questions do not consume the entire exam window.',
+      explanation:['The deck advises straightforward scenario reasoning: remove clearly wrong answers, avoid overthinking, and choose the least complicated complete solution. This keeps difficult questions from absorbing disproportionate time.','Page 866 describes a Flag feature and an optional final review of questions and answers. Its stated question count, duration, score, retake interval, and result timing are source-era exam details and must be checked against current AWS certification policies.'],
+      slideTopics:['Elimination under time pressure','Avoid overthinking','Flag questions','Final answer review','Slide-era exam format'],
+      takeaways:['Make an evidence-based first choice.','Flag uncertainty and continue.','Reserve time for a final review.'],examTip:'If two answers remain, select the one best supported by the requirements, flag the item, and revisit it only after completing the exam.'
+    },
+    'Prepare exam-day logistics from official sources':{
+      sourcePages:'866',summary:'Confirm registration, identification, testing rules, format, results, and retake policy from current official AWS sources.',
+      explanation:['The supplied slide describes online registration, identification requirements, prohibited notes and conversation, the Flag feature, and post-exam result handling. These logistics matter because an administrative problem can prevent or invalidate a testing session.','The slide also lists a US-dollar fee, 65 questions in 130 minutes, a 720/1000 passing score, results within five days, and a 14-day retake wait. Treat every number and URL as dated source material rather than a current guarantee.'],
+      slideTopics:['Registration','Identification and testing rules','Slide-era fee and format','Results and scoring','Retake interval'],
+      takeaways:['Use the official booking instructions.','Prepare valid identification and the required environment.','Verify every numeric policy close to exam day.'],examTip:'Do not rely on this deck for current booking rules; confirm them in the official AWS Certification account and policy pages.'
+    },
+    'Run a final readiness checklist':{
+      sourcePages:'860–866',summary:'Combine the deck’s checkpoint, practice, elimination, official reading, community learning, and logistics into one final go/no-go review.',
+      explanation:['First, compare your knowledge with the certification objectives and repeat hands-on practice where explanations are weak. Use whitepapers and FAQs for service boundaries, then use practice scenarios and elimination to test decision-making.','Finally, review community questions selectively, confirm current logistics through official channels, and rehearse flagging and reviewing uncertain items. The deck’s most durable message is to practice, avoid unnecessary complexity, and verify details that change over time.'],
+      slideTopics:['Learning checkpoint','Practice and repetition','Elimination strategy','Whitepapers, FAQs, and community','Exam logistics'],
+      takeaways:['Close conceptual gaps before scheduling.','Practice scenario reasoning under time limits.','Verify current policies independently of the slide deck.'],examTip:'Book when your weak areas are specific and shrinking—not simply because every lecture is marked complete.'
+    }
+  };
+  sectionThirtyTwoLectures.forEach(lecture=>Object.assign(lecture,sectionThirtyTwoSlideOverrides[lecture.title]||{}));
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
