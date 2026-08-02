@@ -1755,6 +1755,37 @@
     }
   ];
 
+  const sectionTwentyLectures=[
+    {
+      ready:true,title:'Design a serverless mobile to-do application',
+      summary:'Combine managed authentication, an HTTPS API, elastic compute, scalable data, direct file access, and targeted caching.',
+      explanation:['A mobile client authenticates with a Cognito User Pool and sends its token to API Gateway, which authorizes HTTPS requests before invoking Lambda. Lambda applies business rules and reads or writes DynamoDB, giving the API independently scalable compute and data layers without persistent application servers.','For user files, a Cognito Identity Pool can exchange the signed identity token for temporary IAM credentials restricted to that user\'s S3 prefix, avoiding an unnecessary API proxy. DAX accelerates repeated DynamoDB reads, while API Gateway caching can reuse entire API responses; choose the cache closest to the repeated operation and invalidate or expire it safely after writes.'],
+      takeaways:['User Pools authenticate API users.','Identity Pools can authorize direct, scoped S3 access.','DAX and API Gateway cache at different layers.'],
+      examTip:'If mobile users must upload directly to their own S3 folders, issue temporary scoped credentials through a Cognito Identity Pool.'
+    },
+    {
+      ready:true,title:'Build a globally scalable serverless website',
+      summary:'Separate static delivery, dynamic APIs, multi-Region data, and asynchronous reactions into purpose-built managed services.',
+      explanation:['Store static site assets in a private S3 bucket and deliver them globally through CloudFront with Origin Access Control. Dynamic requests use API Gateway and Lambda, while DynamoDB supplies elastic persistence; Global Tables can serve local multi-Region reads and writes when the application truly needs an active-active data layer.','DynamoDB Streams can invoke a Lambda function when a subscriber record appears, and that function can send a welcome message through Amazon SES using its task-specific IAM role. S3 object-created events can trigger image thumbnail processing, optionally buffering work through SQS when bursts or controlled retry behavior matter.'],
+      takeaways:['CloudFront and private S3 serve global static assets.','API Gateway plus Lambda supplies the dynamic API.','Streams and object events decouple side effects from writes.'],
+      examTip:'A public site is read globally and updated rarely: cache static S3 content at CloudFront and keep dynamic writes behind a serverless API.'
+    },
+    {
+      ready:true,title:'Compose independently designed microservices',
+      summary:'Let each service choose suitable compute and data while standardizing discovery, communication, security, and operations.',
+      explanation:['A microservice may use API Gateway and Lambda with DynamoDB, an ALB with ECS and ElastiCache, or EC2 with RDS. Route 53, custom domains, load balancers, and API Gateway provide stable service endpoints even though each implementation scales and deploys independently.','Use synchronous HTTP only when the caller needs an immediate response; use SQS, SNS, EventBridge, Kinesis, or service events when work can proceed asynchronously. Microservices exchange centralized server density for more APIs, versions, deployment pipelines, tracing, authorization boundaries, and failure modes, so shared platform automation becomes essential.'],
+      takeaways:['Each service can select its own compute and database.','Synchronous and asynchronous contracts have different coupling.','Independent deployment requires consistent platform controls.'],
+      examTip:'Do not force every microservice onto one technology; select services per workload, then decouple non-immediate work with messaging.'
+    },
+    {
+      ready:true,title:'Offload software distribution with CloudFront',
+      summary:'Place a global cache in front of an existing origin to reduce compute scaling, bandwidth, and repeated file delivery.',
+      explanation:['An EC2 application may perform well during normal traffic but scale sharply whenever a new software package is released. Because update artifacts are static and identical for many clients, forwarding every download to EC2 and shared storage repeats the same origin work and network transfer.','CloudFront can cache those files at edge locations without rewriting the application or making the origin serverless. Subsequent users download nearby cached copies, reducing load on the Auto Scaling group, origin storage, and long-distance network path while improving availability and latency. Use versioned filenames so immutable releases cache safely.'],
+      takeaways:['Static downloads are highly cacheable.','CloudFront reduces repeated origin requests and transfer.','Versioned filenames avoid stale-release ambiguity.'],
+      examTip:'A release causes a massive spike of identical downloads from an existing EC2 site: add CloudFront before scaling the origin fleet.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -1783,4 +1814,5 @@
   window.AWS_COURSE_CURRICULUM[16].lectures=sectionSeventeenLectures;
   window.AWS_COURSE_CURRICULUM[17].lectures=sectionEighteenLectures;
   window.AWS_COURSE_CURRICULUM[18].lectures=sectionNineteenLectures;
+  window.AWS_COURSE_CURRICULUM[19].lectures=sectionTwentyLectures;
 })();
