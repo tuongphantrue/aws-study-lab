@@ -1313,6 +1313,58 @@
     }
   ];
 
+  const sectionFifteenLectures=[
+    {
+      ready:true,title:'Deliver content globally with CloudFront',
+      summary:'Cache content near viewers to reduce latency, protect origins, and improve the experience of a global audience.',
+      explanation:['Amazon CloudFront is a content delivery network built from globally distributed edge locations. A viewer request reaches a nearby edge; CloudFront serves a cached response when possible or forwards the request to the configured origin and caches the result according to the behavior and cache policy.','The cache key, time to live, HTTP methods, cookies, headers, and query strings determine whether requests share cached objects. CloudFront also integrates with AWS Shield and AWS WAF, giving public applications an edge layer for DDoS resilience and web-request filtering.'],
+      takeaways:['Edge caches shorten the path between viewers and content.','A cache miss causes CloudFront to request the origin.','Cache policies control the cache key and expiration.'],
+      examTip:'Static content requested globally with a need to reduce origin load is a strong CloudFront signal.'
+    },
+    {
+      ready:true,title:'Select and secure a CloudFront origin',
+      summary:'Connect CloudFront to S3, private VPC resources, or a public HTTP server without exposing more than necessary.',
+      explanation:['A distribution can use an S3 bucket, a custom HTTP origin, or a VPC origin. For a normal S3 bucket, Origin Access Control signs origin requests so the bucket policy can allow CloudFront while Block Public Access remains enabled. An S3 static-website endpoint is instead treated as a public custom origin.','CloudFront VPC origins can privately reach supported Application Load Balancers, Network Load Balancers, and EC2 instances in private subnets. For older public-origin designs, the load balancer or instance must be internet reachable and security rules can restrict incoming traffic to CloudFront origin-facing addresses or managed prefix lists.'],
+      takeaways:['OAC keeps a regular S3 origin private.','S3 website endpoints are public custom origins.','VPC origins remove the need to expose supported backends publicly.'],
+      examTip:'To serve a private S3 bucket through CloudFront, use OAC plus a bucket policy—not an S3 website endpoint.'
+    },
+    {
+      ready:true,title:'Choose CloudFront or S3 replication',
+      summary:'Distinguish an expiring edge cache from durable object copies stored in selected AWS Regions.',
+      explanation:['CloudFront creates temporary cached copies at many edge locations after viewers request content. It is optimized for global delivery, and objects age out or refresh according to cache policy; the edge copy is not an independent source of truth.','S3 Cross-Region Replication asynchronously creates durable object versions in explicitly chosen destination Regions. It fits compliance, disaster recovery, regional data ownership, and low-latency S3 access in a small set of Regions, but it does not provide CloudFront\'s global viewer edge network.'],
+      takeaways:['CloudFront caches at edge locations.','CRR stores durable copies in chosen Regions.','CloudFront is demand driven; replication follows eligible writes.'],
+      examTip:'Global delivery of popular static assets points to CloudFront; a durable bucket copy required in another Region points to CRR.'
+    },
+    {
+      ready:true,title:'Control geography and refresh CloudFront caches',
+      summary:'Apply country-level viewer restrictions and remove stale cached paths before their TTL expires.',
+      explanation:['CloudFront geo restriction can allow only selected countries or block selected countries based on the viewer IP geolocation. It is useful for broad licensing or distribution boundaries, though applications needing user-level entitlements still require authorization such as signed URLs or signed cookies.','Changing a file at the origin does not immediately remove previously cached bytes. A CloudFront invalidation marks specified paths, such as one object or a wildcard subtree, as stale so the next request returns updated content. Versioned filenames are often cheaper and safer for routine releases because both old and new assets can coexist.'],
+      takeaways:['Geo restriction works at country granularity.','Invalidation bypasses the remaining cache TTL for matching paths.','Versioned object names avoid most invalidations.'],
+      examTip:'Use invalidation when an already cached path must refresh immediately; lowering the TTL only affects future cache behavior.'
+    },
+    {
+      ready:true,title:'Enter AWS through Global Accelerator anycast addresses',
+      summary:'Give clients stable global IP entry points and move long-distance traffic onto the AWS network quickly.',
+      explanation:['A unicast address identifies one network location, while an anycast address is advertised from many locations and routes a client toward a nearby entry point. AWS Global Accelerator exposes static anycast IP addresses at the AWS edge and carries accepted traffic across the AWS global network to application endpoints.','An IPv4 accelerator receives two static IPv4 addresses; dual-stack provides two IPv4 and two IPv6 addresses. Because these addresses remain attached for the life of the accelerator, clients and firewalls can use stable allowlists even while regional endpoints change behind them.'],
+      takeaways:['Anycast routes the same address toward a nearby edge.','Global Accelerator provides stable client entry points.','Dual-stack accelerators support IPv4 and IPv6.'],
+      examTip:'A global application that must expose fixed IP addresses to enterprise allowlists is a Global Accelerator use case.'
+    },
+    {
+      ready:true,title:'Route to healthy regional endpoints with Global Accelerator',
+      summary:'Improve network consistency and regional failover for ALB, NLB, EC2, and Elastic IP endpoints.',
+      explanation:['A standard accelerator has listeners, regional endpoint groups, and endpoints. It supports TCP and UDP and can direct traffic to Application Load Balancers, Network Load Balancers, EC2 instances, and Elastic IP addresses according to client location, endpoint health, weights, and regional traffic dials.','Health checks remove unhealthy endpoints from normal routing and enable fast failover for new connections without waiting for DNS caches to expire. Traffic enters the AWS network at the edge, reducing exposure to variable public-internet paths, while Shield protection and a small static address set simplify the public security boundary.'],
+      takeaways:['Endpoint groups represent AWS Regions.','Health and routing policy influence endpoint choice.','Traffic dials and weights support controlled traffic shifts.'],
+      examTip:'Deterministic regional failover without DNS propagation delay strongly favors Global Accelerator.'
+    },
+    {
+      ready:true,title:'Choose CloudFront or Global Accelerator',
+      summary:'Match HTTP content delivery and edge caching to CloudFront, or packet acceleration and static IPs to Global Accelerator.',
+      explanation:['Both services use AWS edge locations and the AWS global network, and both benefit from AWS Shield. CloudFront is an HTTP and HTTPS reverse proxy that can cache responses, apply cache behaviors, integrate with WAF, and serve content directly from the edge.','Global Accelerator operates at the network layer for TCP and UDP. It proxies connections from static anycast addresses to healthy regional endpoints without caching application content, making it suitable for gaming, voice, IoT, non-HTTP protocols, static-IP requirements, and rapid multi-Region failover.'],
+      takeaways:['CloudFront understands HTTP caching and content behavior.','Global Accelerator supports TCP and UDP without caching.','Static anycast IPs are a defining Global Accelerator feature.'],
+      examTip:'Choose CloudFront for a CDN or edge HTTP controls; choose Global Accelerator for UDP, fixed IPs, or fast endpoint failover.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -1336,4 +1388,5 @@
   window.AWS_COURSE_CURRICULUM[11].lectures=sectionTwelveLectures;
   window.AWS_COURSE_CURRICULUM[12].lectures=sectionThirteenLectures;
   window.AWS_COURSE_CURRICULUM[13].lectures=sectionFourteenLectures;
+  window.AWS_COURSE_CURRICULUM[14].lectures=sectionFifteenLectures;
 })();
