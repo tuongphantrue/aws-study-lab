@@ -1946,6 +1946,93 @@
     }
   ];
 
+  const sectionTwentyThreeLectures=[
+    {
+      ready:true,title:'Analyze images and video with Amazon Rekognition',
+      summary:'Detect objects, people, text, faces, and unsafe content without building a computer-vision model.',
+      explanation:['Amazon Rekognition applies pretrained computer-vision models to images and stored or streaming video. It can label objects and scenes, detect text and celebrities, compare or search faces, and follow people through video. Applications receive labels and confidence scores rather than a business decision.','Content Moderation identifies potentially unsafe or inappropriate material. Set confidence thresholds to match the cost of false positives and false negatives, and route uncertain or sensitive results to human review, including workflows built with Amazon Augmented AI. Face analysis requires careful consent, access control, retention, and regional policy design.'],
+      takeaways:['Rekognition analyzes images and video.','Responses include labels and confidence scores.','Moderation can be combined with human review.'],
+      examTip:'A question asks for managed object, face, text, or unsafe-content detection in media: choose Rekognition.'
+    },
+    {
+      ready:true,title:'Convert speech to text with Amazon Transcribe',
+      summary:'Create searchable transcripts, captions, and call records from live or recorded audio.',
+      explanation:['Amazon Transcribe is an automatic speech recognition service that converts audio into text. Batch transcription works with recordings, while streaming transcription produces text as audio arrives for captions, contact centers, and live applications.','Features include language identification, speaker labeling, custom vocabulary, channel identification, and redaction of supported personally identifiable information. Transcribe produces text; use a downstream service such as Comprehend for sentiment or entity analysis and protect both the original audio and its transcript.'],
+      takeaways:['Transcribe converts speech into text.','Batch and streaming modes address different latency needs.','Custom vocabulary improves domain-term recognition.'],
+      examTip:'Recorded calls must become searchable text or live audio needs captions: use Amazon Transcribe.'
+    },
+    {
+      ready:true,title:'Create lifelike speech with Amazon Polly',
+      summary:'Synthesize spoken audio from text and control pronunciation, pacing, and delivery.',
+      explanation:['Amazon Polly is the reverse of speech recognition: it converts text into speech using managed voices. Applications can stream the audio response or store generated audio in S3 for narration, accessibility, announcements, and voice-enabled products.','Pronunciation lexicons define how specialized words, abbreviations, or names should sound. Speech Synthesis Markup Language controls pauses, emphasis, speaking rate, pitch, and pronunciation. Cache reusable audio when appropriate to reduce repeated synthesis cost and latency.'],
+      takeaways:['Polly converts text into speech.','Lexicons customize pronunciation.','SSML controls how speech is delivered.'],
+      examTip:'Text must be read aloud with a natural voice and custom pronunciation: choose Amazon Polly.'
+    },
+    {
+      ready:true,title:'Translate text with Amazon Translate',
+      summary:'Add managed neural translation to applications and localization pipelines.',
+      explanation:['Amazon Translate converts text between supported languages for websites, support messages, documents, and near-real-time conversations. It removes the need to train and host a general-purpose translation model.','Choose Translate when the input is already text. For spoken conversations, first use Transcribe to create text, translate it, and optionally use Polly to speak the result. Translation can preserve meaning imperfectly, so high-impact legal, medical, or brand content still needs human review.'],
+      takeaways:['Translate performs managed text translation.','Speech workflows combine Transcribe, Translate, and Polly.','Sensitive translations may require human validation.'],
+      examTip:'An application needs scalable multilingual text localization: select Amazon Translate.'
+    },
+    {
+      ready:true,title:'Build conversational contact centers with Lex and Connect',
+      summary:'Use a chatbot to understand caller intent and a cloud contact center to route customer interactions.',
+      explanation:['Amazon Lex builds text and voice conversational interfaces using intents, utterances, slots, and fulfillment. It uses the same general speech and language capabilities associated with Alexa and can invoke Lambda to validate input or perform business actions.','Amazon Connect provides a managed contact center with phone numbers, contact flows, queues, routing, recording, and agent experiences. Combine Connect and Lex for self-service callers, then transfer to an agent with context when automation cannot resolve the request. CRM and Lambda integrations connect the conversation to customer data and workflows.'],
+      takeaways:['Lex recognizes intents and collects slot values.','Connect is a managed contact center.','Lambda can fulfill chatbot actions.'],
+      examTip:'A cloud call center needs an interactive voice bot before routing to human agents: combine Amazon Connect with Amazon Lex.'
+    },
+    {
+      ready:true,title:'Extract meaning from text with Amazon Comprehend',
+      summary:'Apply natural-language processing to detect language, entities, key phrases, sentiment, and syntax.',
+      explanation:['Amazon Comprehend analyzes unstructured text with pretrained natural-language processing models. Common outputs include dominant language, named entities, key phrases, sentiment, syntax, personally identifiable information, and targeted sentiment; custom classification and custom entity recognition address domain-specific needs.','Use synchronous APIs for small interactive requests and asynchronous jobs for document collections in S3. Topic modeling appears in course and exam material, but AWS no longer offers topic modeling, event detection, or prompt-safety classification to new customers; other Comprehend capabilities remain available, and AWS points new topic and event workloads toward Amazon Bedrock models.'],
+      takeaways:['Comprehend extracts insights from text.','It does not transcribe audio or scan document images.','Some older specialty features are unavailable to new customers.'],
+      examTip:'Customer reviews are already text and require managed sentiment or entity extraction: choose Amazon Comprehend.'
+    },
+    {
+      ready:true,title:'Understand clinical text with Comprehend Medical',
+      summary:'Detect healthcare entities and protected health information in unstructured clinical notes.',
+      explanation:['Amazon Comprehend Medical applies pretrained clinical NLP to English medical text such as physician notes, discharge summaries, and test results. It identifies conditions, medications, dosage details, anatomy, procedures, and protected health information, and can link supported entities to medical ontologies.','The service returns confidence scores and is not a substitute for medical judgment. Encrypt connections, apply least privilege, follow healthcare compliance obligations, and require trained review for patient-care decisions. S3 batch data, Firehose streams, or text created by Transcribe can feed an analysis workflow.'],
+      takeaways:['Comprehend Medical targets clinical language.','It can detect PHI and link medical entities.','High-impact results require professional review.'],
+      examTip:'Unstructured clinical notes require medication, condition, or PHI extraction: choose Amazon Comprehend Medical, not general Comprehend.'
+    },
+    {
+      ready:true,title:'Build and deploy models with Amazon SageMaker AI',
+      summary:'Manage the machine-learning lifecycle from data preparation and training through hosted inference.',
+      explanation:['Amazon SageMaker AI provides managed tools for preparing data, experimenting, training, tuning, evaluating, and deploying machine-learning models. It supports built-in algorithms and frameworks as well as custom containers, so teams retain control over model development without operating every infrastructure component.','Training jobs allocate compute for a finite run and persist model artifacts, while endpoints host models for real-time inference. Batch Transform fits offline data sets, and asynchronous or serverless inference fits other traffic patterns. Monitor data and model quality because deployment does not eliminate drift, bias, or governance responsibilities.'],
+      takeaways:['SageMaker AI supports custom model lifecycles.','Training jobs and inference endpoints are separate resources.','Choose inference mode based on latency and traffic.'],
+      examTip:'A data-science team must train, tune, and deploy its own model: choose SageMaker AI rather than a pretrained AI API.'
+    },
+    {
+      ready:true,title:'Search enterprise documents with Amazon Kendra',
+      summary:'Recognize the course service for natural-language enterprise search and understand its current adoption status.',
+      explanation:['Amazon Kendra indexes documents from repositories and connectors so users can ask natural-language questions and receive ranked passages or answers. Relevance tuning, metadata, access controls, and user feedback help align search results with enterprise content.','Kendra stopped accepting new customers on July 30, 2026; existing customers can continue using it. For a new real-world architecture, AWS recommends evaluating Knowledge Bases for Amazon Bedrock for similar retrieval capabilities. Keep Kendra recognizable for course scenarios while applying the current availability rule to implementation decisions.'],
+      takeaways:['Kendra provides ML-powered enterprise search.','Connectors index content from multiple repositories.','New customers should evaluate Bedrock Knowledge Bases.'],
+      examTip:'For legacy exam wording, natural-language search across company documents points to Kendra; for a new deployment, account for its new-customer restriction.'
+    },
+    {
+      ready:true,title:'Generate recommendations with Amazon Personalize',
+      summary:'Create individualized rankings and recommendations from users, items, and interaction events.',
+      explanation:['Amazon Personalize uses interaction history and optional user and item metadata to produce recommendations, personalized rankings, and user segments. Use-case optimized recommenders simplify common retail and media patterns, while custom resources offer more configuration.','Real-time APIs update recommendations as behavior arrives, while batch inference produces large offline result sets. Recommendation quality depends on representative events, stable identifiers, and evaluation against business outcomes; filters and promotions can enforce eligibility or discovery rules without replacing the relevance model.'],
+      takeaways:['Personalize powers application recommendations.','Interaction data is central to personalization.','Real-time and batch recommendation modes are available.'],
+      examTip:'A retailer wants managed product recommendations modeled after each user\'s behavior: choose Amazon Personalize.'
+    },
+    {
+      ready:true,title:'Extract forms and tables with Amazon Textract',
+      summary:'Turn scanned documents into structured text, handwriting, key-value pairs, and table data.',
+      explanation:['Amazon Textract is more than basic optical character recognition. It detects printed text and handwriting while preserving document structure such as lines, forms, tables, queries, signatures, and expense or identity-document fields supported by specialized APIs.','Synchronous operations fit small interactive documents; asynchronous operations process multi-page documents from S3 and publish completion through notification workflows. Textract extracts document content but does not understand broad sentiment like Comprehend, so document pipelines often use Textract first and NLP or business validation afterward.'],
+      takeaways:['Textract performs document OCR.','It extracts form key-value pairs and tables.','Asynchronous APIs fit multi-page S3 documents.'],
+      examTip:'Scanned invoices or application forms must become structured fields and tables: choose Amazon Textract.'
+    },
+    {
+      ready:true,title:'Choose the right managed AI service',
+      summary:'Match the input format and desired output to a specialized AI API or a custom model platform.',
+      explanation:['Start with modality: Rekognition analyzes media, Transcribe converts speech to text, Polly converts text to speech, Translate changes language, Textract structures documents, and Comprehend analyzes language. Lex manages conversational intent, Connect runs contact centers, Personalize recommends items, and Comprehend Medical handles clinical text.','Prefer a specialized pretrained service when its output directly matches the requirement. Choose SageMaker AI when the organization needs a custom model or control of training and deployment. For enterprise retrieval, remember Kendra for existing course scenarios while checking its current customer availability and considering Bedrock Knowledge Bases for new systems.'],
+      takeaways:['Input and desired output narrow the service choice.','Pretrained APIs minimize ML operations.','SageMaker AI fits custom model development.'],
+      examTip:'Translate the scenario into input, transformation, and output before selecting a service; similarly named AI products solve different layers.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -1977,4 +2064,5 @@
   window.AWS_COURSE_CURRICULUM[19].lectures=sectionTwentyLectures;
   window.AWS_COURSE_CURRICULUM[20].lectures=sectionTwentyOneLectures;
   window.AWS_COURSE_CURRICULUM[21].lectures=sectionTwentyTwoLectures;
+  window.AWS_COURSE_CURRICULUM[22].lectures=sectionTwentyThreeLectures;
 })();
