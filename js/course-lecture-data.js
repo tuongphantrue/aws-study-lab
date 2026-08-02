@@ -5321,6 +5321,98 @@
 
   sectionTwentySevenLectures.forEach(lecture=>Object.assign(lecture,sectionTwentySevenSlideOverridesA[lecture.title]||sectionTwentySevenSlideOverridesB[lecture.title]||{}));
 
+  const sectionTwentyEightSlideOverrides={
+    'Define recovery with RPO and RTO':{
+      sourcePages:'776–777',
+      summary:'Define disaster recovery around business continuity, then express acceptable data loss and downtime as RPO and RTO.',
+      explanation:['The slides define a disaster as an event that harms business continuity or finances and show recovery paths from on premises to on premises, on premises to AWS, or one AWS Region to another. Every design starts by identifying the systems and data that must recover.','Recovery point objective measures the acceptable data-loss window before the disaster; recovery time objective measures the acceptable downtime after it. Smaller objectives require more replication, automation, and continuously available recovery capacity.'],
+      slideTopics:['Disaster-recovery scope','On-premises, hybrid, and cross-Region recovery','RPO data-loss window','RTO downtime window'],
+      takeaways:['RPO is measured backward from the disruption.','RTO is measured forward until service returns.','Business requirements determine the recovery investment.'],
+      examTip:'Five minutes of acceptable lost transactions is RPO; restoring service within one hour is RTO.'
+    },
+    'Choose a disaster-recovery strategy':{
+      sourcePages:'778',
+      summary:'Choose among backup and restore, pilot light, warm standby, and hot or multi-site recovery by balancing speed and cost.',
+      explanation:['The slide orders four strategies from slower recovery toward faster RTO: backup and restore, pilot light, warm standby, and hot site or multi-site. Moving toward an always-running recovery site increases readiness and recurring cost.','A complete decision must satisfy both RPO and RTO. Data replication can improve RPO, while pre-provisioned application capacity and automated traffic failover primarily improve RTO.'],
+      slideTopics:['Backup and restore','Pilot light','Warm standby','Hot site / multi-site','RTO and cost tradeoff'],
+      takeaways:['Backup and restore keeps the least idle infrastructure.','Warm standby keeps a full but smaller environment running.','Multi-site offers the fastest recovery at the highest cost.'],
+      examTip:'Select the least expensive strategy that still meets every stated recovery objective.'
+    },
+    'Recover from backups':{
+      sourcePages:'779, 784',
+      summary:'Restore protected data and recreate compute when a higher RPO and longer RTO are acceptable.',
+      explanation:['The backup-and-restore diagram sends on-premises data through Storage Gateway or Snowball to S3 and archival storage, and protects AWS data with EBS snapshots, RDS backups, and AMIs. Lifecycle policies and cross-Region replication can place recovery copies where they are needed.','After a disaster, the application environment and databases must be recreated from those artifacts. CloudFormation or Elastic Beanstalk can automate infrastructure recovery, but restore testing is necessary because a stored backup alone does not prove the application can return within its RTO.'],
+      slideTopics:['Storage Gateway and Snowball','S3 and archival lifecycle','EBS snapshots and RDS backups','AMIs','Infrastructure recreation'],
+      takeaways:['Backup and restore usually has a high RPO and slower RTO.','Copies must include data and rebuild configuration.','Automation and restore drills reduce recovery time.'],
+      examTip:'A strong cost constraint with relaxed recovery objectives points to backup and restore.'
+    },
+    'Maintain a pilot-light environment':{
+      sourcePages:'780',
+      summary:'Keep the critical core and replicated data running while leaving most application capacity stopped until a disaster.',
+      explanation:['In the slide architecture, RDS remains running in AWS and receives replicated data from the corporate data center, while EC2 application capacity is not running. This small live core is the pilot light.','At failover, the stopped or absent application tier is launched and Route 53 redirects clients. Because critical systems already exist, recovery is faster than rebuilding entirely from backups but slower than a full warm standby.'],
+      slideTopics:['Small live application core','Continuous data replication','RDS running','EC2 not running','Route 53 failover'],
+      takeaways:['Only critical core components remain active.','Most capacity starts during recovery.','Pilot light is faster than backup and restore.'],
+      examTip:'A running recovery database with application servers launched only during an incident describes pilot light.'
+    },
+    'Run a warm standby':{
+      sourcePages:'781',
+      summary:'Run the complete recovery system at minimum size, then scale it to production load during failover.',
+      explanation:['The warm-standby diagram includes a running secondary database, load balancer, and EC2 Auto Scaling group at minimum capacity. Data is replicated from the primary site and every application layer already exists.','When the primary site fails, Route 53 changes traffic and the recovery Auto Scaling group expands. The design costs more than pilot light but avoids provisioning missing application tiers during the event.'],
+      slideTopics:['Full system at minimum size','RDS secondary','Elastic Load Balancing','EC2 Auto Scaling','Route 53 failover'],
+      takeaways:['Every application tier is already running.','Recovery capacity begins below production scale.','Failover consists mainly of scaling and traffic redirection.'],
+      examTip:'A complete secondary stack that runs continuously at reduced capacity is warm standby.'
+    },
+    'Operate active-active multi-site recovery':{
+      sourcePages:'782–783',
+      summary:'Run production-scale environments in multiple sites for very low RTO, accepting the highest cost and coordination complexity.',
+      explanation:['The hot-site slide shows full production capacity on premises and in AWS serving traffic active-active, with data replication and Route 53 failover. This can restore service in minutes or seconds because the secondary site does not need to scale first.','The all-AWS example places production Auto Scaling and load-balanced tiers in two Regions with Aurora Global Database replication. Applications must handle cross-Region data behavior and avoid split-brain writes when both sites are active.'],
+      slideTopics:['Hot site / multi-site','Active-active traffic','Full production capacity','All-AWS multi-Region','Aurora Global Database'],
+      takeaways:['Both sites can serve production traffic.','Very low RTO comes with high steady-state cost.','Cross-site data replication is part of the design.'],
+      examTip:'Production-scale stacks running simultaneously in two locations indicate hot-site or multi-site recovery.'
+    },
+    'Recover servers with AWS Elastic Disaster Recovery':{
+      sourcePages:'785',
+      summary:'Continuously replicate server disks into a low-cost AWS staging area and launch target EC2 resources during recovery.',
+      explanation:['AWS Elastic Disaster Recovery, formerly CloudEndure Disaster Recovery, installs a replication agent on physical, virtual, or cloud servers. It performs continuous block-level replication into low-cost EC2 and EBS staging resources.','During failover it launches target EC2 instances and EBS volumes in the production recovery environment, with recovery measured in minutes and replicated changes measured in seconds in the slide. It also supports failback after the original site is ready.'],
+      slideTopics:['Former CloudEndure Disaster Recovery','Replication agent','Block-level replication','Low-cost staging area','Failover and failback'],
+      takeaways:['DRS protects whole servers.','Staging uses low-cost compute and EBS.','Target production instances launch at recovery time.'],
+      examTip:'Continuous block replication of existing servers into AWS with on-demand EC2 recovery points to Elastic Disaster Recovery.'
+    },
+    'Migrate databases with AWS DMS and schema conversion':{
+      sourcePages:'786–792',
+      summary:'Keep source databases available while DMS performs full load and CDC, adding schema conversion only for different engines.',
+      explanation:['Database Migration Service supports homogeneous and heterogeneous migrations and can continuously replicate changes with change data capture. A DMS replication instance connects the source and target; a Multi-AZ deployment maintains a synchronous standby for the replication service.','For different engines, the slides use AWS Schema Conversion Tool to convert database objects before DMS moves data; same-engine moves do not require schema conversion. The deck also compares snapshot, read-replica, backup-import, and DMS paths for MySQL and PostgreSQL migrations into Aurora.'],
+      slideTopics:['DMS sources and targets','Full load and CDC','DMS Multi-AZ','Schema Conversion Tool','MySQL and PostgreSQL to Aurora'],
+      takeaways:['DMS moves data while the source can remain online.','SCT is for heterogeneous engine conversion.','Same-engine migrations do not need SCT.'],
+      examTip:'For Oracle to Aurora PostgreSQL with minimal downtime, convert the schema and use DMS full load plus CDC.'
+    },
+    'Rehost servers with Application Migration Service':{
+      sourcePages:'793, 799–800',
+      summary:'Use Application Migration Service for minimally disruptive lift-and-shift, while recognizing the slide deck’s other VM migration options.',
+      explanation:['Application Migration Service is presented as the evolution of CloudEndure Migration and replacement for Server Migration Service. Its agent continuously replicates physical, virtual, or cloud server disks to a low-cost staging area, then launches native EC2 instances for test and cutover.','The slides also identify VM Import/Export and VMware Cloud on AWS for customers retaining VMware tooling. Application Discovery Service and Migration Hub support planning, utilization analysis, and dependency mapping before grouping servers into migration waves.'],
+      slideTopics:['Application Migration Service','Lift-and-shift rehosting','Continuous server replication','VM Import/Export','VMware Cloud on AWS'],
+      takeaways:['MGN rehosts servers with minimal application change.','Test launches precede the final cutover.','VMware Cloud retains a vSphere operating model.'],
+      examTip:'Migrating live servers to run natively on EC2 with minimal downtime is an Application Migration Service scenario.'
+    },
+    'Centralize protection with AWS Backup':{
+      sourcePages:'794–797',
+      summary:'Centrally automate backups across supported AWS services with plans, resource assignments, lifecycle, and immutable vault controls.',
+      explanation:['AWS Backup manages scheduled and on-demand protection for services shown in the deck, including EC2, EBS, S3, RDS, Aurora, DynamoDB, EFS, FSx, Storage Gateway, DocumentDB, and Neptune. Backup plans specify frequency, backup windows, cold-storage transition, retention, and tag-based resource assignment.','Cross-Region and cross-account backups improve isolation. Backup Vault Lock enforces write-once-read-many retention so protected recovery points cannot be deleted or shortened—even by the root user under the slide’s locked-vault description.'],
+      slideTopics:['Supported AWS Backup services','Backup plans','Tag-based assignment','Cross-Region and cross-account copies','Backup Vault Lock WORM'],
+      takeaways:['Backup plans replace per-service scripts.','Lifecycle and retention are policy controlled.','Vault Lock protects backups from deletion and shortened retention.'],
+      examTip:'Centrally enforce immutable retention across supported services with AWS Backup and Vault Lock.'
+    },
+    'Discover workloads and move bulk data':{
+      sourcePages:'793, 798, 801',
+      summary:'Inventory servers and dependencies before migration, then choose network or offline transfer from data size, bandwidth, and deadline.',
+      explanation:['The slide-era Application Discovery Service uses agentless discovery for VM inventory and performance history, and agent-based discovery for deeper system, process, and network-connection details. Results appear in Migration Hub to support migration planning. This service name reflects the supplied deck and should be checked against current AWS availability for a live project.','For a 200 TB example, the slides compare roughly 185 days over 100 Mbps internet, 18.5 days of transfer over 1 Gbps Direct Connect after its setup, and about one week end to end with Snowball. Ongoing replication can use Site-to-Site VPN or Direct Connect with DMS or DataSync.'],
+      slideTopics:['Application Discovery Service','Agentless versus agent-based discovery','Migration Hub','200 TB transfer comparison','Snowball, Direct Connect, DMS, and DataSync'],
+      takeaways:['Dependency mapping helps group migration waves.','Transfer time equals data volume divided by effective bandwidth.','Offline Snowball can beat network transfer for one-time bulk data.'],
+      examTip:'If the available link cannot meet a large one-time migration deadline, choose Snowball and synchronize later changes separately.'
+    }
+  };
+  sectionTwentyEightLectures.forEach(lecture=>Object.assign(lecture,sectionTwentyEightSlideOverrides[lecture.title]||{}));
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
