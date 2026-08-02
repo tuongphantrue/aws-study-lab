@@ -21,7 +21,14 @@
   const readList=key=>{try{const value=JSON.parse(localStorage.getItem(key)||'[]');return Array.isArray(value)?value:[]}catch(error){return[]}};
   const writeList=(key,value)=>localStorage.setItem(key,JSON.stringify(value));
   const setText=(id,value)=>{const element=document.getElementById(id);if(element)element.textContent=value};
-  const lectureHref=number=>`lecture.html?section=${sectionNumber}&lecture=${number}`;
+  const lectureHref=(targetSection,targetLecture)=>`lecture.html?section=${targetSection}&lecture=${targetLecture}`;
+  const findReadyLecture=direction=>{
+    for(let targetSection=sectionNumber+direction;targetSection>=1&&targetSection<=curriculum.length;targetSection+=direction){
+      const readyIndexes=curriculum[targetSection-1].lectures.map((item,index)=>item.ready?index:-1).filter(index=>index>=0);
+      if(readyIndexes.length)return {section:targetSection,lecture:(direction>0?readyIndexes[0]:readyIndexes[readyIndexes.length-1])+1};
+    }
+    return null;
+  };
 
   document.title=`${lecture.title} | AWS Study Lab`;
   document.body.dataset.section=String(sectionNumber);
@@ -39,8 +46,31 @@
 
   const previous=document.getElementById('previousLecture');
   const next=document.getElementById('nextLecture');
-  if(lectureNumber>1){previous.href=lectureHref(lectureNumber-1);previous.querySelector('b').textContent=section.lectures[lectureNumber-2].title}else{previous.hidden=true}
-  if(lectureNumber<section.lectures.length){next.href=lectureHref(lectureNumber+1);next.querySelector('b').textContent=section.lectures[lectureNumber].title}else{next.href=`../study-guide.html?section=${sectionNumber}`;next.querySelector('small').textContent='FINISH SECTION';next.querySelector('b').textContent='Return to course content'}
+  if(lectureNumber>1){
+    previous.href=lectureHref(sectionNumber,lectureNumber-1);
+    previous.querySelector('b').textContent=section.lectures[lectureNumber-2].title;
+  }else{
+    const previousReady=findReadyLecture(-1);
+    if(previousReady){
+      previous.href=lectureHref(previousReady.section,previousReady.lecture);
+      previous.querySelector('b').textContent=curriculum[previousReady.section-1].lectures[previousReady.lecture-1].title;
+    }else previous.hidden=true;
+  }
+  if(lectureNumber<section.lectures.length){
+    next.href=lectureHref(sectionNumber,lectureNumber+1);
+    next.querySelector('b').textContent=section.lectures[lectureNumber].title;
+  }else{
+    const nextReady=findReadyLecture(1);
+    if(nextReady){
+      next.href=lectureHref(nextReady.section,nextReady.lecture);
+      next.querySelector('small').textContent=`NEXT SECTION`;
+      next.querySelector('b').textContent=curriculum[nextReady.section-1].lectures[nextReady.lecture-1].title;
+    }else{
+      next.href=`../study-guide.html?section=${sectionNumber}`;
+      next.querySelector('small').textContent='FINISH SECTION';
+      next.querySelector('b').textContent='Return to course content';
+    }
+  }
 
   const complete=document.getElementById('completeLecture');
   function isComplete(){return readList(LECTURE_KEY).map(String).includes(lectureId)||readList(SECTION_KEY).map(Number).includes(sectionNumber)}

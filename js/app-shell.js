@@ -7,10 +7,10 @@
   const area=(inCourse||studyPages.has(current))?'study':examPages.has(current)?'exam':'home';
   const currentSection=Number(document.body.dataset.section||0);
   const courseProgressKey='aws-beginner-section-progress-v2';
-  const sectionTitles=['Introduction','Study method','Getting started with AWS','IAM & CLI','EC2 fundamentals','EC2 architecture','EC2 storage','Load balancing & Auto Scaling','RDS, Aurora & ElastiCache','Route 53','Architecture patterns','Amazon S3','Advanced S3','S3 security','CloudFront & Global Accelerator','Storage extras','SQS, SNS, Kinesis & MQ','Containers','Serverless','Serverless architectures','Databases','Data & analytics','Machine learning','Monitoring & audit','Advanced IAM','Security & encryption','VPC networking','Disaster recovery & migrations','More architectures','Other AWS services','Well-Architected review','Exam preparation','Finish & next steps'];
+  const sectionTitles=['Introduction','Code & slides','Getting started with AWS','IAM & CLI','EC2 fundamentals','EC2 architecture','EC2 storage','Load balancing & Auto Scaling','RDS, Aurora & ElastiCache','Route 53','Architecture patterns','Amazon S3','Advanced S3','S3 security','CloudFront & Global Accelerator','Storage extras','SQS, SNS, Kinesis & MQ','Containers','Serverless','Serverless architectures','Databases','Data & analytics','Machine learning','Monitoring & audit','Advanced IAM','Security & encryption','VPC networking','Disaster recovery & migrations','More architectures','Other AWS services','Well-Architected review','Exam preparation','Finish & next steps'];
   const groups=[{name:'Start here',from:1,to:4},{name:'Compute & architecture',from:5,to:11},{name:'Storage & delivery',from:12,to:16},{name:'Apps, serverless & data',from:17,to:23},{name:'Operations & security',from:24,to:28},{name:'Architecture & exam',from:29,to:33}];
   const readCourseDone=()=>{try{return JSON.parse(localStorage.getItem(courseProgressKey)||'[]').map(Number)}catch(e){return[]}};
-  const sectionHref=n=>`${rootPrefix}course/section-${String(n).padStart(2,'0')}.html`;
+  const sectionHref=n=>n<=2?`${rootPrefix}course/lecture.html?section=${n}&lecture=1`:`${rootPrefix}course/section-${String(n).padStart(2,'0')}.html`;
   const firstIncomplete=()=>{const done=new Set(readCourseDone());for(let i=1;i<=33;i++)if(!done.has(i))return i;return 33};
 
   // Remove any previously injected shells before drawing the current one.

@@ -130,6 +130,25 @@
     }
   ];
 
+  const sectionTwoLectures=[
+    {
+      ready:true,
+      title:'Code & Slides Download',
+      summary:'Organize the course resources so the slides, examples, and your own notes support active study. Use the supplied files for personal learning only.',
+      explanation:[
+        'Keep the course slides nearby as a reference while you study. The lesson reader should be your concise explanation layer, while the deck is useful for diagrams, service lists, and a quick visual review after completing a topic.',
+        'When a lesson includes code or a configuration example, save your own working copy and annotate what each important setting changes. Do not treat a successful copy-and-paste as understanding: rebuild the example, change one input, and observe the result.',
+        'Create a simple folder structure for slides, lab notes, screenshots, and architecture comparisons. The supplied deck is copyrighted course material, so keep it for personal study and do not publish or redistribute it with the study lab.'
+      ],
+      takeaways:[
+        'Use slides as a visual reference, not as a substitute for explaining the concept yourself.',
+        'Rebuild examples and record why each important setting exists.',
+        'Keep supplied course files private and publish only your own notes and original summaries.'
+      ],
+      examTip:'Resource files help with review, but the exam tests decisions. Turn each diagram or code example into a question: which requirement does this component satisfy, and what tradeoff would make you choose something else?'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -140,4 +159,5 @@
     return {count,duration,lectures};
   });
   window.AWS_COURSE_CURRICULUM[0].lectures=sectionOneLectures;
+  window.AWS_COURSE_CURRICULUM[1].lectures=sectionTwoLectures;
 })();
