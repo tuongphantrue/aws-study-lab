@@ -993,6 +993,58 @@
     }
   ];
 
+  const sectionElevenLectures=[
+    {
+      ready:true,title:'Develop the solutions architect mindset',
+      summary:'Evolve a design from the smallest valid system toward scalability and resilience as requirements change.',
+      explanation:['Architecture begins with the current workload and explicit constraints, not a diagram containing every AWS service. A small application may accept one instance and downtime; adding availability, growth, persistent state, or operational requirements justifies additional components.','For each change, name the problem it solves and the tradeoff it introduces. This incremental method exposes why load balancers, Auto Scaling, multi-AZ databases, caches, and shared filesystems appear in a design.'],
+      takeaways:['Start with stated requirements.','Add each service to solve a specific problem.','Re-evaluate cost and operations after every change.'],
+      examTip:'Eliminate answers that add complexity without satisfying a requirement; the simplest complete design is usually preferred.'
+    },
+    {
+      ready:true,title:'Evolve a stateless web application',
+      summary:'Progress from one public server to a private, elastic, multi-AZ fleet behind a stable endpoint.',
+      explanation:['A single EC2 instance with a public address is simple but couples users to one server. Vertical scaling adds capacity with an upper bound and possible downtime; multiple DNS A records add servers but handle replacement and health poorly because answers are cached.','A Route 53 Alias to a multi-AZ load balancer creates a stable entry point. Private instances in an Auto Scaling group register automatically, health checks remove failures, and security groups allow application traffic only from the load balancer.'],
+      takeaways:['Stateless servers can be replaced or scaled horizontally.','ELB provides a stable healthy data-plane endpoint.','Multi-AZ Auto Scaling removes one-AZ dependence.'],
+      examTip:'For an elastic stateless web tier, combine Route 53 Alias, ALB, and a multi-AZ ASG rather than publishing instance IPs.'
+    },
+    {
+      ready:true,title:'Design a stateful e-commerce web application',
+      summary:'Externalize shopping carts, user records, and hot reads so application servers remain disposable.',
+      explanation:['Sticky sessions can temporarily keep a user on one server, but target loss still loses local state and creates uneven load. Client cookies have size and integrity limits. A stronger pattern stores only a session identifier in the cookie and keeps session data in ElastiCache or DynamoDB.','RDS or Aurora stores durable customer and order data. Read replicas or caching scale reads, while Multi-AZ protects database availability. Tier-specific security groups permit only ALB-to-app and app-to-data traffic.'],
+      takeaways:['External session storage enables stateless compute.','Relational databases hold durable transactional data.','Read scaling and Multi-AZ solve different database problems.'],
+      examTip:'Shopping carts must survive instance replacement, so do not rely on sticky sessions plus server-local memory as the only state store.'
+    },
+    {
+      ready:true,title:'Scale WordPress with shared storage',
+      summary:'Separate the database and uploaded files from interchangeable WordPress application instances.',
+      explanation:['A scalable WordPress tier runs behind a load balancer across multiple AZs. RDS or Aurora MySQL stores posts and metadata, with Multi-AZ and reader capacity selected from availability and workload needs.','An EBS volume is tied to one AZ and normally one instance, so independent volumes do not automatically share uploaded images. Regional EFS gives Linux web servers a common POSIX filesystem across AZs, allowing any instance to serve the same media.'],
+      takeaways:['Database state belongs outside the web instances.','EBS suits single-instance block storage.','EFS supplies shared multi-AZ files for Linux servers.'],
+      examTip:'A horizontally scaled WordPress fleet that must see identical uploads points to EFS, not separate EBS disks.'
+    },
+    {
+      ready:true,title:'Instantiate full application stacks quickly',
+      summary:'Prepackage stable software and restore data so replacement environments reach service readiness faster.',
+      explanation:['A golden AMI contains the operating system, dependencies, agents, and stable application components prepared before launch. User data adds small dynamic settings such as environment endpoints, and combining both reduces bootstrap time without baking every deployment detail into the image.','RDS and EBS snapshots restore schemas, data, and formatted disks faster than rebuilding them manually. Image and snapshot pipelines should patch, test, version, and retire artifacts consistently.'],
+      takeaways:['Golden AMIs preinstall stable server components.','User data supplies launch-specific configuration.','Snapshots accelerate database and volume restoration.'],
+      examTip:'When Auto Scaling replacements launch too slowly, move heavy installation into an AMI and keep user data concise.'
+    },
+    {
+      ready:true,title:'Assemble a secure three-tier architecture',
+      summary:'Place public entry, private compute, and protected data in separate layers across multiple Availability Zones.',
+      explanation:['Route 53 directs users to an internet-facing ALB in public subnets. The ALB forwards to an Auto Scaling application tier in private subnets, and the application reaches database and cache services in isolated data subnets.','Security groups reference the preceding tier rather than broad CIDRs. Multi-AZ placement removes location-level single points of failure, while NAT or VPC endpoints provide controlled outbound access for private instances when required.'],
+      takeaways:['Only the public entry tier needs direct internet ingress.','Application and data resources stay in private networks.','Security groups enforce tier-to-tier paths.'],
+      examTip:'A classic secure web design exposes the load balancer—not the EC2 or database instances—to internet clients.'
+    },
+    {
+      ready:true,title:'Deploy applications with Elastic Beanstalk',
+      summary:'Let a developer-focused service orchestrate common web infrastructure while retaining access to underlying AWS configuration.',
+      explanation:['Elastic Beanstalk packages an application version into an environment and manages capacity provisioning, load balancing, Auto Scaling, health monitoring, and instance configuration using standard AWS resources. The service itself has no separate charge, but the resources it creates do.','Web environments handle synchronous requests behind a load balancer, while worker environments consume jobs from SQS. Single-instance environments suit development; load-balanced multi-AZ environments suit production availability.'],
+      takeaways:['Beanstalk environments run one application version at a time.','Web and worker tiers address request and queue processing.','Underlying resources remain configurable and billable.'],
+      examTip:'Choose Elastic Beanstalk when developers want to deploy supported application code with managed infrastructure orchestration but still need EC2-level configuration control.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -1012,4 +1064,5 @@
   window.AWS_COURSE_CURRICULUM[7].lectures=sectionEightLectures;
   window.AWS_COURSE_CURRICULUM[8].lectures=sectionNineLectures;
   window.AWS_COURSE_CURRICULUM[9].lectures=sectionTenLectures;
+  window.AWS_COURSE_CURRICULUM[10].lectures=sectionElevenLectures;
 })();
