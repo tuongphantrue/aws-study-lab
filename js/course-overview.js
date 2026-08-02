@@ -1,14 +1,7 @@
 (function(){
   const KEY='aws-beginner-section-progress-v2';
   const TOTAL_LECTURES=396;
-  const sectionMeta=[
-    [6,'15 min'],[1,'1 min'],[3,'13 min'],[20,'57 min'],[16,'1 hr 38 min'],[9,'34 min'],
-    [14,'59 min'],[17,'1 hr 34 min'],[14,'1 hr 10 min'],[20,'1 hr 25 min'],[7,'43 min'],
-    [14,'50 min'],[8,'30 min'],[15,'53 min'],[7,'33 min'],[10,'37 min'],[16,'1 hr 21 min'],
-    [10,'49 min'],[18,'1 hr 23 min'],[4,'16 min'],[10,'25 min'],[12,'48 min'],[12,'26 min'],
-    [18,'1 hr 19 min'],[10,'49 min'],[21,'1 hr 26 min'],[38,'2 hr 40 min'],[11,'44 min'],
-    [5,'27 min'],[15,'48 min'],[4,'15 min'],[8,'17 min'],[3,'9 min']
-  ];
+  const curriculum=window.AWS_COURSE_CURRICULUM||[];
   const read=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'[]').map(Number)}catch(e){return[]}};
   const done=new Set(read());
 
@@ -18,15 +11,17 @@
     const section=Number(link.dataset.section);
     const title=link.querySelector('.section-row-copy b')?.textContent.trim()||`Section ${section}`;
     const description=link.querySelector('.section-row-copy small')?.textContent.trim()||'';
-    const [lectureCount,duration]=sectionMeta[section-1];
+    const sectionData=curriculum[section-1];
+    if(!sectionData)return;
+    const {count:lectureCount,duration,lectures}=sectionData;
     const sectionComplete=done.has(section);
     const article=document.createElement('article');
     const panelId=`course-section-${section}-details`;
-    const lectureRows=Array.from({length:lectureCount},(_,index)=>`
+    const lectureRows=lectures.map((lecture,index)=>`
       <div class="course-lecture-row" data-lecture="${index+1}">
         <span class="lecture-status ${sectionComplete?'complete':''}" aria-hidden="true">${sectionComplete?'\u2713':''}</span>
         <svg class="lecture-icon" viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="3" width="12" height="14" rx="1.5"/><path d="M7 7h6M7 10h6M7 13h4"/></svg>
-        <span class="lecture-copy"><b>Lecture ${index+1}</b><small>Lesson details coming next</small></span>
+        <span class="lecture-copy"><b>${lecture.title}</b><small><span>Lecture ${index+1}</span>${lecture.summary}</small></span>
       </div>`).join('');
     article.className='course-section-row';
     article.dataset.section=String(section);
@@ -59,8 +54,12 @@
       row.classList.toggle('open',!open);
     });
   });
+  const requestedSection=Number(new URLSearchParams(location.search).get('section'));
+  if(requestedSection){
+    rows.find(row=>Number(row.dataset.section)===requestedSection)?.querySelector('.course-section-toggle')?.click();
+  }
 
-  const completedLectures=sectionMeta.reduce((total,[count],index)=>total+(done.has(index+1)?count:0),0);
+  const completedLectures=curriculum.reduce((total,section,index)=>total+(done.has(index+1)?section.count:0),0);
   const pct=Math.round(completedLectures/TOTAL_LECTURES*100);
   const progressText=document.getElementById('courseProgressText');
   const progressBar=document.getElementById('courseProgressBar');
