@@ -5551,6 +5551,42 @@
   };
   sectionThirtyLectures.forEach(lecture=>Object.assign(lecture,sectionThirtySlideOverrides[lecture.title]||{}));
 
+  const sectionThirtyOneSlideOverrides={
+    'Apply the six Well-Architected pillars':{
+      sourcePages:'853–855',
+      summary:'Use the six complementary Well-Architected pillars and evidence-driven design principles to improve workloads continuously.',
+      explanation:['The deck names Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization, and Sustainability as the six pillars. It says they work in synergy rather than as isolated tradeoffs.','General principles include stopping capacity guesses, testing at production scale, automating architectural experiments, allowing architectures to evolve, responding to changing requirements, making data-driven decisions, and learning through game days such as simulated flash-sale demand.'],
+      slideTopics:['Framework section overview','General guiding principles','Six Well-Architected pillars','Evolutionary architecture','Game days'],
+      takeaways:['The framework contains six pillars.','Architecture should evolve from measured requirements.','Production-scale tests and game days expose assumptions.'],
+      examTip:'Evaluate an architecture across all six pillars; do not improve one dimension while ignoring the stated requirement in another.'
+    },
+    'Review workloads with the Well-Architected Tool':{
+      sourcePages:'856',
+      summary:'Answer workload questions in the free Well-Architected Tool, compare the design with all six pillars, and receive improvement guidance.',
+      explanation:['The workflow starts by selecting a workload and answering architecture questions. The tool reviews those answers against the six pillars and surfaces best-practice risks.','Its output includes advice, videos and documentation, a generated report, and dashboard results. The tool supports structured reviews; the team still owns remediation priorities and implementation.'],
+      slideTopics:['Free Well-Architected Tool','Workload questions','Six-pillar review','Advice and documentation','Reports and dashboard'],
+      takeaways:['Reviews are organized around a workload.','Answers are assessed against all pillars.','The tool produces guidance and reports.'],
+      examTip:'A structured self-service review against the Well-Architected Framework points to the Well-Architected Tool.'
+    },
+    'Act on AWS Trusted Advisor recommendations':{
+      sourcePages:'857',
+      summary:'Use Trusted Advisor for an account-level assessment and recommendations across the six categories shown in the deck.',
+      explanation:['Trusted Advisor requires no agent installation and analyzes AWS accounts for cost optimization, performance, security, fault tolerance, service limits, and operational excellence. It is broader and more account-oriented than a workload design review.','The supplied slide associates the full set of checks and programmatic AWS Support API access with Business and Enterprise Support plans. Support-plan entitlements change, so verify current check availability before relying on this source-era detail.'],
+      slideTopics:['High-level account assessment','Six recommendation categories','No installation','Full set of checks','AWS Support API'],
+      takeaways:['Trusted Advisor assesses AWS account configuration.','Recommendations span cost, performance, security, resilience, limits, and operations.','Access to checks depends on current support entitlements.'],
+      examTip:'For account-level optimization and quota or security recommendations, choose Trusted Advisor; for a workload pillar review, choose the Well-Architected Tool.'
+    },
+    'Use reference architectures without copying blindly':{
+      sourcePages:'853, 858',
+      summary:'Use AWS architecture and solutions libraries to extend the classic and serverless patterns covered by the course.',
+      explanation:['The section overview points to Well-Architected, Trusted Advisor, reference architectures, and the Disaster Recovery on AWS whitepaper. The final slide directs learners to AWS Architecture and AWS Solutions for more real-world examples.','The deck groups familiar patterns into classic stacks using EC2, ELB, RDS, and ElastiCache, and serverless stacks using S3, Lambda, DynamoDB, CloudFront, and API Gateway. A reference is a starting point; requirements, failure domains, security, cost, and service constraints still determine the actual design.'],
+      slideTopics:['Reference architecture resources','Classic architecture pattern','Serverless architecture pattern','AWS Architecture Center','AWS Solutions Library'],
+      takeaways:['Reference designs accelerate exploration.','Classic and serverless patterns use different managed building blocks.','Every reference must be adapted to workload requirements.'],
+      examTip:'Use reference architectures to recognize proven patterns, then select only the components that satisfy the scenario.'
+    }
+  };
+  sectionThirtyOneLectures.forEach(lecture=>Object.assign(lecture,sectionThirtyOneSlideOverrides[lecture.title]||{}));
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
