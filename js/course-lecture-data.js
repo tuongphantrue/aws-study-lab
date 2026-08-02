@@ -3384,6 +3384,65 @@
 
   sectionFiveLectures.forEach(lecture=>Object.assign(lecture,sectionFiveSlideOverrides[lecture.title]||{}));
 
+  const sectionSixSlideOverrides={
+    'Public and private IP addressing on EC2':{
+      sourcePages:'78–81, 84',summary:'Use the deck’s IPv4 model to distinguish internet-unique public addresses from reusable private-network addresses.',
+      explanation:['The slides introduce IPv4 and IPv6 but use IPv4 throughout the course. Public IPv4 addresses identify machines on the internet, must be globally unique, and can be geolocated.','Private IPv4 addresses work only within a private network, must be unique inside that network, and may be reused by different private networks. EC2 commonly has a private address for the AWS network and a public address for internet reachability; the public address may change after stop/start.'],
+      slideTopics:[{heading:'Public IPv4',bullets:['Reachable and identifiable on the internet.','Globally unique across the public web.','Can be geolocated.']},{heading:'Private IPv4',bullets:['Reachable within its private network.','Unique only inside that network.','The same private range may be reused by separate organizations.']},{heading:'EC2 hands-on',bullets:['Private IP supports the internal AWS network.','Public IP supports access from the internet.','Stop/start may replace the public IP while the private IP remains.']}],
+      takeaways:['Public IPs are internet-unique.','Private IPs are locally unique.','Separate private networks may reuse ranges.','An automatic EC2 public IP is not a stable endpoint.'],examTip:'Use private IPs for internal communication and do not assume an auto-assigned public IP survives stop/start.'
+    },
+    'Elastic IP addresses and stable endpoints':{
+      sourcePages:'82–83',summary:'Apply Elastic IPs only when a fixed public IPv4 address is required, while retaining the deck’s warning that they are usually an avoidable design constraint.',
+      explanation:['An Elastic IP is a public IPv4 address retained by the account until it is released. It solves the problem of an ordinary EC2 public IP changing after the instance is stopped and started.','The deck shows rapid remapping to another instance as a way to mask failure, then recommends avoiding dependence on Elastic IPs by using a random public IP with DNS or a load balancer. Its five-address statement is a slide-era default quota, not a permanent universal limit.'],
+      slideTopics:[{heading:'Stable address',bullets:['Owned by the account until released.','Can be attached to one instance at a time.','Can be remapped to another instance.']},{heading:'Deck guidance',bullets:['The slide-era default quota is five per account.','Elastic IPs can expose architectural constraints.','Prefer DNS or a load balancer when a fixed instance IP is unnecessary.']}],
+      takeaways:['Elastic IP supplies stable public IPv4.','It can be remapped during failure.','Quotas are time-specific and adjustable.','Load balancing often removes the fixed-IP need.'],examTip:'Choose a load balancer for scalable failover; choose an Elastic IP only when the requirement specifically demands a fixed public IPv4 address.'
+    },
+    'Placement group strategy overview':{
+      sourcePages:'85',summary:'Choose among cluster, spread, and partition placement using the definitions on the overview slide.',
+      explanation:['A placement group gives control over the placement strategy for EC2 instances. The overview names three strategies.','Cluster packs instances into a low-latency group in one Availability Zone; spread places instances across underlying hardware; partition divides instances among partitions that rely on different hardware racks.'],
+      slideTopics:[{heading:'Three strategies',bullets:['Cluster: close placement in one AZ.','Spread: distribute instances across hardware.','Partition: divide instances across rack groups.']},{heading:'Decision axis',bullets:['Cluster optimizes network proximity.','Spread minimizes correlated failure for a small critical set.','Partition isolates large distributed groups by rack partition.']}],
+      takeaways:['Placement groups control instance placement strategy.','Cluster favors performance.','Spread favors per-instance isolation.','Partition favors grouped rack isolation at scale.'],examTip:'Translate the scenario’s main concern—latency, individual-instance isolation, or partition-aware scale—into the placement strategy.'
+    },
+    'Cluster placement groups':{
+      sourcePages:'85–86',summary:'Use cluster placement for tightly coupled, high-throughput instances that can accept one-AZ failure correlation.',
+      explanation:['The cluster diagram places instances together in the same Availability Zone. The slide cites very high inter-instance network performance with Enhanced Networking enabled.','The tradeoff is common fate: if that Availability Zone fails, all clustered instances fail together. Listed use cases are a fast big-data job and an application requiring extremely low latency and high network throughput.'],
+      slideTopics:[{heading:'Cluster benefits',bullets:['Instances are packed close together.','Very high inter-instance bandwidth is the goal.','Low latency supports tightly coupled work.']},{heading:'Cluster risk and fit',bullets:['The group occupies one AZ.','An AZ failure affects the whole group.','Use for big data or extreme low-latency/high-throughput applications.']}],
+      takeaways:['Cluster is single-AZ.','It maximizes network proximity.','It increases correlated AZ risk.','It fits tightly coupled compute.'],examTip:'Choose cluster for the strongest east-west network performance, not for multi-AZ resilience.'
+    },
+    'Spread placement groups':{
+      sourcePages:'85, 87',summary:'Use spread placement to put a small number of critical instances on different physical hardware, potentially across AZs.',
+      explanation:['Spread placement reduces simultaneous failure by placing EC2 instances on separate underlying hardware. The diagram spans multiple Availability Zones.','The slide-era limit is seven instances per AZ per placement group. Its use case is a critical application in which each individual instance must be isolated from hardware failure.'],
+      slideTopics:[{heading:'Spread properties',bullets:['Can span Availability Zones.','Places instances on different physical hardware.','Reduces simultaneous hardware failure risk.']},{heading:'Scale and use case',bullets:['The slide states a seven-instances-per-AZ limit.','Designed for a small number of critical instances.','Treat the numeric limit as source-era service information.']}],
+      takeaways:['Spread isolates individual instances.','It can cross AZs.','It reduces correlated hardware failure.','It is intended for a small critical set.'],examTip:'Choose spread when each critical instance needs distinct underlying hardware; use partition for much larger fleets.'
+    },
+    'Partition placement groups':{
+      sourcePages:'85, 88',summary:'Use partition placement for large distributed systems that understand rack-level partitions.',
+      explanation:['A partition placement group divides instances into partitions whose racks do not overlap. A partition failure may affect many instances inside that partition but does not share racks with other partitions.','The slide says a group can span multiple AZs in one Region, scale to hundreds of instances, and use up to seven partitions per AZ. EC2 exposes partition information to instance metadata; listed examples are HDFS, HBase, and Cassandra.'],
+      slideTopics:[{heading:'Partition isolation',bullets:['Partitions use different sets of racks.','Failure is contained to the affected partition’s racks.','Instances can see their partition in metadata.']},{heading:'Scale and examples',bullets:['Can span AZs in one Region.','Supports hundreds of EC2 instances.','The slide cites up to seven partitions per AZ.','HDFS, HBase, and Cassandra are example systems.']}],
+      takeaways:['Partitions isolate rack groups.','A group can span AZs.','It scales beyond spread placement.','Distributed systems can use partition awareness.'],examTip:'Choose partition for a large rack-aware distributed system; choose spread for a small number of individually isolated instances.'
+    },
+    'Elastic Network Interfaces':{
+      sourcePages:'89',summary:'Model an ENI as a movable virtual network card within one Availability Zone, carrying addresses, security groups, and a MAC address.',
+      explanation:['An Elastic Network Interface is a logical VPC component representing a virtual network card. The slide lists a primary private IPv4 address, one or more secondary private IPv4 addresses, one Elastic IP per private IPv4, one public IPv4, security groups, and a MAC address.','An ENI can be created independently and moved between EC2 instances for failover, but it is bound to a specific Availability Zone. The diagram uses this movement to illustrate network-interface failover.'],
+      slideTopics:[{heading:'ENI attributes',bullets:['Primary and optional secondary private IPv4 addresses.','Public IPv4 and Elastic IP relationships.','Attached security groups.','A MAC address.']},{heading:'Lifecycle',bullets:['Create an ENI independently of an instance.','Attach or move it between instances.','Keep it within one Availability Zone.']}],
+      takeaways:['ENI is a virtual network card.','It carries IP and security-group configuration.','It can move between instances.','It is AZ-bound.'],examTip:'An ENI can preserve a network identity during same-AZ instance failover; it cannot be moved across AZs.'
+    },
+    'EC2 stop, start, reboot, and terminate behavior':{
+      sourcePages:'82, 84, 90',summary:'Separate disk persistence, public-address changes, reboot behavior, and termination loss using the lifecycle statements in the deck.',
+      explanation:['Stopping an EBS-backed instance keeps data on its EBS disk for the next start, while the automatically assigned public IP may change. Starting after a stop performs a new operating-system boot, although the private IP is retained in the hands-on model.','Termination removes the instance and loses any root EBS volume configured for deletion. A reboot restarts the operating system without the stop/start address transition; the hibernation slides contrast both with preserving RAM state.'],
+      slideTopics:[{heading:'Stop and start',bullets:['EBS disk data remains intact.','A later start boots the operating system again.','The public IP can change after stop/start.']},{heading:'Reboot and terminate',bullets:['Reboot restarts the OS without a full stop/start lifecycle.','Termination removes the instance.','Root EBS data is lost when Delete on Termination is enabled.']}],
+      takeaways:['Stop preserves EBS-backed disk data.','Stop/start may change public IP.','Reboot differs from stop/start.','Termination can delete the root EBS volume.'],examTip:'Read the Delete on Termination setting before deciding whether storage survives instance termination.'
+    },
+    'EC2 hibernation':{
+      sourcePages:'90–92',summary:'Preserve RAM to the encrypted root EBS volume for faster resume, subject to the deck’s hibernation prerequisites and limits.',
+      explanation:['Hibernation writes the in-memory RAM state to a file on the root EBS volume. The operating system is not fully restarted on resume, so the instance returns faster and retains its prior memory state.','The root EBS volume must be encrypted and large enough for RAM. The good-to-know slide lists supported families and operating systems, excludes bare metal, states a slide-era RAM threshold below 150 GB, and caps hibernation at 60 days; all specific limits should be rechecked when implementing.'],
+      slideTopics:[{heading:'How hibernation works',bullets:['Preserves in-memory state.','Writes RAM into the root EBS volume.','Resumes faster because the OS is not restarted from scratch.']},{heading:'Requirements shown',bullets:['Encrypted root EBS volume with enough space.','Supported family, size, AMI, and operating system.','Slide-era limits include less than 150 GB RAM and at most 60 days.']}],
+      takeaways:['Hibernation preserves RAM.','RAM is stored on root EBS.','Root EBS encryption is required.','Support and numeric limits are source-era details.'],examTip:'Choose hibernation when an application has expensive in-memory initialization and must resume its prior state.'
+    }
+  };
+
+  sectionSixLectures.forEach(lecture=>Object.assign(lecture,sectionSixSlideOverrides[lecture.title]||{}));
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
