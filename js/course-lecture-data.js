@@ -2235,6 +2235,156 @@
     }
   ];
 
+  const sectionTwentySixLectures=[
+    {
+      ready:true,title:'Choose encryption in transit, at rest, or client side',
+      summary:'Place encryption at the layer that matches who may see plaintext and where keys must be controlled.',
+      explanation:['Encryption in transit protects network connections with protocols such as TLS. Server-side encryption lets the receiving AWS service encrypt stored data and decrypt it for authorized requests. Client-side encryption transforms data before upload, so the storage service never receives plaintext.','These controls solve different threats and are commonly combined. Encryption does not replace authorization, integrity checks, backups, or secret management; key access is effectively data access, so least privilege and recovery planning must cover the keys as carefully as the ciphertext.'],
+      takeaways:['TLS protects data in transit.','Server-side encryption occurs at the service.','Client-side encryption keeps plaintext from the storage service.'],
+      examTip:'If AWS must never receive plaintext, encrypt on the client before sending the data.'
+    },
+    {
+      ready:true,title:'Manage encryption keys with AWS KMS',
+      summary:'Use a regional managed control plane for cryptographic keys, policies, grants, rotation, and audit.',
+      explanation:['AWS Key Management Service creates and controls keys backed by protected hardware and integrates with services such as S3, EBS, RDS, DynamoDB, and Secrets Manager. KMS API activity is recorded in CloudTrail, and customer managed keys support configurable policies, aliases, enablement, rotation options, and deletion waiting periods.','KMS is designed for keys and small cryptographic operations, not bulk payload encryption. Applications normally request a data key, encrypt the large payload locally, store the encrypted data key beside the ciphertext, and ask KMS to decrypt that data key when authorized. This envelope pattern limits data transferred to KMS.'],
+      takeaways:['KMS centrally controls cryptographic keys.','Integrated services use KMS permissions on the caller\'s behalf.','Envelope encryption handles large payloads efficiently.'],
+      examTip:'Managed encryption with auditability and fine-grained key control across AWS services points to AWS KMS.'
+    },
+    {
+      ready:true,title:'Select KMS key ownership and key type',
+      summary:'Balance control, cost, compatibility, and cryptographic operation requirements.',
+      explanation:['AWS owned keys are fully managed and hidden within a service. AWS managed keys use service aliases and visible policies that customers cannot edit. Customer managed keys provide control over policy, aliases, lifecycle, rotation, and cross-account use, with associated charges and operational responsibility.','Symmetric KMS keys serve most integrated AWS encryption because the same protected key material encrypts and decrypts. Asymmetric keys expose a public key for supported encryption, signing, or verification patterns, while HMAC keys generate and verify message authentication codes. Confirm that a target AWS service supports the selected key kind.'],
+      takeaways:['Customer managed keys offer the most control.','Symmetric keys fit most service integrations.','Asymmetric and HMAC keys serve specialized operations.'],
+      examTip:'Cross-account encryption or editable key policy requirements usually require a customer managed KMS key.'
+    },
+    {
+      ready:true,title:'Authorize KMS with key policies and grants',
+      summary:'Combine the key policy, IAM permissions, and scoped grants to control cryptographic use.',
+      explanation:['Every KMS key has a key policy, and access is impossible without a policy path that permits it. A default customer managed key policy can enable the account to delegate through IAM, while a custom policy can name administrators, users, services, and conditions directly. Keep key administration separate from key usage.','KMS grants provide delegated, often temporary permissions to use a key and are heavily used by integrated AWS services. Conditions such as encryption context and ViaService can constrain where a key is usable. Troubleshoot both the calling principal permission and key policy rather than broadening only one side.'],
+      takeaways:['A KMS key policy is mandatory.','Key administrators need not decrypt data.','Grants support delegated service use.'],
+      examTip:'An IAM allow alone does not guarantee KMS access; confirm that the key policy enables the principal or account delegation.'
+    },
+    {
+      ready:true,title:'Copy encrypted snapshots and AMIs safely',
+      summary:'Re-encrypt regional copies and explicitly share both artifacts and customer managed keys across accounts.',
+      explanation:['KMS keys are regional, so copying an encrypted EBS or RDS snapshot to another Region re-encrypts the copy under a destination-Region key. The target key policy and caller permissions must allow the operation, and the copied snapshot becomes an independent regional recovery artifact.','For cross-account use, encrypt with a customer managed key, authorize the destination account in the key policy, and share the snapshot or AMI permissions. The recipient commonly copies the artifact into its own account and re-encrypts it under its own key. AWS managed keys cannot be edited for this sharing workflow.'],
+      takeaways:['Cross-Region copies use a destination key.','Artifact permission and KMS permission are separate.','Cross-account sharing needs a customer managed key.'],
+      examTip:'To share an encrypted AMI, grant launch access and authorize the recipient to use the backing customer managed KMS key.'
+    },
+    {
+      ready:true,title:'Use KMS multi-Region keys deliberately',
+      summary:'Replicate related key material across Regions when applications require compatible regional cryptography.',
+      explanation:['A multi-Region primary KMS key can be replicated into supported Regions. Replicas share key material and key ID so ciphertext or signatures can be processed regionally without a re-encryption hop, while each replica has its own ARN, policy, alias configuration, enabled state, and audit trail.','Multi-Region keys do not replicate application data and are not automatically global. They fit client-side encryption, disaster recovery, and globally distributed signing where identical key material is a requirement; ordinary AWS service encryption often remains simpler with independent regional keys.'],
+      takeaways:['Primary and replica keys share key material.','Policies and lifecycle remain regional.','Data replication is a separate concern.'],
+      examTip:'A globally replicated application must decrypt the same client-side ciphertext locally in multiple Regions: consider KMS multi-Region keys.'
+    },
+    {
+      ready:true,title:'Replicate KMS-encrypted S3 objects',
+      summary:'Give S3 permission to decrypt the source and encrypt the replica with an approved destination key.',
+      explanation:['S3 Replication copies eligible objects according to a rule and role. SSE-KMS objects require explicit replication configuration, permission to decrypt with the source key, and permission to encrypt with the destination KMS key. Cross-account destinations also need compatible bucket and key policies.','The destination object may use a different regional key, and KMS request volume and throttling become part of replication capacity planning. Replication status and failure metrics should be monitored because a valid bucket rule alone cannot overcome a denied or disabled KMS key.'],
+      takeaways:['SSE-KMS replication needs explicit enablement.','Source decrypt and destination encrypt are distinct permissions.','KMS capacity can affect replication.'],
+      examTip:'S3 replication works for unencrypted objects but fails for SSE-KMS objects: check the replication rule and both KMS key permissions.'
+    },
+    {
+      ready:true,title:'Store configuration in Systems Manager Parameter Store',
+      summary:'Manage hierarchical configuration values and optionally encrypt sensitive strings with KMS.',
+      explanation:['Systems Manager Parameter Store stores versioned String, StringList, and SecureString parameters under hierarchical names such as /application/environment/database. IAM policies can grant access by path, and applications can retrieve values through APIs without hard-coding configuration into images or source control.','SecureString uses KMS, so callers need both Parameter Store and KMS permissions. Standard and advanced tiers differ in quotas, value size, throughput options, and features; advanced parameters support policies such as expiration notifications. Parameter Store is a strong configuration service but does not provide the same managed secret rotation workflow as Secrets Manager.'],
+      takeaways:['Hierarchies organize environment configuration.','SecureString adds KMS encryption.','Parameter policies require the advanced tier.'],
+      examTip:'Hierarchical application settings with optional encrypted values and no managed rotation requirement point to Parameter Store.'
+    },
+    {
+      ready:true,title:'Rotate credentials with AWS Secrets Manager',
+      summary:'Store, retrieve, rotate, and replicate application secrets through a purpose-built managed service.',
+      explanation:['AWS Secrets Manager encrypts secret versions with KMS and controls retrieval through IAM and resource policies. Managed integrations and Lambda rotation functions can create a new credential, test it, promote its staging label, and preserve an older version for rollback. Applications should cache values briefly and handle rotation without restart.','Multi-Region secrets create managed replicas that track the primary for regional applications and recovery. Use Secrets Manager when rotation, database credential integration, cross-account resource policies, or replica secrets justify it; use Parameter Store for simpler configuration where those features are unnecessary.'],
+      takeaways:['Secrets are versioned and KMS encrypted.','Rotation can be automated.','Regional replicas support resilient applications.'],
+      examTip:'A database password must rotate automatically without embedding credentials in code: use Secrets Manager.'
+    },
+    {
+      ready:true,title:'Provision TLS certificates with AWS Certificate Manager',
+      summary:'Request, validate, deploy, and renew certificates on supported AWS integrated services.',
+      explanation:['AWS Certificate Manager issues public certificates after domain validation and manages renewal while they remain eligible and in use with supported integrations. ACM also manages private certificates with AWS Private CA and can import externally issued certificates, although imported certificates require the owner to monitor expiration and replace them.','ACM certificates attach to services such as Elastic Load Balancing, CloudFront, and API Gateway rather than being downloaded as private keys in the traditional non-exportable workflow. Certificate Region matters: a CloudFront viewer certificate is requested in us-east-1, while a regional load balancer uses a certificate in its own Region.'],
+      takeaways:['ACM manages TLS certificate lifecycle.','Imported certificates need owner-managed renewal.','Certificate Region must match the integration.'],
+      examTip:'Use an ACM public certificate on an ALB for managed HTTPS and renewal; do not install it directly as a normal EC2 file.'
+    },
+    {
+      ready:true,title:'Secure API Gateway custom domains',
+      summary:'Match endpoint scope, DNS, and ACM certificate Region for edge, regional, or private APIs.',
+      explanation:['An edge-optimized custom domain routes through a CloudFront distribution managed by API Gateway and uses an ACM certificate in us-east-1. A regional custom domain serves from a chosen Region and uses an ACM certificate there; Route 53 alias records can direct clients to either endpoint.','Private APIs are reachable through interface VPC endpoints and resource policies rather than public edge distribution. Endpoint selection depends on client geography and network exposure, and TLS termination does not replace authorization, throttling, WAF protection, or backend encryption.'],
+      takeaways:['Edge endpoints suit geographically distributed clients.','Regional endpoints keep the API in one Region.','Private APIs use VPC endpoint access.'],
+      examTip:'For an edge-optimized API Gateway custom domain, the ACM certificate must be in us-east-1.'
+    },
+    {
+      ready:true,title:'Control dedicated key hardware with AWS CloudHSM',
+      summary:'Operate keys on single-tenant hardware security modules when exclusive control or specialized interfaces are required.',
+      explanation:['AWS CloudHSM provisions dedicated HSM appliances inside a customer VPC. AWS maintains the hardware, but the customer manages users, keys, clusters, backups, client software, and cryptographic operations through supported industry interfaces. IAM controls cluster-management APIs, not access to cryptographic keys inside the HSM.','A production cluster should span Availability Zones because an individual HSM is not the availability boundary. CloudHSM suits requirements for single-tenant devices, direct PKCS #11, JCE, or CNG access, or key ownership beyond standard KMS control, but it carries more cost and operational effort.'],
+      takeaways:['CloudHSM provides dedicated single-tenant HSMs.','Customers manage HSM users and keys.','Multi-AZ clusters provide resilience.'],
+      examTip:'A compliance requirement demands customer-controlled keys on dedicated HSM hardware: choose CloudHSM.'
+    },
+    {
+      ready:true,title:'Compare KMS, CloudHSM, and custom key stores',
+      summary:'Choose managed key service convenience, direct HSM control, or a bridge between the two.',
+      explanation:['KMS is multi-tenant, highly integrated, and operationally managed by AWS, with customer control expressed through keys and policies. CloudHSM provides dedicated appliances and direct cryptographic interfaces, but customers handle clustering, users, keys, capacity, and availability.','A KMS custom key store can back KMS keys with a CloudHSM cluster, preserving many KMS integrations while placing key material in customer-controlled HSMs. An external key store instead connects KMS to supported external key-management infrastructure. Both add availability, latency, and operational dependencies that standard KMS avoids.'],
+      takeaways:['KMS maximizes managed integration.','CloudHSM maximizes direct dedicated control.','Custom key stores combine KMS APIs with alternate key backing.'],
+      examTip:'Choose standard KMS unless a stated requirement demands single-tenancy, direct HSM interfaces, or externally controlled key material.'
+    },
+    {
+      ready:true,title:'Filter application traffic with AWS WAF',
+      summary:'Inspect Layer 7 web requests and allow, block, count, challenge, or rate-limit matches.',
+      explanation:['AWS WAF attaches a web ACL to supported resources such as CloudFront, Application Load Balancer, API Gateway, AppSync, and other current integrations. Rules match IP sets, headers, URI paths, query strings, body content, geographic origin, labels, rate behavior, or managed rule groups.','WAF protects HTTP and HTTPS semantics, not arbitrary TCP or UDP traffic. Start new rules in count mode, inspect sampled requests and logs, tune exclusions, then enforce to reduce false positives. Capacity units and rule priority determine whether a web ACL is valid and which action takes effect.'],
+      takeaways:['WAF is a Layer 7 firewall.','Web ACLs contain ordered rules.','Managed rules still require tuning and monitoring.'],
+      examTip:'Block SQL injection, cross-site scripting, or abusive HTTP request rates: use AWS WAF.'
+    },
+    {
+      ready:true,title:'Combine WAF with stable entry points',
+      summary:'Use CloudFront or Global Accelerator when clients need global ingress behavior that a regional web tier alone cannot provide.',
+      explanation:['WAF does not attach directly to a Network Load Balancer because an NLB operates at Layer 4. For global HTTP applications, CloudFront provides edge caching, a stable distribution endpoint, WAF integration, and an origin such as an ALB.','Global Accelerator supplies static anycast IP addresses and routes TCP or UDP traffic to healthy regional endpoints, including ALBs. When the application also needs Layer 7 filtering, place WAF on the ALB while clients enter through Global Accelerator; choose the pattern based on caching, protocol, and static-IP requirements.'],
+      takeaways:['WAF cannot attach to an NLB.','CloudFront integrates edge delivery and WAF.','Global Accelerator provides static anycast IPs.'],
+      examTip:'Static global IPs plus WAF-protected HTTP behind an ALB point to Global Accelerator in front of the WAF-associated ALB.'
+    },
+    {
+      ready:true,title:'Mitigate DDoS attacks with AWS Shield',
+      summary:'Use automatic baseline protection or an advanced subscription with enhanced detection and response support.',
+      explanation:['AWS Shield Standard automatically protects AWS customers against common infrastructure-layer DDoS attacks at no additional charge. It is built into services such as CloudFront and Route 53 and works with scalable regional front doors to absorb or route around attacks.','AWS Shield Advanced adds enhanced detection, visibility, protection groups, health-based detection, cost-protection benefits under qualifying conditions, and access to the AWS Shield Response Team. It is not a replacement for WAF: Shield addresses denial-of-service resilience while WAF expresses application request rules.'],
+      takeaways:['Shield Standard is automatic and included.','Shield Advanced adds response and cost-protection features.','WAF and Shield address different layers.'],
+      examTip:'A business needs expert DDoS response support and enhanced protected-resource visibility: choose Shield Advanced.'
+    },
+    {
+      ready:true,title:'Apply security policies with AWS Firewall Manager',
+      summary:'Centrally deploy and audit firewall protections across accounts and organizational units.',
+      explanation:['AWS Firewall Manager lets a delegated security administrator define policies for AWS WAF, Shield Advanced, security groups, Network Firewall, Route 53 Resolver DNS Firewall, and other supported controls. It discovers in-scope resources and can remediate missing or noncompliant protection.','Firewall Manager requires AWS Organizations and appropriate service configuration. It distributes policy but does not replace the underlying firewall services: teams still design WAF rules, Network Firewall policies, and exception processes, then use Firewall Manager to enforce their consistent presence.'],
+      takeaways:['Firewall Manager centralizes multi-account policy.','It works through underlying security services.','Policies can audit or remediate resources.'],
+      examTip:'Enforce the same WAF web ACL across application accounts in an organization: use Firewall Manager.'
+    },
+    {
+      ready:true,title:'Design a DDoS-resilient architecture',
+      summary:'Absorb traffic at the edge, scale regional capacity, filter requests, and minimize exposed origins.',
+      explanation:['CloudFront, Global Accelerator, Route 53, and Shield provide globally distributed entry points. Regional layers use Elastic Load Balancing and Auto Scaling to spread legitimate surges, while WAF rate-based and managed rules reject abusive application requests before expensive backend work.','Reduce attack surface by keeping origins private or restricted to approved front doors, using security groups and network controls, avoiding direct instance exposure, and decoupling work with queues. Monitor normal baselines, rehearse incident response, protect DNS and credentials, and control scaling cost because elasticity alone is not a complete defense.'],
+      takeaways:['Edge services absorb and distribute traffic.','WAF filters application-layer abuse.','Origin exposure should be minimized.'],
+      examTip:'The strongest DDoS design combines edge protection, scalable regional layers, request filtering, and a hidden origin.'
+    },
+    {
+      ready:true,title:'Detect threats with Amazon GuardDuty',
+      summary:'Continuously analyze account, network, DNS, and optional workload signals for suspicious activity.',
+      explanation:['Amazon GuardDuty uses threat intelligence, anomaly detection, and machine learning over foundational sources including CloudTrail management events, VPC Flow Logs, and Route 53 Resolver DNS query logs. It consumes independent service feeds, so foundational detection does not require customers to create those log deliveries first.','Protection plans extend coverage to areas such as S3 data events, EKS audit activity, RDS login activity, Lambda networking, malware, AI workloads, and runtime events on supported compute. Findings describe evidence and severity and can flow through EventBridge for enrichment or response; they do not automatically prove compromise.'],
+      takeaways:['GuardDuty is managed threat detection.','Foundational sources require little setup.','Protection plans add workload-specific coverage.'],
+      examTip:'Detect anomalous API activity, malicious IP communication, or credential compromise without managing a SIEM pipeline: enable GuardDuty.'
+    },
+    {
+      ready:true,title:'Scan vulnerabilities with Amazon Inspector',
+      summary:'Continuously assess supported EC2, ECR image, and Lambda resources for software and code risk.',
+      explanation:['Amazon Inspector discovers eligible resources and continuously scans EC2 instances, container images in Amazon ECR, and Lambda functions. Findings correlate package or code vulnerabilities with exploit intelligence, network reachability, and resource context to help prioritize remediation.','EC2 coverage can use Systems Manager agent-based scanning and supported agentless or hybrid paths; exact operating-system and language support matters. ECR rescans images as vulnerability intelligence changes, while Lambda standard and code scanning cover supported packages and runtimes. Inspector identifies vulnerabilities but does not patch them automatically.'],
+      takeaways:['Inspector performs vulnerability management.','It covers EC2, ECR images, and Lambda.','Findings must feed a remediation process.'],
+      examTip:'Continuously identify CVEs in EC2 packages and ECR container images: use Amazon Inspector.'
+    },
+    {
+      ready:true,title:'Discover sensitive S3 data with Amazon Macie',
+      summary:'Use managed classification to find personal, financial, credential, and custom sensitive-data patterns in S3.',
+      explanation:['Amazon Macie inventories S3 buckets and evaluates security posture signals such as public access, encryption, and sharing. Sensitive-data discovery jobs inspect selected objects with managed data identifiers, custom regular expressions, and allow lists, then produce findings without changing the source data.','Automated sensitive data discovery samples and profiles supported bucket data over time, while targeted jobs provide precise scope and scheduling. Findings can reach Security Hub or EventBridge for workflow, but classification should be paired with access remediation, retention, encryption, and cost-aware sampling.'],
+      takeaways:['Macie focuses on sensitive data in S3.','Managed and custom identifiers classify content.','Discovery findings do not remediate access automatically.'],
+      examTip:'Find buckets and objects containing PII or exposed credentials at scale: use Amazon Macie.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -2269,4 +2419,5 @@
   window.AWS_COURSE_CURRICULUM[22].lectures=sectionTwentyThreeLectures;
   window.AWS_COURSE_CURRICULUM[23].lectures=sectionTwentyFourLectures;
   window.AWS_COURSE_CURRICULUM[24].lectures=sectionTwentyFiveLectures;
+  window.AWS_COURSE_CURRICULUM[25].lectures=sectionTwentySixLectures;
 })();
