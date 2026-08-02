@@ -2162,6 +2162,79 @@
     }
   ];
 
+  const sectionTwentyFiveLectures=[
+    {
+      ready:true,title:'Organize multiple accounts with AWS Organizations',
+      summary:'Group AWS accounts into a hierarchy for centralized governance, billing, and shared services.',
+      explanation:['AWS Organizations is a global service with one management account and member accounts arranged beneath the root in organizational units. OUs should reflect governance boundaries such as production, development, and regulated workloads rather than merely copying a company org chart. Policies attached higher in the tree inherit downward.','Consolidated billing combines usage for payment and eligible volume benefits while preserving account-level cost reporting. Organizations can also coordinate services such as organization trails, delegated administration, tag policies, and account creation. Keep application workloads out of the management account and protect its root credentials with strong controls.'],
+      takeaways:['The management account governs member accounts.','OUs create policy inheritance boundaries.','Consolidated billing retains account-level visibility.'],
+      examTip:'Central billing and governance across many AWS accounts point to AWS Organizations.'
+    },
+    {
+      ready:true,title:'Set permission ceilings with SCPs and RCPs',
+      summary:'Apply organization-wide guardrails to principals and supported resources without directly granting access.',
+      explanation:['A service control policy defines the maximum permissions available to principals in member accounts. Every applicable SCP from the root, OU, and account participates in evaluation; an explicit deny wins, and an allow-list strategy requires each level to permit the action. SCPs do not grant an IAM principal permission and do not restrict identities in the management account.','Resource control policies add resource-centric permission ceilings for supported services in member accounts. Effective access still requires the relevant identity- or resource-based grant and must survive SCPs, RCPs, boundaries, and explicit denies. Test restrictive policies on a small OU before broad rollout to avoid disabling essential operations.'],
+      takeaways:['SCPs limit principals in member accounts.','RCPs limit access to supported member-account resources.','Neither policy type grants access.'],
+      examTip:'Even AdministratorAccess cannot perform an action explicitly denied by an applicable SCP.'
+    },
+    {
+      ready:true,title:'Standardize governance with organization policies',
+      summary:'Use tagging and backup-oriented policies to apply consistent operational expectations across accounts.',
+      explanation:['AWS Organizations policy types address different governance needs. Tag policies define valid tag keys and values and report compliance, helping teams standardize ownership, environment, and cost-allocation metadata. They do not automatically attach missing tags or replace IAM authorization.','Other supported organization policies can coordinate backup, AI-service opt-out, declarative EC2 configuration, or chat application controls depending on current feature support. Treat policies as versioned governance code, validate inherited effects, and separate reporting-oriented policies from permission guardrails such as SCPs and RCPs.'],
+      takeaways:['Tag policies standardize tag conventions.','Compliance reporting does not grant or deny API access.','Policy inheritance follows the organization tree.'],
+      examTip:'A company needs consistent allowed values for cost-center tags across accounts: use an Organizations tag policy.'
+    },
+    {
+      ready:true,title:'Scope IAM access with conditions and resource ARNs',
+      summary:'Constrain permissions by request context, resource tags, Regions, networks, and precise resource types.',
+      explanation:['IAM conditions evaluate keys such as source IP, requested Region, MFA presence, principal organization, and resource or request tags. Use the correct operator and understand whether the key exists for the service and request; a condition written for public source IP behavior may not mean the same thing through a VPC endpoint or AWS service call.','Resource ARNs must match the API being authorized. For S3, ListBucket targets the bucket ARN, while GetObject, PutObject, and DeleteObject target object ARNs beneath the bucket. Combining both resource levels in one undifferentiated statement often produces missing permission or unintended scope.'],
+      takeaways:['Conditions narrow when a grant applies.','Not every context key is present in every request.','S3 bucket and object actions use different ARNs.'],
+      examTip:'For S3 listing plus object reads, authorize ListBucket on the bucket ARN and GetObject on the object ARN pattern.'
+    },
+    {
+      ready:true,title:'Choose roles or resource-based cross-account access',
+      summary:'Decide whether a caller should assume a new identity or access a resource with its existing principal identity.',
+      explanation:['With cross-account role assumption, the target account trust policy permits the source principal to call STS, and the resulting session uses the role permissions. The caller gives up its original identity-based permissions for that session, which is useful for a defined target-account job or administrative persona.','A resource-based policy on services such as S3, SQS, SNS, Lambda, or EventBridge can grant the external principal direct access without role switching. This preserves the principal identity, although effective evaluation depends on principal type and policy context. EventBridge similarly uses target resource policies where supported and execution roles for targets that require API calls.'],
+      takeaways:['AssumeRole creates a role session.','Resource policies can grant direct cross-account access.','Event targets need the correct permission model.'],
+      examTip:'A user must retain its original principal while sending to a cross-account SQS queue: use a queue resource policy.'
+    },
+    {
+      ready:true,title:'Delegate safely with permissions boundaries',
+      summary:'Cap the permissions that identity policies can grant to an IAM user or role.',
+      explanation:['A permissions boundary is a managed policy attached to an IAM user or role that defines its maximum identity-based permissions. It does not grant actions by itself. This lets a central team allow developers to create roles while preventing those roles from exceeding an approved permission envelope.','Evaluation combines the identity policy with the boundary and applicable organization controls, session policies, and resource policies. An explicit deny wins. Boundaries do not apply to IAM groups, and careless delegation can still allow removal of the boundary or creation of an unbounded principal unless those escalation paths are denied.'],
+      takeaways:['Boundaries apply to users and roles.','A boundary is a ceiling, not a grant.','Delegation must prevent boundary removal and bypass.'],
+      examTip:'Allow a developer to create IAM roles that can never exceed a prescribed policy: require a permissions boundary.'
+    },
+    {
+      ready:true,title:'Evaluate IAM policies and troubleshoot denials',
+      summary:'Trace a request through authentication, applicable policy types, explicit denies, and final allows.',
+      explanation:['AWS first authenticates the principal and builds the request context, then evaluates applicable identity policies, resource policies, permissions boundaries, session policies, SCPs, and RCPs. A relevant explicit deny overrides any allow; otherwise the request needs an effective allow and is implicitly denied.','Troubleshoot by naming the exact action and resource, identifying the principal session, and checking every ceiling and condition. Policy Simulator and CloudTrail help, but simulator coverage is not universal and a successful simulation cannot compensate for a missing trust relationship, KMS key policy, or runtime context key.'],
+      takeaways:['Explicit deny overrides allow.','No effective allow means implicit deny.','Trust and permissions solve different parts of role access.'],
+      examTip:'When an allowed action still fails, check boundaries and organization policies before adding broader IAM permissions.'
+    },
+    {
+      ready:true,title:'Centralize workforce access with IAM Identity Center',
+      summary:'Give users one sign-in experience for AWS accounts and business applications.',
+      explanation:['AWS IAM Identity Center connects a workforce identity source to AWS accounts in an organization and supported applications. The identity source may be the built-in directory, an external identity provider, or supported Microsoft Active Directory integration; users receive temporary federated sessions rather than long-lived IAM user keys.','Permission sets are reusable templates of policies and session settings. Assigning a user or group, permission set, and account causes Identity Center to provision corresponding roles in target accounts. Use groups and job functions to manage access at scale, apply MFA at the identity provider, and avoid routine workforce IAM users.'],
+      takeaways:['Identity Center provides workforce SSO.','Permission sets become roles in assigned accounts.','Federation uses temporary credentials.'],
+      examTip:'Employees need one portal and centrally managed access to many organization accounts: use IAM Identity Center.'
+    },
+    {
+      ready:true,title:'Integrate Microsoft identity with Directory Service',
+      summary:'Choose managed Microsoft AD, a proxy to existing AD, or a lightweight directory based on compatibility needs.',
+      explanation:['AWS Managed Microsoft AD runs actual Microsoft Active Directory in AWS and supports trusts with an on-premises forest, making it suitable for workloads that need full AD compatibility. AD Connector proxies authentication requests to an existing on-premises directory without caching user credentials in AWS.','Simple AD is a lower-cost Samba-based directory for compatible basic use cases but lacks many Microsoft AD capabilities. IAM Identity Center can use supported directory integrations for workforce sign-in; plan redundant network connectivity and DNS carefully because authentication becomes dependent on the directory path.'],
+      takeaways:['Managed Microsoft AD provides full AD capability.','AD Connector proxies an existing directory.','Simple AD supports narrower use cases.'],
+      examTip:'AWS applications must authenticate directly against an existing on-premises AD without replicating users: choose AD Connector.'
+    },
+    {
+      ready:true,title:'Govern a landing zone with AWS Control Tower',
+      summary:'Orchestrate a multi-account environment with account vending, centralized logging, and ongoing controls.',
+      explanation:['AWS Control Tower builds a landing zone on AWS Organizations and coordinates services including IAM Identity Center, CloudTrail, AWS Config, and Service Catalog. Account Factory standardizes account provisioning, while dedicated audit and log archive accounts separate security responsibilities.','Controls, formerly called guardrails, express governance at the OU level. Preventive controls use mechanisms such as SCPs to block actions, detective controls evaluate deployed resources, and proactive controls check resources before provisioning in supported workflows. Control Tower orchestrates these services rather than replacing them.'],
+      takeaways:['Control Tower creates and governs a landing zone.','Account Factory standardizes new accounts.','Controls can be preventive, detective, or proactive.'],
+      examTip:'A company wants an AWS best-practice multi-account landing zone with automated account provisioning: choose AWS Control Tower.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -2195,4 +2268,5 @@
   window.AWS_COURSE_CURRICULUM[21].lectures=sectionTwentyTwoLectures;
   window.AWS_COURSE_CURRICULUM[22].lectures=sectionTwentyThreeLectures;
   window.AWS_COURSE_CURRICULUM[23].lectures=sectionTwentyFourLectures;
+  window.AWS_COURSE_CURRICULUM[24].lectures=sectionTwentyFiveLectures;
 })();
