@@ -2970,6 +2970,30 @@
     }
   ];
 
+  const sectionThirtyThreeLectures=[
+    {
+      ready:true,title:'Complete the architecture learning journey',
+      summary:'Consolidate the course into a connected model of secure, resilient, performant, and cost-aware design.',
+      explanation:['You have progressed from AWS foundations through compute, storage, databases, networking, integration, security, monitoring, migration, and architecture review. The lasting skill is not recalling hundreds of service facts independently, but composing them into a design whose tradeoffs match business requirements.','Use the study guide as a navigable reference: revisit comparisons, recreate small architectures, and explain choices aloud. If an explanation depends only on a memorized product name, strengthen it by identifying the input, output, failure mode, scaling boundary, security control, and cost driver.'],
+      takeaways:['Architecture connects services into outcomes.','Tradeoff reasoning matters more than isolated facts.','Weak explanations identify the next study target.'],
+      examTip:'Before declaring a topic complete, explain why the correct service fits and why its closest alternatives do not.'
+    },
+    {
+      ready:true,title:'Turn course notes into hands-on evidence',
+      summary:'Build a small portfolio of repeatable labs that prove core architecture behaviors.',
+      explanation:['Create focused experiments rather than one oversized project: a multi-AZ web tier, private service access through endpoints, queue-driven processing with a DLQ, encrypted backup and restore, least-privilege cross-account access, and an observable serverless workflow. Define success and failure tests before deployment.','Provision with infrastructure as code, record costs, capture diagrams and operational decisions, then delete resources safely. For each lab, document what failed, how telemetry exposed it, and how the design recovered. This turns certification study into evidence useful for real engineering work and interviews.'],
+      takeaways:['Small focused labs teach service boundaries.','Failure tests deepen operational understanding.','Infrastructure as code makes learning repeatable.'],
+      examTip:'Hands-on validation is especially valuable for concepts that sound similar in notes but behave differently under failure.'
+    },
+    {
+      ready:true,title:'Continue after certification',
+      summary:'Use the exam as a milestone and maintain a current, practice-driven AWS learning loop.',
+      explanation:['After the exam, review the score report without overinterpreting domain bands, update weak areas, and continue following AWS documentation and service announcements. Cloud services evolve: names, limits, recommended patterns, and product availability can change even while older concepts remain visible in training material.','Choose the next step from actual goals—deeper solutions architecture, security, networking, data, operations, development, or machine learning—and pair study with production-quality practice. Regular Well-Architected reviews, incident learning, cost analysis, and recovery exercises create expertise that lasts beyond a certificate renewal cycle.'],
+      takeaways:['Certification is one checkpoint.','Current documentation keeps knowledge accurate.','Real goals should determine the next specialty.'],
+      examTip:'Celebrate completion, then preserve momentum with one concrete lab or review objective scheduled for the following week.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -3011,4 +3035,5 @@
   window.AWS_COURSE_CURRICULUM[29].lectures=sectionThirtyLectures;
   window.AWS_COURSE_CURRICULUM[30].lectures=sectionThirtyOneLectures;
   window.AWS_COURSE_CURRICULUM[31].lectures=sectionThirtyTwoLectures;
+  window.AWS_COURSE_CURRICULUM[32].lectures=sectionThirtyThreeLectures;
 })();
