@@ -1146,6 +1146,65 @@
     }
   ];
 
+  const sectionThirteenLectures=[
+    {
+      ready:true,title:'Automate storage with S3 Lifecycle rules',
+      summary:'Transition aging objects to lower-cost classes and expire data that no longer provides value.',
+      explanation:['S3 Lifecycle rules automate actions according to object age. Transition actions move matching objects into another storage class, while expiration actions delete current objects, noncurrent versions, expired delete markers, or abandoned multipart uploads.','A rule can target an entire bucket or a filtered set of objects by prefix, tags, object size, or a combination of filters. Build the schedule around retrieval time, minimum storage duration, and retention requirements so that storage savings do not create unexpected access or early-deletion costs.'],
+      takeaways:['Transitions change an object\'s storage class automatically.','Expiration can remove old versions and incomplete multipart uploads.','Filters let one bucket apply different policies to different data sets.'],
+      examTip:'When access predictably decreases as objects age, choose a Lifecycle rule; when access is unpredictable, consider Intelligent-Tiering.'
+    },
+    {
+      ready:true,title:'Design Lifecycle policies from recovery requirements',
+      summary:'Translate retention, retrieval speed, and data reproducibility into safe transition and expiration schedules.',
+      explanation:['Classify each data set before choosing a lifecycle action. Re-creatable derivatives such as thumbnails can use a one-AZ class and expire early, while source objects may need multi-AZ storage before moving to an archive tier when slower recovery becomes acceptable.','With versioning enabled, a delete normally creates a delete marker and leaves a recoverable noncurrent version. Lifecycle rules can keep recent noncurrent versions in an immediately accessible class, then move older versions to deep archive or expire them after the required retention period. S3 Storage Class Analysis can provide access-pattern evidence for Standard and Standard-IA transition decisions.'],
+      takeaways:['Recovery-time objectives determine eligible archive tiers.','Re-creatable data can accept more aggressive cost optimization.','Noncurrent-version rules support staged deleted-object recovery.'],
+      examTip:'If deleted objects need fast recovery first and slower recovery later, combine versioning with lifecycle transitions for noncurrent versions.'
+    },
+    {
+      ready:true,title:'Share large data sets with Requester Pays',
+      summary:'Keep ownership and storage charges with the bucket owner while shifting request and download costs to consumers.',
+      explanation:['Normally the bucket owner pays S3 storage, requests, and data transfer. A Requester Pays bucket changes the billing relationship so an authenticated requester accepts the request and download charges while the owner continues paying for stored capacity.','This model is useful for public or cross-account distribution of very large data sets where usage costs should follow each consumer. Requesters must identify an AWS account for billing and explicitly acknowledge Requester Pays in their requests, so anonymous access is not supported.'],
+      takeaways:['The owner still pays storage charges.','The authenticated requester pays request and download costs.','Clients must explicitly send the Requester Pays acknowledgement.'],
+      examTip:'Choose Requester Pays when many consumers download a shared data set and the owner must avoid paying their transfer costs.'
+    },
+    {
+      ready:true,title:'React to object changes with S3 Event Notifications',
+      summary:'Send object-created, removed, restored, and replication events to serverless processing destinations.',
+      explanation:['S3 Event Notifications can publish selected bucket events to Lambda, Amazon SNS, or Amazon SQS. Prefix and suffix filters narrow delivery, allowing workflows such as invoking an image-processing function only when a matching object is created.','Delivery is asynchronous and can occasionally take longer than a few seconds. The destination must also trust S3: Lambda uses a resource-based permission, while SNS topics and SQS queues use resource policies that allow the bucket to publish or send messages. Design consumers to tolerate duplicate delivery.'],
+      takeaways:['S3 can target Lambda, SNS, or SQS directly.','Key-name filters reduce irrelevant events.','Destination resource policies authorize S3 delivery.'],
+      examTip:'If an S3 notification configuration looks correct but messages never arrive, check the destination resource policy before changing the bucket role.'
+    },
+    {
+      ready:true,title:'Route S3 events through Amazon EventBridge',
+      summary:'Use richer filtering, more destinations, replay, and routing when direct bucket notifications are too limited.',
+      explanation:['An S3 bucket can send its events to EventBridge, where rules evaluate structured event fields such as operation, object name, object size, and metadata. Matching events can then reach a broad set of AWS targets, including Step Functions and streaming services.','EventBridge adds capabilities such as multiple routing rules, event archives, replay, and reliable delivery controls. Direct S3 notifications remain simpler for a single Lambda, SNS, or SQS destination; EventBridge is the stronger choice for complex fan-out and content-based routing.'],
+      takeaways:['EventBridge rules filter structured event content.','One event can be routed to multiple service targets.','Archives and replay help recover or reprocess events.'],
+      examTip:'Requirements for advanced JSON filtering, Step Functions targets, or replay point to EventBridge rather than a direct S3 notification.'
+    },
+    {
+      ready:true,title:'Scale S3 requests and large-object transfers',
+      summary:'Use prefixes, multipart upload, Transfer Acceleration, and byte-range reads for high-throughput workloads.',
+      explanation:['S3 automatically scales request capacity per prefix, so distributing a heavy workload across multiple prefixes increases aggregate throughput. Modern applications do not need random key prefixes for ordinary scale, but they should recognize that hot request patterns and client-side concurrency still shape performance.','Multipart upload sends large files as independent parts that can transfer in parallel and retry separately. Transfer Acceleration enters AWS through nearby edge locations for long-distance uploads, while byte-range GETs parallelize downloads or retrieve only the needed portion of an object.'],
+      takeaways:['Multiple prefixes can provide parallel request capacity.','Multipart upload improves concurrency and retry efficiency.','Byte ranges support parallel or partial reads.'],
+      examTip:'For a distant client uploading very large objects, combine multipart upload with S3 Transfer Acceleration when testing shows a benefit.'
+    },
+    {
+      ready:true,title:'Transform object fleets with S3 Batch Operations',
+      summary:'Run a managed action across a manifest of existing objects with tracking, retries, and completion reports.',
+      explanation:['S3 Batch Operations applies one operation to a large object list. Managed actions include copying objects, changing tags or ACLs, restoring archived objects, invoking Lambda per object, and replacing selected metadata or encryption settings.','A job combines a manifest, an operation, permissions, and optional parameters. S3 handles scheduling, progress tracking, retries, and reporting. S3 Inventory can generate the source list, and Athena can filter that inventory before it becomes the job manifest.'],
+      takeaways:['Batch Operations targets existing objects at scale.','A manifest defines the exact object population.','Inventory plus Athena can build a filtered manifest.'],
+      examTip:'Use Batch Operations—not a Lifecycle rule—when a one-time change must be applied to millions of existing objects.'
+    },
+    {
+      ready:true,title:'Analyze an S3 estate with Storage Lens',
+      summary:'Aggregate organization-wide storage, cost, protection, access, event, and performance signals in shared dashboards.',
+      explanation:['S3 Storage Lens summarizes usage and activity across organizations, accounts, Regions, buckets, and prefixes. Its dashboards help identify fast-growing storage, incomplete multipart uploads, old noncurrent versions, and buckets that are missing expected protection or access-management settings.','Free metrics provide a baseline view with shorter historical retention. Advanced metrics add deeper activity, cost-optimization, data-protection, and status-code insight, along with longer retention, prefix aggregation, CloudWatch publishing, and daily CSV or Parquet exports for further analysis.'],
+      takeaways:['Storage Lens provides an aggregate view beyond one bucket.','Metric categories cover cost, protection, access, events, and performance.','Advanced metrics add richer detail and longer history.'],
+      examTip:'Choose Storage Lens for cross-account S3 visibility; choose Storage Class Analysis when the narrow question is when Standard objects should transition to Standard-IA.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -1167,4 +1226,5 @@
   window.AWS_COURSE_CURRICULUM[9].lectures=sectionTenLectures;
   window.AWS_COURSE_CURRICULUM[10].lectures=sectionElevenLectures;
   window.AWS_COURSE_CURRICULUM[11].lectures=sectionTwelveLectures;
+  window.AWS_COURSE_CURRICULUM[12].lectures=sectionThirteenLectures;
 })();
