@@ -1626,6 +1626,135 @@
     }
   ];
 
+  const sectionNineteenLectures=[
+    {
+      ready:true,title:'Think in serverless building blocks',
+      summary:'Design around managed execution, data, identity, messaging, and orchestration services rather than long-lived servers.',
+      explanation:['Serverless means the customer does not provision or patch the underlying servers; it does not mean servers cease to exist. Capacity is allocated by the service, scaling is driven by demand or configuration, and billing usually follows requests, execution, or consumed capacity.','AWS serverless architectures combine services such as Lambda, API Gateway, DynamoDB, S3, Cognito, SQS, SNS, EventBridge, Step Functions, Aurora Serverless, and Fargate. Reduced infrastructure work comes with service limits, event-driven failure modes, distributed tracing needs, and stronger dependence on managed-service contracts.'],
+      takeaways:['AWS operates the underlying server fleet.','Serverless includes more than functions.','Managed scaling does not remove architectural limits.'],
+      examTip:'A requirement to minimize server administration should trigger a composition of managed services, not automatically Lambda for every component.'
+    },
+    {
+      ready:true,title:'Run event-driven code with AWS Lambda',
+      summary:'Execute short-lived functions on demand with automatic scaling and usage-based billing.',
+      explanation:['AWS Lambda runs a handler in response to a synchronous request, asynchronous event, or polling event source. Functions use managed language runtimes or custom runtimes; container-image packages must implement the Lambda Runtime API and are not arbitrary always-on containers.','Memory configuration also influences available CPU and network resources. Lambda suits bursty APIs, file processing, automation, and event handlers with bounded execution time, while ECS or Fargate is usually better for long-running processes, arbitrary images, specialized host needs, or protocols requiring persistent servers.'],
+      takeaways:['Lambda scales by creating execution environments.','Billing follows requests and execution resources.','A Lambda container image must implement the Runtime API.'],
+      examTip:'Choose Lambda for short event-driven execution; choose Fargate when a normal container must run longer or control its process model.'
+    },
+    {
+      ready:true,title:'Connect Lambda to events and schedules',
+      summary:'Use native integrations for object processing, stream consumption, queue workers, APIs, and recurring jobs.',
+      explanation:['Services can invoke Lambda directly, deliver events asynchronously, or expose records through an event source mapping that Lambda polls. S3 object events can start thumbnail generation, API Gateway can invoke request handlers, and SQS or Kinesis event source mappings batch records for scalable processing.','EventBridge rules invoke functions from schedules or matching events, replacing server-based cron jobs. Each integration has its own retry, ordering, batching, and failure-destination behavior, so the architecture must define idempotency and what happens after repeated failure.'],
+      takeaways:['Invocation models differ by event source.','EventBridge supplies schedules and event routing.','Consumers must tolerate retries and duplicates.'],
+      examTip:'For an hourly serverless task, use an EventBridge schedule targeting Lambda rather than keeping an EC2 cron host running.'
+    },
+    {
+      ready:true,title:'Design within Lambda quotas',
+      summary:'Account for execution duration, memory, temporary disk, deployment size, environment configuration, and concurrency.',
+      explanation:['A Lambda invocation has a maximum execution duration of 15 minutes and runs with configured memory, proportional compute, and configurable ephemeral storage under /tmp. Deployment packages, container images, environment variables, payloads, and file descriptors each have limits that can eliminate Lambda for a workload.','Concurrency counts simultaneous executions in a Region. The account receives a regional quota that can be raised, while functions can consume from the shared pool. Monitor duration, memory, throttles, errors, iterator age, and queue age rather than assuming automatic scaling is unlimited.'],
+      takeaways:['Lambda executions are limited to 15 minutes.','More memory also supplies more compute resources.','Regional concurrency is finite and shared.'],
+      examTip:'A single job may run for hours: redesign it as smaller steps or use ECS/Fargate, Batch, or Step Functions rather than increasing Lambda timeout.'
+    },
+    {
+      ready:true,title:'Control Lambda concurrency and startup latency',
+      summary:'Use reserved capacity boundaries, provisioned environments, or SnapStart according to isolation and latency needs.',
+      explanation:['Reserved concurrency guarantees capacity for a function while also capping its maximum, protecting downstream systems and preventing one function from consuming the entire regional pool. Synchronous callers receive throttling errors when capacity is unavailable; asynchronous and polling sources apply their own queueing and retry behavior.','Provisioned concurrency keeps initialized environments ready for predictable low latency. SnapStart publishes snapshots of initialized supported Java, Python, or .NET managed runtimes and restores from them to reduce cold starts, but it has feature limitations and cannot be combined with provisioned concurrency on the same version.'],
+      takeaways:['Reserved concurrency is both a reservation and a limit.','Provisioned concurrency pre-initializes environments.','SnapStart restores a published initialization snapshot.'],
+      examTip:'Protect a database from a burst of Lambda connections by limiting reserved concurrency; solve connection churn further with RDS Proxy.'
+    },
+    {
+      ready:true,title:'Customize CloudFront at the edge',
+      summary:'Choose lightweight CloudFront Functions or more capable Lambda@Edge processing based on the event and code requirements.',
+      explanation:['CloudFront Functions execute JavaScript on viewer request or viewer response events at very high scale with extremely low latency. They fit URL rewrites, redirects, header changes, cache-key normalization, and lightweight token checks without network or file-system access.','Lambda@Edge supports viewer and origin request or response events with longer execution, more resources, request-body access in supported triggers, third-party libraries, and network calls. Functions are authored in us-east-1 and replicated by CloudFront. Use the lighter service whenever its restricted runtime can perform the job.'],
+      takeaways:['CloudFront Functions run only on viewer events.','Lambda@Edge can also run around origin requests and responses.','Lambda@Edge supports heavier processing and network access.'],
+      examTip:'A simple header rewrite at millions of viewer requests favors CloudFront Functions; origin selection requiring an SDK call favors Lambda@Edge.'
+    },
+    {
+      ready:true,title:'Reach private resources from Lambda safely',
+      summary:'Attach functions to VPC subnets only when necessary and pool relational database connections through RDS Proxy.',
+      explanation:['By default, Lambda runs in an AWS-managed network and can reach public AWS endpoints but not private addresses in a customer VPC. VPC attachment places managed network interfaces into selected subnets and security groups, enabling access to RDS, ElastiCache, internal load balancers, and other private resources.','A VPC-attached function needs a NAT path for general internet egress and VPC endpoints for private service access when desired. Rapid Lambda scaling can exhaust database connections, so RDS Proxy pools and reuses connections, stores credentials through Secrets Manager, supports IAM authentication, and improves failover behavior.'],
+      takeaways:['VPC attachment is required for private VPC addresses.','Private subnets need an explicit egress path for public endpoints.','RDS Proxy absorbs Lambda connection churn.'],
+      examTip:'Thousands of Lambda invocations overload an RDS database with connections: put Lambda in the VPC and connect through RDS Proxy.'
+    },
+    {
+      ready:true,title:'Model data in DynamoDB',
+      summary:'Organize schemaless items around partition and sort keys that directly support application access patterns.',
+      explanation:['Amazon DynamoDB is a managed multi-AZ NoSQL database with consistent low-millisecond performance at scale. A table contains items with flexible attributes, but every item is identified by either a partition key or a composite partition-and-sort key; individual items have a 400 KB size limit.','The partition key determines physical distribution, so a low-cardinality or heavily concentrated key can create hot partitions. Design keys and secondary indexes from known query patterns rather than trying to reproduce relational joins or unrestricted ad hoc queries.'],
+      takeaways:['Every table has a primary key.','Composite keys group and order related items.','Access patterns drive DynamoDB schema design.'],
+      examTip:'A massive key-value workload needing predictable millisecond latency and no joins is a DynamoDB candidate.'
+    },
+    {
+      ready:true,title:'Choose DynamoDB capacity mode',
+      summary:'Use on-demand capacity for unpredictable traffic or provisioned capacity for planned throughput and tighter cost control.',
+      explanation:['On-demand mode automatically accommodates changing request traffic and bills for reads and writes consumed, reducing capacity planning for new or spiky workloads. Provisioned mode configures read and write throughput units and can use Application Auto Scaling to follow longer-term demand.','Both modes can throttle poorly distributed hot keys, and switching modes has operational rules. Evaluate base tables and indexes together, monitor consumed capacity and throttled requests, and use capacity reservations or warm-throughput features only when the workload justifies them.'],
+      takeaways:['On-demand removes explicit RCU and WCU planning.','Provisioned mode reserves configured throughput.','Key distribution matters in either mode.'],
+      examTip:'Unknown request volume with abrupt spikes generally favors on-demand; stable measurable traffic may cost less with provisioned plus auto scaling.'
+    },
+    {
+      ready:true,title:'Accelerate DynamoDB reads with DAX',
+      summary:'Add an API-compatible in-memory cache for repeated DynamoDB item, Query, and Scan access.',
+      explanation:['DynamoDB Accelerator is a managed multi-node cache placed between an application and DynamoDB. Its client is compatible with DynamoDB APIs, allowing cached reads to achieve microsecond latency and offload hot read traffic with relatively small application changes.','DAX is optimized for DynamoDB access patterns and is not a general-purpose cache. ElastiCache is better for arbitrary application objects, computed aggregates, sessions, pub/sub, or data not backed by DynamoDB. Neither cache should be treated as the durable system of record.'],
+      takeaways:['DAX caches DynamoDB reads.','Cached responses can reach microsecond latency.','ElastiCache supports broader application caching patterns.'],
+      examTip:'Repeated GetItem and Query calls cause DynamoDB read pressure and require microsecond responses: use DAX.'
+    },
+    {
+      ready:true,title:'React to changes with DynamoDB Streams',
+      summary:'Consume an ordered record of item mutations for projections, notifications, analytics, and downstream workflows.',
+      explanation:['DynamoDB Streams records item-level inserts, updates, and deletes in order for each item and retains records for 24 hours. A Lambda event source mapping can process batches, or applications can use the Streams adapter to build custom consumers.','Use streams to update derived tables, index data, send notifications, or trigger business reactions without modifying the write path. Kinesis Data Streams for DynamoDB provides longer retention and more consumer scalability when the 24-hour change stream is too constrained. Consumers must be idempotent because batches can be retried.'],
+      takeaways:['Streams capture item-level mutations.','Ordering is preserved per item.','Lambda can process stream batches automatically.'],
+      examTip:'Send a welcome workflow when a new DynamoDB user item appears: enable a stream and trigger Lambda.'
+    },
+    {
+      ready:true,title:'Replicate globally with DynamoDB Global Tables',
+      summary:'Serve local reads and writes from multiple Regions using managed multi-active replication.',
+      explanation:['A DynamoDB global table consists of regional replicas that use the same DynamoDB API and replicate item changes. Applications can direct traffic to a nearby healthy Region for low latency and multi-Region availability without implementing their own replication pipeline.','Current global tables support multi-Region eventual consistency and, in supported configurations, multi-Region strong consistency. The consistency mode is chosen when the global table is created and cannot later be changed; write conflicts, regional routing, capacity, and failover behavior must be designed explicitly.'],
+      takeaways:['Global tables are multi-Region and multi-active.','Each replica serves local application traffic.','Consistency mode affects write and failure semantics.'],
+      examTip:'Active-active DynamoDB access with local reads and writes in several Regions points directly to Global Tables.'
+    },
+    {
+      ready:true,title:'Manage DynamoDB retention, backup, and S3 exchange',
+      summary:'Expire short-lived items, recover tables to new resources, and move snapshots without consuming table request capacity.',
+      explanation:['DynamoDB Time to Live uses an epoch-seconds attribute to remove expired items asynchronously without consuming write capacity. It fits sessions and retention cleanup but is not an exact-time scheduler because deletion can occur after the timestamp.','Point-in-time recovery keeps configurable continuous recovery points for up to 35 days and restores into a new table. On-demand backups support longer retention. PITR exports can write DynamoDB JSON or Ion to S3 without consuming read capacity, while S3 imports create a new table from supported formats without consuming write capacity.'],
+      takeaways:['TTL deletion is asynchronous.','PITR restore creates a new table.','S3 export and import avoid live table capacity consumption.'],
+      examTip:'To analyze a historical DynamoDB snapshot in Athena without affecting production reads, export the PITR data to S3.'
+    },
+    {
+      ready:true,title:'Build managed APIs with API Gateway',
+      summary:'Expose Lambda, HTTP backends, or AWS service APIs with routing, stages, throttling, validation, and observability.',
+      explanation:['Amazon API Gateway provides REST, HTTP, and WebSocket API front doors. Integrations can invoke Lambda, proxy an HTTP service, connect privately through supported links, or call an AWS service directly using a configured service role and request mapping.','Stages and deployments separate environments and versions, while throttling, quotas, request validation, transformation, access logs, metrics, and optional REST API caching centralize cross-cutting concerns. API keys identify and meter clients but are not a substitute for authentication and authorization.'],
+      takeaways:['API Gateway supports multiple API and integration types.','Stages represent deployed environments.','API keys handle metering, not user identity.'],
+      examTip:'A public HTTPS API must send records directly to Kinesis without Lambda code: use an API Gateway AWS service integration.'
+    },
+    {
+      ready:true,title:'Select and secure an API Gateway endpoint',
+      summary:'Match edge-optimized, Regional, or private REST endpoints with the right authentication and custom-domain design.',
+      explanation:['An edge-optimized REST endpoint routes globally distributed clients through a service-managed CloudFront distribution. A Regional endpoint serves from one Region and can sit behind a customer-managed CloudFront distribution. A private REST API is reachable only through API Gateway interface VPC endpoints and is constrained with resource policies.','IAM authorization fits AWS-authenticated callers, Cognito user-pool authorizers validate application user tokens, and Lambda authorizers implement custom logic. Custom domains use ACM certificates: edge-optimized domains require the certificate in us-east-1, while Regional domains use a certificate in the API Region.'],
+      takeaways:['Endpoint type reflects client location and network boundary.','Private APIs require interface VPC endpoints.','Authorization options include IAM, Cognito, and Lambda authorizers.'],
+      examTip:'An API must be callable only inside specified VPCs: choose a private REST API, interface endpoint, and resource policy.'
+    },
+    {
+      ready:true,title:'Orchestrate workflows with Step Functions',
+      summary:'Express sequences, choices, parallel work, retries, waits, callbacks, and service calls as durable state machines.',
+      explanation:['AWS Step Functions coordinates Lambda and many other AWS services through visual state machines. States can branch by data, run work in parallel, wait, retry with backoff, catch errors, map over collections, and pause for an external callback or human approval.','Standard Workflows fit durable, auditable, potentially long-running orchestration; Express Workflows fit high-volume, short-duration event processing with different execution semantics. Moving control flow out of Lambda avoids custom polling loops and functions waiting while no compute work occurs.'],
+      takeaways:['State machines make workflow state explicit.','Retry and catch policies handle failures declaratively.','Wait and callback states avoid idle function execution.'],
+      examTip:'A multi-step order process needs branching, retries, and a human approval that may take days: use a Step Functions Standard Workflow.'
+    },
+    {
+      ready:true,title:'Authenticate app users with Cognito User Pools',
+      summary:'Provide a managed user directory and standards-based tokens for web and mobile application sign-in.',
+      explanation:['A Cognito user pool stores user profiles and handles registration, password policies, recovery, verification, MFA, hosted login, and federation with social, OIDC, or SAML identity providers. Successful authentication returns signed JWTs with identity and authorization claims.','API Gateway and Application Load Balancer integrations can validate those tokens before requests reach application code. User pools authenticate application users at consumer scale; IAM users are identities for operating AWS accounts and should not be created for every customer.'],
+      takeaways:['User pools are application user directories.','Authentication produces OIDC-compatible JWTs.','Federation can connect enterprise and social providers.'],
+      examTip:'A mobile app needs registration, login, MFA, and JWT authentication for API Gateway: use a Cognito User Pool.'
+    },
+    {
+      ready:true,title:'Authorize direct AWS access with Cognito Identity Pools',
+      summary:'Exchange trusted application identity tokens for temporary, scoped AWS credentials.',
+      explanation:['A Cognito identity pool accepts identities from a user pool or supported external providers and exchanges their tokens for temporary AWS credentials through AWS STS. Authenticated and optional guest users assume configured IAM roles rather than receiving permanent access keys.','Those credentials can let a mobile app upload directly to a user-specific S3 prefix or access permitted DynamoDB items, reducing the need to proxy large data through an API. IAM conditions based on identity attributes enforce fine-grained boundaries; the application must never rely only on a client-supplied object path.'],
+      takeaways:['Identity pools issue temporary AWS credentials.','User pools and identity pools can work together.','IAM roles and conditions bound direct resource access.'],
+      examTip:'App users must upload directly to their own private S3 folders: use an identity pool with scoped IAM credentials.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -1653,4 +1782,5 @@
   window.AWS_COURSE_CURRICULUM[15].lectures=sectionSixteenLectures;
   window.AWS_COURSE_CURRICULUM[16].lectures=sectionSeventeenLectures;
   window.AWS_COURSE_CURRICULUM[17].lectures=sectionEighteenLectures;
+  window.AWS_COURSE_CURRICULUM[18].lectures=sectionNineteenLectures;
 })();
