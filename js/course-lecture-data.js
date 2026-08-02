@@ -345,6 +345,121 @@
     }
   ];
 
+  const sectionFiveLectures=[
+    {
+      ready:true,title:'Amazon EC2 and infrastructure as a service',
+      summary:'Understand EC2 as configurable virtual compute and place it within the larger set of services used to run an application.',
+      explanation:['Amazon EC2 provides resizable virtual machines. You select the machine image, compute size, network placement, storage, and security controls while AWS operates the physical infrastructure.','A production EC2 design commonly combines instances with EBS storage, load balancing, and Auto Scaling. EC2 offers flexibility, but the customer remains responsible for the guest operating system, installed software, and workload configuration.'],
+      takeaways:['EC2 provides virtual machines as infrastructure as a service.','You control the guest OS and workload configuration.','Storage, load balancing, and scaling are separate design choices.'],
+      examTip:'Choose EC2 when the workload requires operating-system control or software that does not fit a more managed compute service.'
+    },
+    {
+      ready:true,title:'Configure an EC2 instance',
+      summary:'Translate workload needs into an image, instance size, storage, networking, and firewall configuration.',
+      explanation:['An EC2 launch begins with an Amazon Machine Image that supplies the operating system and initial software. The instance type defines CPU, memory, networking, and sometimes local storage capacity.','Network placement determines the VPC, subnet, and addressing. EBS volumes provide network-attached block storage, instance store provides temporary local disks on supported types, and security groups control allowed traffic.'],
+      takeaways:['The AMI supplies the starting operating system and software.','Instance type controls the compute resource profile.','Subnet, storage, and security groups complete the launch design.'],
+      examTip:'Do not choose an instance type from CPU alone; memory, network, storage, and architecture requirements can change the correct family.'
+    },
+    {
+      ready:true,title:'Bootstrap instances with EC2 user data',
+      summary:'Automate first-boot configuration so newly launched instances become consistent application servers.',
+      explanation:['EC2 user data supplies a script or cloud-init configuration that runs during the initial boot by default. It can install packages, download configuration, start services, and register the instance with other systems.','User-data code runs with powerful operating-system privileges, so keep secrets out of the script and make commands safe to retry. For continuing configuration management, use images, Systems Manager, or deployment tooling rather than treating first boot as a full lifecycle manager.'],
+      takeaways:['User data automates instance bootstrap.','It normally runs on the first launch.','Avoid placing credentials and other secrets in user data.'],
+      examTip:'Use user data when an Auto Scaling group must configure every replacement instance automatically at launch.'
+    },
+    {
+      ready:true,title:'Launch and manage an EC2 instance',
+      summary:'Follow the resource lifecycle and distinguish stopping, rebooting, and terminating a virtual server.',
+      explanation:['At launch, verify the Region, AMI, instance type, key or connection method, subnet, security group, storage, and user data. Test the application through only the network path that should be allowed.','A reboot keeps the instance on its host in normal circumstances. Stop and start may place an EBS-backed instance on new hardware and can change its auto-assigned public IPv4 address. Termination removes the instance and may delete volumes configured for deletion.'],
+      takeaways:['Review placement, security, storage, and bootstrap before launch.','Stop/start differs from an operating-system reboot.','Termination can delete attached root storage.'],
+      examTip:'If an application needs a stable public IPv4 address across stop/start, use an Elastic IP or a stable front door rather than relying on the auto-assigned address.'
+    },
+    {
+      ready:true,title:'Read EC2 instance type names',
+      summary:'Decode instance family, generation, capabilities, and size from an EC2 type name.',
+      explanation:['An instance type name identifies a family and a size. The family letter points to a workload profile, the generation number tracks hardware evolution, and suffixes can identify processors, accelerators, local disks, or enhanced features.','Size scales resources within a family, but scaling is not perfectly interchangeable across every characteristic. Check current AWS specifications for CPU architecture, memory, network bandwidth, EBS bandwidth, and local storage.'],
+      takeaways:['Family represents the workload profile.','Generation identifies a version of the family.','Size and suffixes communicate capacity and special capabilities.'],
+      examTip:'Recognize the family intent; exact model specifications change and are usually provided when a scenario depends on them.'
+    },
+    {
+      ready:true,title:'Choose an EC2 instance family',
+      summary:'Match general, compute, memory, and storage-optimized families to the dominant workload constraint.',
+      explanation:['General-purpose instances balance CPU, memory, and networking. Compute-optimized families suit CPU-bound processing; memory-optimized families suit large in-memory datasets; storage-optimized families provide high local storage throughput or IOPS.','Start with measured workload behavior rather than a familiar family name. A database may be memory-bound, storage-bound, or balanced depending on its working set and access pattern, so monitoring should guide rightsizing.'],
+      takeaways:['General purpose balances common resources.','Compute and memory families target their named bottlenecks.','Storage-optimized instances target intensive local data access.'],
+      examTip:'Keywords such as high-performance processors, large in-memory cache, or high sequential local I/O point to different optimized families.'
+    },
+    {
+      ready:true,title:'Right-size EC2 capacity',
+      summary:'Select enough CPU, memory, network, and storage bandwidth without paying for consistently idle capacity.',
+      explanation:['Instance sizes within a family offer different resource levels. Evaluate CPU utilization, memory pressure, network throughput, EBS bandwidth, latency, and burst behavior before moving up or down.','Vertical scaling changes the size of one instance and may require interruption. Horizontal scaling distributes work across more instances and is often the better resilience model for stateless applications.'],
+      takeaways:['Measure all important resource dimensions.','Rightsizing reduces cost and performance risk.','Horizontal scaling can improve both capacity and resilience.'],
+      examTip:'For a stateless web tier with changing demand, prefer load balancing and horizontal Auto Scaling over one permanently oversized instance.'
+    },
+    {
+      ready:true,title:'Security group fundamentals',
+      summary:'Use stateful virtual firewalls to allow only required inbound and outbound traffic.',
+      explanation:['A security group is attached to an elastic network interface and contains allow rules. Inbound rules identify permitted sources and destination ports; outbound rules identify permitted destinations. There are no explicit deny rules.','Security groups are stateful: response traffic for an allowed connection is automatically permitted. New groups deny inbound traffic by default and commonly allow outbound traffic by default until you tighten the rules.'],
+      takeaways:['Security groups contain allow rules only.','They filter traffic at the network interface.','Stateful behavior automatically permits response traffic.'],
+      examTip:'Do not add a separate inbound rule for return traffic from a connection the instance initiated; state tracking handles the response.'
+    },
+    {
+      ready:true,title:'Reference security groups in layered architectures',
+      summary:'Authorize traffic by workload identity instead of maintaining changing lists of private IP addresses.',
+      explanation:['A security group rule can reference another security group as its source or destination. A database group can therefore allow its port from the application group, regardless of which current application instance addresses are attached to that group.','The reference does not copy rules or create network connectivity. Routing must already exist, and the rule applies to private network traffic associated with matching group membership.'],
+      takeaways:['Group references follow workload membership, not fixed IPs.','They are useful between load balancer, application, and database tiers.','Security group rules do not create routes.'],
+      examTip:'For an Auto Scaling application tier accessing a database, reference the application security group instead of its changing instance IP addresses.'
+    },
+    {
+      ready:true,title:'Diagnose security group and application failures',
+      summary:'Use connection symptoms to separate blocked network traffic from a service that is not listening.',
+      explanation:['A connection timeout often indicates that traffic is being dropped by a security group, network ACL, route, or host firewall. A connection-refused response usually means the host was reached but no application accepted the target port.','Check the entire path: DNS and address, route, security rules, operating-system firewall, listening process, and application health. Avoid opening broad access as a troubleshooting shortcut.'],
+      takeaways:['Timeout commonly indicates a blocked or unreachable path.','Connection refused commonly indicates an application or listening-port issue.','Troubleshoot the path layer by layer.'],
+      examTip:'Security groups are Region/VPC scoped and sit outside the guest OS, so blocked packets may never reach instance logs.'
+    },
+    {
+      ready:true,title:'Recognize common network ports',
+      summary:'Associate standard administration and web protocols with their default ports while keeping access narrow.',
+      explanation:['SSH and SFTP commonly use TCP 22, HTTP uses 80, HTTPS uses 443, and Windows Remote Desktop uses 3389. FTP control traditionally uses 21 but introduces additional connection behavior that must be considered.','A port number identifies an expected protocol endpoint, not a security guarantee. Prefer encrypted protocols, restrict administrative ports to controlled sources, and expose only ports the application actually serves.'],
+      takeaways:['SSH and SFTP commonly use port 22.','HTTP uses 80 and HTTPS uses 443.','RDP commonly uses port 3389.'],
+      examTip:'Public web servers normally allow 80/443 from clients; administrative ports should not be open to the entire internet.'
+    },
+    {
+      ready:true,title:'Connect to Linux instances securely',
+      summary:'Compare SSH and browser-based EC2 Instance Connect while preserving key and network security.',
+      explanation:['Traditional SSH uses a private key held by the administrator and requires reachability to port 22. Protect the private key file, use the correct operating-system username, and restrict the security-group source.','EC2 Instance Connect can push a temporary public key and open a browser-based terminal for supported configurations, but the network path and IAM authorization still matter. Systems Manager Session Manager can remove the need for inbound SSH in suitable managed environments.'],
+      takeaways:['SSH requires a protected private key and reachable port 22.','Instance Connect uses temporary key material in supported setups.','Session Manager can provide administration without inbound SSH.'],
+      examTip:'For secure administration without public IPs or open port 22, look for Systems Manager Session Manager when its prerequisites are available.'
+    },
+    {
+      ready:true,title:'Choose between On-Demand and Reserved pricing',
+      summary:'Use flexible pricing for uncertain workloads and commitments for stable, predictable usage.',
+      explanation:['On-Demand Instances have no long-term commitment and suit short-lived, unpredictable, or newly launched workloads. Their flexibility comes with a higher unit price than committed models.','Reserved Instance billing discounts suit steady-state usage over a one- or three-year term. Standard reservations offer stronger discounts with less flexibility, while convertible reservations allow more attribute changes with a different discount profile.'],
+      takeaways:['On-Demand prioritizes flexibility.','Reservations target predictable long-term usage.','Commitment length and flexibility affect the discount.'],
+      examTip:'A continuously running, stable database is a classic commitment candidate; a short uncertain experiment is an On-Demand candidate.'
+    },
+    {
+      ready:true,title:'Use EC2 Savings Plans',
+      summary:'Commit to a level of compute spend while retaining more usage flexibility than a narrowly scoped reservation.',
+      explanation:['Savings Plans exchange a one- or three-year hourly spend commitment for discounted eligible compute usage. Matching usage consumes the commitment and additional usage is billed at normal rates.','The exact flexibility depends on the plan type, but the architectural idea is consistent: it is a billing commitment, not a capacity reservation. Capacity availability must be solved separately when a workload requires guaranteed placement.'],
+      takeaways:['Savings Plans are spend commitments.','They discount matching compute usage.','They do not reserve physical capacity.'],
+      examTip:'Separate cost optimization from capacity assurance: a Savings Plan lowers eligible cost, while an On-Demand Capacity Reservation holds capacity.'
+    },
+    {
+      ready:true,title:'Run interruption-tolerant work on Spot Instances',
+      summary:'Trade interruption risk for deep discounts on spare EC2 capacity.',
+      explanation:['Spot Instances use spare AWS capacity at a variable discount and can be interrupted when the capacity is reclaimed. Design workers to checkpoint, retry, drain, and distribute work across capacity pools.','Good candidates include batch processing, analytics, media conversion, testing, and fault-tolerant distributed workloads. A single critical database or an uncheckpointed long-running job is a poor fit.'],
+      takeaways:['Spot capacity can be interrupted.','Fault-tolerant and flexible workloads are suitable.','Checkpointing and diversified capacity reduce interruption impact.'],
+      examTip:'Choose Spot for the lowest-cost flexible batch workload, not when the scenario requires uninterrupted single-instance execution.'
+    },
+    {
+      ready:true,title:'Dedicated tenancy, capacity reservations, and Spot fleets',
+      summary:'Distinguish hardware isolation, guaranteed AZ capacity, and diversified spare-capacity provisioning.',
+      explanation:['Dedicated Hosts allocate an entire physical server and expose placement information useful for server-bound licenses or strict compliance. Dedicated Instances run on single-tenant hardware without the same host-level placement control. Capacity Reservations hold capacity in one Availability Zone but provide no discount by themselves.','A Spot Fleet requests target capacity from multiple Spot—and optionally On-Demand—pools. Allocation strategies can emphasize available capacity, price, or diversification; capacity-aware diversification generally reduces interruptions better than selecting one cheapest pool.'],
+      takeaways:['Dedicated Hosts support host-level control and licensing.','Capacity Reservations guarantee capacity in a specific AZ.','Spot Fleets diversify capacity across launch pools.'],
+      examTip:'Match the requirement precisely: licensing and sockets suggest Dedicated Hosts, guaranteed placement suggests Capacity Reservations, and resilient low-cost fleets suggest Spot diversification.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -358,4 +473,5 @@
   window.AWS_COURSE_CURRICULUM[1].lectures=sectionTwoLectures;
   window.AWS_COURSE_CURRICULUM[2].lectures=sectionThreeLectures;
   window.AWS_COURSE_CURRICULUM[3].lectures=sectionFourLectures;
+  window.AWS_COURSE_CURRICULUM[4].lectures=sectionFiveLectures;
 })();
