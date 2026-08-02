@@ -627,6 +627,128 @@
     }
   ];
 
+  const sectionEightLectures=[
+    {
+      ready:true,title:'Scalability, elasticity, and high availability',
+      summary:'Separate capacity growth from failure resilience and choose vertical or horizontal scaling deliberately.',
+      explanation:['Vertical scaling increases the resources of one system; horizontal scaling adds more systems and requires a distributed workload. Elasticity is the ability to adjust that capacity as demand changes.','High availability is a different goal: keeping service available through component or location failure. On AWS, an active web tier commonly combines horizontal scaling with instances distributed across multiple Availability Zones.'],
+      takeaways:['Vertical scaling makes one resource larger.','Horizontal scaling adds resources.','High availability removes single failure domains.'],
+      examTip:'A larger instance improves capacity but does not survive an Availability Zone failure; multi-AZ redundancy is still required.'
+    },
+    {
+      ready:true,title:'Elastic Load Balancing fundamentals',
+      summary:'Expose one managed endpoint that distributes connections to healthy application targets.',
+      explanation:['Elastic Load Balancing accepts client traffic on listeners and forwards it to registered targets. It provides a stable DNS endpoint while backend instances can be added, replaced, or kept private.','Health checks test a configured protocol, port, and path. Unhealthy targets stop receiving new traffic, so the health endpoint should prove that the application can actually serve requests without depending on unrelated optional systems.'],
+      takeaways:['Listeners accept traffic and target groups receive it.','Health checks remove failing targets from service.','Managed load balancers reduce infrastructure operations.'],
+      examTip:'A load balancer provides traffic distribution; pair it with redundant targets and Auto Scaling for a complete resilient tier.'
+    },
+    {
+      ready:true,title:'Choose an AWS load balancer',
+      summary:'Match HTTP routing, transport performance, or transparent appliances to ALB, NLB, or GWLB.',
+      explanation:['Application Load Balancer operates at Layer 7 for HTTP and HTTPS features. Network Load Balancer operates at Layer 4 for high-performance TCP, UDP, and TLS traffic with static per-AZ addresses.','Gateway Load Balancer routes IP traffic transparently through fleets of virtual network appliances. Classic Load Balancer is the legacy generation and is rarely the preferred answer for new designs.'],
+      takeaways:['ALB understands HTTP requests.','NLB handles high-performance transport traffic.','GWLB inserts scalable network appliances.'],
+      examTip:'Path or host routing suggests ALB; static IP and extreme TCP/UDP performance suggest NLB; inline inspection suggests GWLB.'
+    },
+    {
+      ready:true,title:'Application Load Balancer routing',
+      summary:'Route HTTP requests to different services using host, path, header, method, or query information.',
+      explanation:['An ALB listener evaluates ordered rules and forwards matching requests to target groups. One endpoint can route different hostnames or URL paths to separate applications, making ALB a natural front door for microservices and containers.','Rules can also redirect HTTP to HTTPS, return fixed responses, or weight traffic across target groups. A default rule handles requests that match no higher-priority condition.'],
+      takeaways:['ALB routing uses Layer 7 request attributes.','One ALB can front multiple applications.','Listener rule priority controls evaluation order.'],
+      examTip:'Consolidating many HTTP services behind one endpoint with host- or path-based routing is an ALB design.'
+    },
+    {
+      ready:true,title:'ALB target groups and client context',
+      summary:'Register EC2, containers, private IPs, or Lambda and preserve original request information through headers.',
+      explanation:['ALB target groups can represent instances, private IP addresses, ECS tasks, or Lambda functions. Each group owns its health-check configuration and can use a different backend port.','Because the ALB terminates the client connection, targets see the load balancer as the network peer. Forwarded headers carry the original client IP, protocol, and port, and applications must trust them only from the controlled load-balancer path.'],
+      takeaways:['ALB supports several target types.','Health checks are configured per target group.','Forwarded headers preserve client connection context.'],
+      examTip:'Use the forwarded client-IP header for application logging behind an ALB, not the target connection source address.'
+    },
+    {
+      ready:true,title:'Network Load Balancer',
+      summary:'Distribute TCP, UDP, and TLS traffic with very high throughput, low latency, and stable addresses.',
+      explanation:['NLB operates on transport connections rather than HTTP request content. It scales to demanding connection rates and provides a static IP for each enabled Availability Zone, with optional Elastic IP association for internet-facing designs.','Targets can include instances, private IPs, and an ALB. Health checks can use TCP, HTTP, or HTTPS even when client traffic uses another supported transport protocol.'],
+      takeaways:['NLB works at Layer 4.','It supports TCP, UDP, and TLS.','Static per-AZ addresses support IP allowlisting.'],
+      examTip:'When a partner must allowlist fixed public IPs for a high-volume TCP service, choose an internet-facing NLB.'
+    },
+    {
+      ready:true,title:'Gateway Load Balancer',
+      summary:'Insert and scale third-party firewalls and inspection appliances transparently in a network path.',
+      explanation:['GWLB combines a transparent network gateway with load distribution across virtual appliances. Route tables direct traffic through a GWLB endpoint, while the service distributes encapsulated packets to healthy appliance targets.','Common uses include firewalls, intrusion detection, deep packet inspection, and traffic transformation. The GENEVE encapsulation used by GWLB requires compatible appliances and target configuration.'],
+      takeaways:['GWLB operates on IP packets.','It scales fleets of network virtual appliances.','Route tables steer traffic through GWLB endpoints.'],
+      examTip:'Centralized transparent inspection by third-party appliances is the signature Gateway Load Balancer scenario.'
+    },
+    {
+      ready:true,title:'Sticky sessions and application state',
+      summary:'Keep a client associated with one target when legacy in-memory session state cannot yet be externalized.',
+      explanation:['Session affinity uses a cookie or connection behavior to send a returning client to the same backend. ALB supports load-balancer-generated duration cookies and application cookies with configurable lifetime.','Stickiness can create uneven load and reduces the freedom to replace targets. Stateless application servers with sessions stored in a shared cache or database scale and recover more cleanly.'],
+      takeaways:['Stickiness preserves target affinity for a client.','Cookie expiration controls affinity duration.','External session storage enables stateless scaling.'],
+      examTip:'Use stickiness only when the requirement demands target affinity; prefer externalized session state for resilient horizontal scaling.'
+    },
+    {
+      ready:true,title:'Cross-zone load balancing',
+      summary:'Understand whether each load-balancer node distributes traffic only within its AZ or across all registered targets.',
+      explanation:['Without cross-zone balancing, each load-balancer node sends its share of traffic to targets in its own Availability Zone. Uneven target counts can therefore produce uneven per-target load.','With cross-zone balancing, nodes can use healthy targets across enabled AZs. Defaults and inter-AZ data charges differ by load-balancer type, so validate current service behavior when cost or strict zonal isolation matters.'],
+      takeaways:['Cross-zone balancing pools targets across AZs.','It can smooth load when target counts differ.','Defaults and data-transfer pricing vary by load-balancer type.'],
+      examTip:'Distinguish even traffic per AZ from even traffic per target; cross-zone behavior determines which result you get.'
+    },
+    {
+      ready:true,title:'TLS termination, ACM, and SNI',
+      summary:'Encrypt client connections at the load balancer and serve multiple domains with managed certificates.',
+      explanation:['An HTTPS or TLS listener presents an X.509 certificate and negotiates encryption with the client. AWS Certificate Manager can provision and renew supported public certificates, while an appropriate security policy controls allowed protocol versions and ciphers.','Server Name Indication lets a modern client name the requested hostname during the handshake so one ALB or NLB listener can select among certificates. A default certificate handles clients or names without a match.'],
+      takeaways:['TLS protects data in transit to the listener.','ACM manages supported certificate lifecycle.','SNI enables multiple certificates on one listener.'],
+      examTip:'Multiple HTTPS domains on one modern load balancer require ALB or NLB certificate lists with SNI, not multiple legacy CLBs.'
+    },
+    {
+      ready:true,title:'Deregistration delay and connection draining',
+      summary:'Stop new traffic while allowing in-flight requests to finish during deployments or scale-in.',
+      explanation:['When a target is deregistered, the load balancer stops selecting it for new work but can allow existing requests or connections to complete for a configured period. ALB and NLB call this deregistration delay; legacy CLB calls it connection draining.','Set the delay to match normal request duration and application shutdown behavior. Very short requests can use a lower value, while long downloads or transactions need enough time to finish safely.'],
+      takeaways:['Draining stops new work before removing a target.','Existing work receives a configurable completion window.','Shutdown hooks should align with the delay.'],
+      examTip:'Graceful instance replacement with in-flight request completion points to deregistration delay.'
+    },
+    {
+      ready:true,title:'Auto Scaling Group fundamentals',
+      summary:'Maintain minimum, desired, and maximum EC2 capacity while replacing failed instances automatically.',
+      explanation:['An Auto Scaling Group manages a fleet of instances from a launch template. Desired capacity is the current target, minimum is the lower boundary, and maximum prevents uncontrolled growth.','The group can span subnets in multiple Availability Zones and register instances with target groups. When an instance becomes unhealthy or terminates, the group launches a replacement to restore desired capacity.'],
+      takeaways:['ASG desired capacity is bounded by minimum and maximum.','Multi-AZ subnet selection supports availability.','Unhealthy instances can be replaced automatically.'],
+      examTip:'An ASG maintains compute count; a load balancer distributes traffic. Most elastic web tiers need both.'
+    },
+    {
+      ready:true,title:'Launch templates and load-balancer integration',
+      summary:'Define repeatable instance configuration and connect every new server to the application target group.',
+      explanation:['A launch template versions the AMI, instance type, security groups, storage, IAM role, key settings, and user data used by an ASG. Versioning supports controlled fleet updates and rollbacks.','Target-group integration registers launched instances and makes load-balancer health available to the group. Ensure the instance security group permits only the load-balancer path on the application port.'],
+      takeaways:['Launch templates make fleet configuration repeatable.','Versions support controlled configuration changes.','Target-group integration automates registration and health.'],
+      examTip:'Put configuration shared by every fleet member in the launch template or AMI, not in manual post-launch steps.'
+    },
+    {
+      ready:true,title:'ASG health checks and instance replacement',
+      summary:'Use meaningful health signals and warm-up timing so the group replaces failures without creating a loop.',
+      explanation:['EC2 health checks detect infrastructure failure, while load-balancer health checks can detect an application that no longer serves requests. An ASG can use both when configured for target-group health.','Health-check grace and instance warm-up prevent a new server from being judged before startup completes. If bootstrap repeatedly fails, automatic replacement creates churn rather than recovery, so monitor launch failures and application logs.'],
+      takeaways:['EC2 and load-balancer health detect different failures.','Grace periods protect initializing instances.','Replacement cannot repair a broken launch configuration.'],
+      examTip:'For replacement when the web process fails but the VM still runs, enable load-balancer health checks for the ASG.'
+    },
+    {
+      ready:true,title:'Target tracking scaling',
+      summary:'Let the ASG adjust capacity to keep a selected utilization metric near a desired value.',
+      explanation:['Target tracking compares a metric with a target and creates the required scale-out and scale-in behavior. Common metrics include average CPU utilization and ALB request count per target.','Choose a metric that changes proportionally with capacity and reflects demand. The policy needs warm-up information so new instances can contribute before further decisions overreact.'],
+      takeaways:['Target tracking maintains a metric near a target.','The metric should correlate with fleet capacity.','Warm-up prevents premature scaling decisions.'],
+      examTip:'For a simple requirement such as maintaining average CPU near 40 percent, target tracking is the preferred policy.'
+    },
+    {
+      ready:true,title:'Step, scheduled, and predictive scaling',
+      summary:'Use thresholds for reactive changes, schedules for known events, and forecasts for recurring demand.',
+      explanation:['Step scaling changes capacity by different amounts according to alarm severity. Scheduled scaling changes minimum, maximum, or desired capacity at known times such as a weekly traffic event.','Predictive scaling forecasts recurring load and prepares capacity ahead of demand. These approaches can coexist with dynamic policies when boundaries and timing are designed to avoid conflicting actions.'],
+      takeaways:['Step scaling reacts by alarm magnitude.','Scheduled scaling handles known timing.','Predictive scaling prepares for forecast demand.'],
+      examTip:'Known calendar traffic suggests scheduled scaling; repeatable but varying patterns may benefit from predictive scaling.'
+    },
+    {
+      ready:true,title:'Scaling metrics, cooldowns, and architecture review',
+      summary:'Select a demand signal and stabilize scaling so capacity changes improve service instead of oscillating.',
+      explanation:['Useful metrics include CPU, request count per target, network throughput, queue depth, or an application-specific custom metric. The signal should represent demand each instance can help absorb.','Cooldowns and instance warm-up allow metrics to settle after a scaling action. Fast launch from a prepared AMI reduces the delay between demand and useful capacity, while multi-AZ distribution and a load balancer keep the fleet available.'],
+      takeaways:['Scale on demand signals tied to capacity.','Cooldown and warm-up reduce oscillation.','Prepared images shorten time to serve traffic.'],
+      examTip:'Queue workers should often scale on backlog per worker rather than CPU; the best metric expresses the actual bottleneck.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -643,4 +765,5 @@
   window.AWS_COURSE_CURRICULUM[4].lectures=sectionFiveLectures;
   window.AWS_COURSE_CURRICULUM[5].lectures=sectionSixLectures;
   window.AWS_COURSE_CURRICULUM[6].lectures=sectionSevenLectures;
+  window.AWS_COURSE_CURRICULUM[7].lectures=sectionEightLectures;
 })();
