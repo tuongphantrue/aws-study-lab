@@ -1365,6 +1365,79 @@
     }
   ];
 
+  const sectionSixteenLectures=[
+    {
+      ready:true,title:'Move offline data and compute at the edge with Snowball',
+      summary:'Understand the physical-transfer and disconnected-compute pattern, together with the service\'s current availability limits.',
+      explanation:['Snowball Edge devices were designed to move very large data sets when bandwidth, transfer time, network cost, or connectivity makes online migration impractical. AWS ships a secured device, the customer copies data locally, and the device is returned for import into AWS. Workloads can also run compute close to where data is produced in disconnected locations.','A Snowball import lands data in S3, not directly in an S3 Glacier storage class; use a Lifecycle rule after import when archival is required. As of November 7, 2025, new customers cannot order AWS Snow Family devices. AWS recommends DataSync for online transfer, Data Transfer Terminal or partners for secure physical movement, and Outposts for new edge-compute designs.'],
+      takeaways:['Physical transfer avoids dependence on a constrained WAN.','Glacier ingestion requires an S3 landing step and lifecycle transition.','Snowball Edge remains available only to existing customers.'],
+      examTip:'For the course pattern, a petabyte migration that would take weeks over the network identifies Snowball; for a real new customer, evaluate AWS\'s current alternatives.'
+    },
+    {
+      ready:true,title:'Run Windows shares with FSx for Windows File Server',
+      summary:'Provide managed SMB and NTFS storage with Microsoft identity integration and Multi-AZ availability options.',
+      explanation:['Amazon FSx for Windows File Server provides a native Windows file system accessible through SMB. It integrates with Microsoft Active Directory and supports familiar Windows capabilities such as NTFS ACLs, user quotas, and Distributed File System namespaces. Linux clients can also mount the SMB share.','SSD storage fits latency-sensitive, IOPS-heavy workloads, while HDD storage fits throughput-oriented file shares at lower cost. Clients can connect from EC2 or from on premises through VPN or Direct Connect, and Multi-AZ deployment supports higher availability for production shares.'],
+      takeaways:['FSx for Windows uses SMB and NTFS.','Active Directory supplies user authentication and authorization context.','Multi-AZ deployment improves file-service availability.'],
+      examTip:'A managed shared drive requiring SMB, Windows ACLs, and Active Directory points to FSx for Windows—not EFS.'
+    },
+    {
+      ready:true,title:'Accelerate parallel workloads with FSx for Lustre',
+      summary:'Use a high-throughput Linux file system for HPC, machine learning, analytics, and media processing.',
+      explanation:['Amazon FSx for Lustre is a managed parallel file system built for workloads that need very high throughput, high IOPS, and low latency across many compute nodes. It can link to S3 so applications process bucket objects through a file-system interface and export results back to S3.','Scratch deployments prioritize temporary burst performance and do not replicate data across file servers, so source and output should live elsewhere. Persistent deployments replicate data within an Availability Zone and replace failed file servers, making them appropriate for longer-running or sensitive workloads.'],
+      takeaways:['Lustre is optimized for parallel Linux computation.','S3 integration connects durable object data to file-based processing.','Scratch favors temporary speed; persistent favors durability.'],
+      examTip:'A compute cluster that must process an S3 data set through a high-performance shared file system strongly suggests FSx for Lustre.'
+    },
+    {
+      ready:true,title:'Choose FSx for NetApp ONTAP or OpenZFS',
+      summary:'Preserve enterprise NAS features or ZFS semantics while moving managed file storage to AWS.',
+      explanation:['FSx for NetApp ONTAP supports NFS, SMB, and iSCSI and fits organizations migrating existing NetApp or multiprotocol NAS workloads. It adds ONTAP features such as snapshots, replication, compression, deduplication, automatic capacity changes, and space-efficient clones.','FSx for OpenZFS provides managed ZFS storage over NFS and is the natural fit for applications already relying on ZFS behavior. It offers low-latency performance, snapshots, compression, and fast clones, but it does not provide ONTAP\'s SMB and iSCSI multiprotocol compatibility.'],
+      takeaways:['ONTAP supports NFS, SMB, and iSCSI.','OpenZFS exposes managed ZFS through NFS.','Both support snapshots and rapid cloning workflows.'],
+      examTip:'Choose ONTAP for NetApp or multiprotocol migration; choose OpenZFS for a ZFS/NFS workload.'
+    },
+    {
+      ready:true,title:'Bridge local file applications with Storage Gateway',
+      summary:'Expose cloud-backed storage through familiar on-premises protocols while caching hot data locally.',
+      explanation:['AWS Storage Gateway is a hybrid storage layer deployed as a local virtual machine, appliance, or supported cloud instance. It connects applications using file, block, or virtual-tape protocols to durable AWS storage over encrypted links, supporting migration, backup, disaster recovery, and tiered storage.','S3 File Gateway presents S3-backed objects through NFS or SMB and caches recently used content locally. IAM roles control bucket access, SMB can integrate with Active Directory, and S3 Lifecycle policies transition objects into archive classes after they have entered the bucket.'],
+      takeaways:['The gateway preserves familiar local storage protocols.','A local cache provides low-latency access to active data.','S3 File Gateway maps NFS or SMB files to S3 objects.'],
+      examTip:'An on-premises file application that must use NFS or SMB while storing durable data as S3 objects points to S3 File Gateway.'
+    },
+    {
+      ready:true,title:'Present cloud-backed iSCSI with Volume Gateway',
+      summary:'Choose cached or stored volumes according to where the authoritative block data must live.',
+      explanation:['Volume Gateway presents iSCSI block volumes to on-premises servers and creates point-in-time backups as EBS snapshots. Those snapshots support restoring a local volume or creating an EBS volume for disaster recovery in AWS.','Cached volumes keep primary data in AWS and retain frequently accessed blocks in the local cache, reducing on-premises capacity needs. Stored volumes keep the complete primary data set locally for low-latency access and asynchronously back it up to AWS.'],
+      takeaways:['Applications mount Volume Gateway through iSCSI.','Cached mode places primary data in AWS.','Stored mode keeps primary data on premises.'],
+      examTip:'If the entire data set must remain locally available but needs cloud snapshots, choose stored volumes; if local capacity is constrained, choose cached volumes.'
+    },
+    {
+      ready:true,title:'Replace physical tape infrastructure with Tape Gateway',
+      summary:'Keep existing backup software and tape workflows while storing virtual tapes in AWS.',
+      explanation:['Tape Gateway presents an iSCSI Virtual Tape Library with virtual tape drives and a media changer, allowing supported backup applications to operate much as they do with physical tape systems. Active virtual tapes use cloud storage rather than hardware cartridges.','Ejecting a virtual tape from the backup application archives it into lower-cost AWS storage for long retention. This pattern removes physical tape transport and facilities while preserving established backup catalogs, schedules, and operational processes.'],
+      takeaways:['Tape Gateway exposes an iSCSI VTL.','Existing supported backup software can keep its tape workflow.','Archived virtual tapes provide low-cost long-term retention.'],
+      examTip:'A company must retire its physical tape library without changing tape-oriented backup software: choose Tape Gateway.'
+    },
+    {
+      ready:true,title:'Modernize managed file exchange with AWS Transfer Family',
+      summary:'Land partner and user transfers directly in AWS storage while retaining familiar transfer protocols and identities.',
+      explanation:['AWS Transfer Family provides managed endpoints for SFTP, FTPS, FTP, AS2 business exchanges, and browser-based transfers. Files can flow into or out of S3 and supported workflows can also use EFS, while the service handles highly available endpoint infrastructure and scaling.','Authentication can use service-managed users, Microsoft Active Directory, or custom identity providers backed by API Gateway or Lambda, depending on protocol and endpoint type. Prefer SFTP or FTPS for encrypted transport; plain FTP sends credentials and data without transport encryption and is limited to appropriate private-network designs.'],
+      takeaways:['Transfer Family preserves common partner-facing protocols.','S3 or EFS provides the durable storage backend.','Identity and endpoint choices depend on the selected protocol.'],
+      examTip:'When partners insist on SFTP but the destination must be S3 without self-managed servers, use AWS Transfer Family.'
+    },
+    {
+      ready:true,title:'Automate storage movement with AWS DataSync',
+      summary:'Schedule accelerated, validated copies between on-premises, other clouds, and AWS storage services.',
+      explanation:['AWS DataSync moves file and object data between supported locations such as NFS, SMB, HDFS, S3-compatible storage, Amazon S3, EFS, and FSx. Transfers from on premises or another cloud use a DataSync agent; transfers between supported AWS storage services generally do not.','A task defines source, destination, schedule, filters, verification, and bandwidth controls. DataSync parallelizes transfer and preserves supported metadata and permissions, making it a migration and recurring synchronization service rather than a live application file-system protocol.'],
+      takeaways:['External locations normally require a DataSync agent.','AWS-to-AWS transfers can run without an agent.','Tasks can schedule, filter, throttle, and verify copies.'],
+      examTip:'For a repeatable NFS or SMB migration that must preserve metadata and run nightly, choose DataSync rather than Snowball or Storage Gateway.'
+    },
+    {
+      ready:true,title:'Select the right AWS storage and transfer service',
+      summary:'Start with the data interface and operating pattern, then choose a storage target and movement method.',
+      explanation:['Choose object storage for API-addressed objects, block storage for mounted volumes, and file storage for shared hierarchical namespaces. S3 and archive classes serve objects; EBS and instance store serve EC2 block needs; EFS provides managed Linux NFS; the FSx families supply specialized Windows, Lustre, ONTAP, and OpenZFS file systems.','Then separate access from movement. Storage Gateway gives on-premises applications a persistent hybrid protocol, Transfer Family accepts partner file-transfer protocols, DataSync performs scheduled data copies, and physical-transfer services address data sets that cannot cross the available network in time. Databases belong in the decision only when indexing, transactions, or query semantics are required.'],
+      takeaways:['Interface requirements narrow object, block, and file choices.','Persistent hybrid access differs from a migration copy.','Protocol compatibility is often the decisive scenario clue.'],
+      examTip:'Identify the required protocol first—S3 API, iSCSI, NFS, SMB, SFTP, or tape—before comparing cost or performance.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -1389,4 +1462,5 @@
   window.AWS_COURSE_CURRICULUM[12].lectures=sectionThirteenLectures;
   window.AWS_COURSE_CURRICULUM[13].lectures=sectionFourteenLectures;
   window.AWS_COURSE_CURRICULUM[14].lectures=sectionFifteenLectures;
+  window.AWS_COURSE_CURRICULUM[15].lectures=sectionSixteenLectures;
 })();
