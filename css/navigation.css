@@ -27,11 +27,13 @@
 
 /* Retire every older shell. */
 .app-sidebar,.sidebar-scrim,.global-rail,.rw-platform-rail{display:none!important}
-body.rw-shell-on{padding-top:calc(var(--rw-top-h) + 42px)!important;padding-left:var(--rw-primary-w)!important;background:var(--rw-canvas)!important}
+body.rw-shell-on{padding-top:var(--rw-top-h)!important;padding-left:var(--rw-primary-w)!important;background:var(--rw-canvas)!important}
 body.rw-study-shell,body.rw-exam-shell{padding-left:calc(var(--rw-primary-w) + var(--rw-context-w))!important}
 
 /* Global utility bar ---------------------------------------------------- */
 .rw-global-topbar{position:fixed;z-index:1200;inset:0 0 auto 0;height:var(--rw-top-h);background:#fff;border-bottom:1px solid var(--rw-line);display:grid;grid-template-columns:var(--rw-primary-w) minmax(260px,1fr) auto;align-items:center;color:var(--rw-ink)}
+/* Legacy app-page header rules also match injected <header> elements. */
+body.app-page.rw-shell-on>header.rw-global-topbar{position:fixed!important;inset:0 0 auto 0!important;width:auto!important;height:var(--rw-top-h)!important;max-width:none!important;margin:0!important;padding:0!important;box-sizing:border-box!important}
 .rw-global-brand{height:100%;display:flex;align-items:center;gap:9px;padding:0 13px;text-decoration:none;color:#111a22;font-size:13.5px;font-weight:800;border-right:1px solid transparent;white-space:nowrap}
 .rw-brand-mark{width:24px;height:24px;border-radius:6px;background:var(--rw-blue);display:grid;place-items:center;color:#fff;font-size:8px;font-weight:900;letter-spacing:.03em;box-shadow:inset 0 0 0 1px rgba(0,0,0,.04)}
 .rw-global-search-wrap{display:flex;justify-content:center;min-width:0;padding:0 18px}
@@ -92,6 +94,11 @@ body.rw-shell-on .course-main,
 body.rw-shell-on .course-index-main,
 body.rw-shell-on .course-section-main,
 body.rw-shell-on .beginner-main{margin-left:0!important}
+body.rw-shell-on .landing-shell,
+body.rw-shell-on .course-main,
+body.rw-shell-on .course-index-main,
+body.rw-shell-on .course-section-main,
+body.rw-shell-on .beginner-main{padding-top:0!important}
 
 /* Most older pages used a pale canvas. Rework workspaces are white and flat. */
 body.rw-shell-on main{background:#fff}
@@ -111,8 +118,8 @@ body.rw-shell-on .primary-action:hover,body.rw-shell-on .btn.primary:hover,body.
   .rw-primary-head{justify-content:center;padding:0}.rw-primary-head span{display:none}.rw-primary-scroll{padding:8px 5px}.rw-primary-label,.rw-primary-link span{display:none}.rw-primary-link{grid-template-columns:1fr;place-items:center;padding:6px}.rw-primary-link svg{width:18px;height:18px}.rw-primary-bottom{padding:5px}.rw-primary-account{display:grid;grid-template-columns:1fr;place-items:center;padding:4px}.rw-primary-account>div,.rw-primary-account>span:last-child{display:none}
 }
 @media(max-width:650px){
-  :root{--rw-primary-w:0px;--rw-context-w:0px}
-  body.rw-shell-on,body.rw-study-shell,body.rw-exam-shell{padding-left:0!important;padding-top:86px!important}
+  :root{--rw-top-h:48px;--rw-primary-w:0px;--rw-context-w:0px}
+  body.rw-shell-on,body.rw-study-shell,body.rw-exam-shell{padding-left:0!important;padding-top:var(--rw-top-h)!important}
   .rw-global-topbar{height:48px;grid-template-columns:auto 1fr auto}.rw-global-brand{padding:0 10px;justify-content:flex-start}.rw-global-brand>span:last-child{display:inline}.rw-global-search-wrap{display:none}.rw-primary-sidebar,.rw-context-sidebar{display:none}.rw-global-actions{padding-right:6px}
   .rw-mobile-nav{display:grid!important;position:fixed;z-index:1250;inset:auto 0 0 0;height:52px;background:#fff;border-top:1px solid var(--rw-line);grid-template-columns:repeat(3,1fr)}.rw-mobile-nav a{display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;color:#62717e;font-size:10px;font-weight:650}.rw-mobile-nav a.active{color:var(--rw-blue)}
   body.rw-shell-on{padding-bottom:52px!important}.rw-workspace-crumb{height:38px;padding:0 10px}
