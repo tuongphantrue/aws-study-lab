@@ -5639,6 +5639,34 @@
   };
   sectionThirtyTwoLectures.forEach(lecture=>Object.assign(lecture,sectionThirtyTwoSlideOverrides[lecture.title]||{}));
 
+  const sectionThirtyThreeSlideOverrides={
+    'Complete the architecture learning journey':{
+      sourcePages:'867–875',
+      summary:'Recognize Solutions Architect Associate as one stage in a broader AWS certification journey, then mark completion of the course.',
+      explanation:['The deck groups certifications into Foundational, Associate, Professional, and Specialty levels, with increasing role depth and recommended experience. Its path diagrams span architecture, operations, DevOps, security, development, networking, data analytics, and AI/ML roles.','Certification names and paths change over time, so the diagrams are a source-era map rather than a current catalog. The section then reaches the Congratulations slide: completing the material is a milestone, while practical architecture skill continues to grow through application.'],
+      slideTopics:['Certification levels','Architecture and operations paths','DevOps and security paths','Development, networking, data, and AI/ML paths','Course completion'],
+      takeaways:['Associate certification is one career milestone.','AWS paths extend across several technical roles.','Current certification options should be verified with AWS.'],
+      examTip:'Choose a next certification from the work you intend to perform, not simply from the visual order in this dated path diagram.'
+    },
+    'Turn course notes into hands-on evidence':{
+      sourcePages:'861, 876',
+      summary:'Carry the course’s practice-first message into real AWS work so the final notes become observable architecture skills.',
+      explanation:['The earlier exam-review slide says practice makes perfect and recommends hands-on AWS experience instead of rushing to the exam. The final slide hopes the learner has learned how to use AWS and will become a strong Solutions Architect.','The supplied closing slide does not prescribe a lab portfolio. A practical continuation is to reproduce key patterns in a controlled account, document design decisions and cleanup, and connect each result back to the relevant course concept without presenting that extension as slide text.'],
+      slideTopics:['Practice makes perfect','Hands-on AWS experience','Learning how to use AWS','Becoming a Solutions Architect','Applied follow-through beyond the slide'],
+      takeaways:['Completion should lead to practice.','Evidence includes design reasoning as well as deployed resources.','Clearly separate slide content from suggested next actions.'],
+      examTip:'Hands-on work makes it easier to recognize service boundaries and operational consequences in scenario questions.'
+    },
+    'Continue after certification':{
+      sourcePages:'867–876',
+      summary:'Share the achievement and lessons learned, then continue toward the AWS role path that matches your goals.',
+      explanation:['The final slide congratulates learners, encourages successful candidates to share tips in the course Q&A and on LinkedIn, and closes with the goal of becoming a capable AWS Solutions Architect.','The preceding career slides show that architecture connects with operations, DevOps, security, development, networking, data, and AI/ML. Use them as broad role categories, but consult current AWS certification pages because the specific badges and recommended paths are time-sensitive.'],
+      slideTopics:['Congratulations','Share tips with other learners','Professional achievement','Cross-role AWS paths','Source-era certification map'],
+      takeaways:['Celebrate course and certification milestones.','Sharing lessons can help the learning community.','Continue learning along a role-relevant path.'],
+      examTip:'Certification validates a body of knowledge; durable architecture judgment comes from continuing to design, test, operate, and review systems.'
+    }
+  };
+  sectionThirtyThreeLectures.forEach(lecture=>Object.assign(lecture,sectionThirtyThreeSlideOverrides[lecture.title]||{}));
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
