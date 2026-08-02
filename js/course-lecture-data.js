@@ -202,6 +202,149 @@
     }
   ];
 
+  const sectionFourLectures=[
+    {
+      ready:true,title:'IAM foundations: identities and permissions',
+      summary:'Build the core mental model for deciding who can make an AWS request and which actions the request may perform.',
+      explanation:['AWS Identity and Access Management controls authentication and authorization. Authentication establishes who the caller is; authorization evaluates whether that identity may perform the requested action on the requested resource.','IAM is a global service. Its identities and policies are available across Regions, although the resources they authorize are often Regional. Start every access design by identifying the caller, required actions, target resources, and any conditions.'],
+      takeaways:['Authentication identifies the caller.','Authorization decides whether a request is permitted.','IAM is global even when target resources are Regional.'],
+      examTip:'Separate identity questions from resource questions. A valid login does not imply permission to use every AWS service.'
+    },
+    {
+      ready:true,title:'Protect the AWS account root user',
+      summary:'Reserve the root user for the small set of account tasks that cannot be delegated safely.',
+      explanation:['The root user is created with the AWS account and has unrestricted account-level power. It is not an everyday administrator identity and should not be shared or used for routine service work.','Protect root with a unique strong password and MFA, avoid creating root access keys, and store its recovery details securely. Create delegated administrative identities for normal operations so activity can be attributed and limited.'],
+      takeaways:['Root has unrestricted account authority.','Use root only for tasks that specifically require it.','Protect root with MFA and avoid root access keys.'],
+      examTip:'When an answer proposes using root for normal administration or applications, eliminate it unless the scenario names a root-only account task.'
+    },
+    {
+      ready:true,title:'IAM users and groups',
+      summary:'Represent people with individual identities and manage common permissions through groups.',
+      explanation:['An IAM user represents a person or, in legacy designs, a long-lived workload identity. Each person should have an individual identity so credentials and activity are not shared.','Groups are collections of users used to assign common permissions. A user may belong to multiple groups, users do not have to belong to a group, and groups cannot contain other groups.'],
+      takeaways:['Use one identity per person.','Assign shared job permissions through groups.','Groups contain users, not other groups.'],
+      examTip:'For a team of people with the same job function, attach permissions to a group instead of duplicating policies on every user.'
+    },
+    {
+      ready:true,title:'Assign group membership with least privilege',
+      summary:'Translate job responsibilities into group membership without accumulating unnecessary access.',
+      explanation:['Design groups around stable job functions such as billing review, operations, or development. Users can join multiple groups when responsibilities overlap, and their effective permissions combine the applicable policies.','Review membership when responsibilities change. Least privilege is not a one-time configuration: access should be reduced when it is no longer required, particularly for temporary projects and privileged work.'],
+      takeaways:['Model stable job functions with groups.','Multiple memberships combine applicable permissions.','Remove access when responsibilities end.'],
+      examTip:'Choose the design that centralizes repeatable human permissions and minimizes direct per-user exceptions.'
+    },
+    {
+      ready:true,title:'How IAM policies authorize requests',
+      summary:'Understand policies as JSON rules that allow or deny actions against AWS resources.',
+      explanation:['An IAM policy contains statements describing an effect, actions, resources, and optional conditions. Identity-based policies can be attached to users, groups, or roles to grant permissions to those identities.','AWS begins with an implicit deny. An applicable Allow is required, and an applicable explicit Deny overrides an Allow. This evaluation model lets guardrails remain effective even when another policy grants broad access.'],
+      takeaways:['Policies describe effects, actions, resources, and conditions.','Requests are implicitly denied until allowed.','An explicit Deny overrides an Allow.'],
+      examTip:'When policies conflict, look for an explicit Deny before adding together the Allow statements.'
+    },
+    {
+      ready:true,title:'Read the structure of an IAM policy',
+      summary:'Interpret the fields of a policy statement instead of treating the JSON document as opaque configuration.',
+      explanation:['A policy document declares a language version and one or more statements. Each statement commonly contains Effect, Action, and Resource; Sid is an optional label, while Condition narrows when the statement applies.','Principal identifies the trusted identity in policy types that require it, such as role trust or resource-based policies. In an identity-based permissions policy, the principal is already implied by the identity to which the policy is attached.'],
+      takeaways:['Statement is the required collection of permission rules.','Action names API operations and Resource narrows their targets.','Condition adds contextual restrictions such as source or tags.'],
+      examTip:'Do not assume Principal belongs in every policy. First identify whether the question describes identity permissions, a resource policy, or a role trust policy.'
+    },
+    {
+      ready:true,title:'Managed policies, inline policies, and inheritance',
+      summary:'Choose a reusable or tightly coupled policy form and predict the permissions an identity receives.',
+      explanation:['AWS managed policies are maintained by AWS, customer managed policies are reusable policies maintained in your account, and inline policies are embedded in one identity. Reusable customer managed policies are usually easier to govern consistently.','A user receives permissions from policies attached directly and from every group membership. A role receives its permissions from policies attached to the role. Effective access is the result of all applicable policy types and guardrails.'],
+      takeaways:['Customer managed policies are reusable across identities.','Inline policies have a one-to-one relationship with an identity.','Effective permissions combine all applicable sources.'],
+      examTip:'Prefer centrally managed reusable policies when the same permission set must be maintained for multiple identities.'
+    },
+    {
+      ready:true,title:'Design least-privilege permissions',
+      summary:'Narrow actions, resources, and conditions to the smallest access required for a task.',
+      explanation:['Least privilege means granting only the permissions needed to perform defined work. Replace broad wildcards with specific API actions and resource ARNs whenever the service supports resource-level permissions.','Conditions can further limit access by factors such as network source, requested Region, resource tags, or required encryption. Begin with a narrow policy, test expected tasks, and expand only for a demonstrated need.'],
+      takeaways:['Limit actions to required API operations.','Limit resources to intended targets.','Use conditions for contextual controls.'],
+      examTip:'The most secure valid answer usually avoids Action "*" and Resource "*" unless the named API cannot be scoped more narrowly.'
+    },
+    {
+      ready:true,title:'IAM password policies',
+      summary:'Set an account-wide baseline for IAM user console passwords.',
+      explanation:['An IAM password policy controls properties such as minimum length, character requirements, reuse prevention, expiration, and whether users may change their own password. It applies to IAM users in the account.','A strong password policy reduces weak credential risk, but passwords remain a single authentication factor. Combine the policy with MFA and prefer federated workforce access when centralized identity management is available.'],
+      takeaways:['Password policy is configured at the account level.','It can enforce length, complexity, rotation, and reuse rules.','Password strength does not replace MFA.'],
+      examTip:'If stolen passwords are the concern, MFA provides the decisive additional control; increasing password complexity alone is insufficient.'
+    },
+    {
+      ready:true,title:'Multi-factor authentication',
+      summary:'Require a second factor so a stolen password alone cannot authenticate a privileged user.',
+      explanation:['MFA combines something the user knows with something the user possesses. After the password is entered, the user must provide a time-based code or use a supported security key.','Enable MFA for root and privileged identities first, then enforce it broadly. Policies can also require that a request was made using an MFA-authenticated session before allowing sensitive actions.'],
+      takeaways:['MFA adds a possession factor to the password.','Protect root and privileged access first.','Policies can require MFA-authenticated sessions.'],
+      examTip:'Choose MFA when a scenario asks how to protect an account after a password is compromised.'
+    },
+    {
+      ready:true,title:'Choose and manage MFA devices',
+      summary:'Compare virtual authenticators and hardware security devices while planning enrollment and recovery.',
+      explanation:['AWS supports virtual authenticator applications and compatible hardware security devices. Hardware-backed options can resist phishing more effectively, while virtual authenticators are often easier to deploy at scale.','Device choice should include a recovery process. Losing the only enrolled device must not force insecure credential sharing, so keep account contacts current and document controlled recovery for administrators.'],
+      takeaways:['Virtual and hardware MFA options serve different operational needs.','Security keys can provide strong phishing resistance.','Plan device replacement and account recovery before an incident.'],
+      examTip:'The key exam concept is the second factor, not a particular vendor. Match device strength and operations to the stated requirement.'
+    },
+    {
+      ready:true,title:'Console, CLI, and SDK access',
+      summary:'Choose the correct AWS interface for interactive work, shell automation, or application code.',
+      explanation:['The Management Console is a browser interface typically protected by a password and MFA. The AWS CLI sends service API requests from a command shell, while an AWS SDK lets application code call those APIs through language-specific libraries.','The interfaces expose many of the same AWS capabilities. Their main differences are how requests are created and how credentials are supplied, not a separate permissions model. IAM authorization still evaluates every request.'],
+      takeaways:['Console supports interactive browser work.','CLI supports commands and scripts.','SDKs embed AWS API calls in applications.'],
+      examTip:'Select CLI for shell automation and an SDK for application integration; neither bypasses IAM.'
+    },
+    {
+      ready:true,title:'Access keys and credential safety',
+      summary:'Treat long-lived programmatic credentials as secrets and avoid embedding them in code.',
+      explanation:['An access key consists of an access key ID and a secret access key. The ID identifies the credential; the secret proves possession. Both belong to one IAM identity and the secret is normally displayed only when created.','Never publish keys, commit them to source control, or share one key between people. Prefer temporary credentials from roles. If a long-lived key is unavoidable, store it securely, rotate it, monitor its use, and remove it when no longer required.'],
+      takeaways:['The secret access key must remain confidential.','Do not embed or commit credentials in source code.','Temporary role credentials are preferred for workloads.'],
+      examTip:'An application running on AWS should normally use a role, not hard-coded IAM user access keys.'
+    },
+    {
+      ready:true,title:'Configure and use the AWS CLI safely',
+      summary:'Establish a predictable command-line workflow with explicit profiles, Regions, and output verification.',
+      explanation:['The AWS CLI translates shell commands into signed AWS API requests. Configuration commonly includes a credential source, default Region, and output format; named profiles can separate accounts or roles.','Before running a modifying command, verify the active identity and Region. Use read-only commands first, inspect the result, and avoid placing secrets directly in command history or scripts.'],
+      takeaways:['CLI commands call public AWS service APIs.','Profiles help separate identities and environments.','Verify identity and Region before changing resources.'],
+      examTip:'CLI access is authorized by the caller credentials. Installing the CLI grants no permissions by itself.'
+    },
+    {
+      ready:true,title:'Use AWS CloudShell for browser-based commands',
+      summary:'Run authenticated AWS CLI commands from the console without managing a local CLI installation.',
+      explanation:['AWS CloudShell provides a browser-based shell with common tools and AWS CLI access. It uses the permissions of the signed-in console identity, which avoids copying a separate long-lived access key into the environment.','CloudShell is convenient for short administrative commands and learning. For production automation, use controlled pipelines, roles, and repeatable scripts rather than depending on an interactive shell session.'],
+      takeaways:['CloudShell is launched from the AWS console.','It inherits the signed-in identity permissions.','It is useful for interactive work, not a replacement for automation pipelines.'],
+      examTip:'CloudShell simplifies CLI access, but the same IAM authorization rules and Region awareness still apply.'
+    },
+    {
+      ready:true,title:'Use AWS SDKs in application code',
+      summary:'Call AWS services through language libraries while keeping credentials outside the application source.',
+      explanation:['AWS SDKs provide language-specific clients, request models, retry behavior, and credential discovery. Applications use them to call services such as S3, DynamoDB, SQS, or Secrets Manager.','Use the default credential provider chain so code can obtain temporary credentials from its runtime role. This keeps the application portable across local development, AWS compute, and controlled deployment environments.'],
+      takeaways:['SDKs provide language-specific AWS service clients.','Credential provider chains keep secrets out of code.','Runtime roles supply temporary credentials on AWS.'],
+      examTip:'When code on EC2 or Lambda needs AWS access, attach a role and let the SDK retrieve temporary credentials automatically.'
+    },
+    {
+      ready:true,title:'IAM roles for AWS services',
+      summary:'Delegate permissions to a service through temporary credentials instead of attaching permanent keys to a workload.',
+      explanation:['An IAM role is an assumable identity with permissions but no long-term password or access key. AWS services such as EC2, Lambda, and CloudFormation can assume a role to act on your behalf.','Attach only the workload permissions the service needs. The service obtains and refreshes temporary credentials, removing the need for credentials stored in an image, environment file, or code repository.'],
+      takeaways:['Roles are assumed identities without long-lived credentials.','AWS services use roles to call other services.','Temporary credentials are delivered and rotated automatically.'],
+      examTip:'For AWS-to-AWS access, a service role is almost always safer than an IAM user key.'
+    },
+    {
+      ready:true,title:'Role trust policies and permission policies',
+      summary:'Separate who may assume a role from what the role may do after assumption.',
+      explanation:['A role trust policy defines the principals allowed to assume the role. Its permission policies define the AWS actions available to the resulting role session. Both sides must be correct for delegated access to work.','This separation supports AWS services, cross-account access, and federated users. Narrow the trusted principals and conditions, then grant the assumed role only the permissions required for its task.'],
+      takeaways:['Trust policy controls who may assume the role.','Permission policies control actions after assumption.','Role sessions use temporary credentials.'],
+      examTip:'If AssumeRole is denied, inspect trust. If assumption succeeds but an AWS action fails, inspect the role permissions and other guardrails.'
+    },
+    {
+      ready:true,title:'Audit credentials and permissions',
+      summary:'Use IAM security reports to find stale credentials and permissions that can be removed.',
+      explanation:['The account-level credential report lists IAM users and the status or age of credentials such as passwords, access keys, and MFA. It supports periodic reviews for unused or weak authentication.','Access Advisor shows services an identity is allowed to use and when they were last accessed. Use that evidence carefully to reduce permissions, accounting for infrequent but legitimate operational tasks.'],
+      takeaways:['Credential report audits user credential status account-wide.','Access Advisor shows service access history for an identity.','Audit results support credential cleanup and least privilege.'],
+      examTip:'Choose the credential report for account-wide credential status and Access Advisor for deciding which granted service permissions may be unused.'
+    },
+    {
+      ready:true,title:'IAM review and security decision rules',
+      summary:'Combine users, groups, policies, roles, MFA, and audit tools into a secure identity strategy.',
+      explanation:['Use individual or federated identities for people, groups or centralized permission sets for job access, and roles for workloads. Protect interactive access with strong authentication and protect programmatic access by preferring temporary credentials.','Review policies and credentials continuously. Remove unused users and keys, narrow permissions, monitor privileged access, and keep root reserved for exceptional account tasks.'],
+      takeaways:['People need attributable identities and MFA.','Workloads should use roles and temporary credentials.','Least privilege requires ongoing auditing and cleanup.'],
+      examTip:'Map the requirement to the IAM control: MFA protects login, policies authorize actions, roles delegate temporary access, and reports support auditing.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -214,4 +357,5 @@
   window.AWS_COURSE_CURRICULUM[0].lectures=sectionOneLectures;
   window.AWS_COURSE_CURRICULUM[1].lectures=sectionTwoLectures;
   window.AWS_COURSE_CURRICULUM[2].lectures=sectionThreeLectures;
+  window.AWS_COURSE_CURRICULUM[3].lectures=sectionFourLectures;
 })();
