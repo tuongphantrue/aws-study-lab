@@ -460,6 +460,72 @@
     }
   ];
 
+  const sectionSixLectures=[
+    {
+      ready:true,title:'Public and private IP addressing on EC2',
+      summary:'Distinguish internet-routable addresses from VPC-local addresses and understand how each participates in an EC2 connection.',
+      explanation:['A private IP identifies an interface inside its VPC and can be reused in unrelated private networks. A public IP is internet-routable and must be globally unique while assigned. IPv4 remains common, while IPv6 provides a much larger address space and different end-to-end routing possibilities.','An EC2 instance communicates internally through its private address. A public IPv4 address is mapped to that private address through AWS network infrastructure; it does not replace the interface private IP. Routing and security rules must still permit the traffic.'],
+      takeaways:['Private addresses are unique only within their private network.','Public addresses are globally routable while assigned.','Addressing, routes, and security controls must all support a connection.'],
+      examTip:'Private-subnet instances normally use private addresses and controlled egress; public addressing alone does not make an instance reachable.'
+    },
+    {
+      ready:true,title:'Elastic IP addresses and stable endpoints',
+      summary:'Use a static public IPv4 address only when a workload truly requires address-level continuity.',
+      explanation:['An automatically assigned public IPv4 address can change after an instance is stopped and started. An Elastic IP is an account-allocated public IPv4 address that can be associated with an interface and remapped when necessary.','Elastic IPs are scarce and often couple clients to one instance. DNS, load balancers, and resilient multi-instance designs are usually better public entry points, while Elastic IPs remain useful for explicit allowlists or legacy protocols that require fixed addresses.'],
+      takeaways:['Auto-assigned public IPv4 addresses can change after stop/start.','Elastic IPs remain allocated until released.','Prefer DNS and load balancing for resilient application endpoints.'],
+      examTip:'A fixed allowlisted IPv4 may justify an Elastic IP; high availability for a web application usually points to a load balancer instead.'
+    },
+    {
+      ready:true,title:'Placement group strategy overview',
+      summary:'Control how EC2 instances share or avoid underlying infrastructure when latency, isolation, or scale dominates.',
+      explanation:['Placement groups influence physical placement beyond choosing an Availability Zone. Cluster placement keeps instances close, spread placement isolates a small number of critical instances, and partition placement separates large distributed fleets into rack groups.','The strategies optimize different properties and cannot be treated as interchangeable. Begin with the failure domain and network requirement, then select a strategy supported by the instance types and topology.'],
+      takeaways:['Cluster optimizes proximity and network performance.','Spread maximizes hardware isolation for a small fleet.','Partition exposes large logical failure domains.'],
+      examTip:'Match the named requirement—lowest latency, isolated critical instances, or rack-aware distributed systems—to the corresponding placement strategy.'
+    },
+    {
+      ready:true,title:'Cluster placement groups',
+      summary:'Place tightly coupled instances near one another for high throughput and low network latency.',
+      explanation:['A cluster placement group packs supported instances into a low-latency arrangement within one Availability Zone. It suits tightly coupled computation, high-performance analytics, and workloads that exchange large amounts of data between nodes.','The performance advantage concentrates risk: an Availability Zone disruption can affect the entire group. Capacity can also be easier to obtain when the fleet is launched together with consistent instance types.'],
+      takeaways:['Cluster placement stays within one Availability Zone.','It targets high inter-instance network performance.','Concentrated placement increases correlated failure risk.'],
+      examTip:'Choose cluster placement for tightly coupled HPC, not for a request to survive an Availability Zone failure.'
+    },
+    {
+      ready:true,title:'Spread placement groups',
+      summary:'Keep a small set of critical instances on distinct underlying hardware to reduce simultaneous failure.',
+      explanation:['A spread placement group distributes instances across distinct hardware and can span Availability Zones. It suits a limited number of individually important instances where sharing a rack is an unacceptable correlated risk.','Spread placement has a low per-AZ instance limit, so it is not designed for hundreds of interchangeable workers. Use multiple AZs as well when the requirement includes location-level resilience.'],
+      takeaways:['Spread instances use distinct underlying hardware.','The group can span multiple Availability Zones.','Strict per-AZ limits make it suitable for small critical fleets.'],
+      examTip:'A handful of critical instances that must not share hardware points to spread placement.'
+    },
+    {
+      ready:true,title:'Partition placement groups',
+      summary:'Divide a large distributed fleet into rack-level failure domains that applications can recognize.',
+      explanation:['Partition placement separates instances into logical partitions backed by different racks. A rack failure may affect one partition but should not affect the others, and the application can retrieve partition information from instance metadata.','This model suits rack-aware distributed systems such as large data stores and streaming clusters. Application replicas should be distributed across partitions so one failure domain does not contain every copy of data.'],
+      takeaways:['Partitions represent distinct rack groups.','The strategy scales to large distributed fleets.','Applications can use partition metadata for replica placement.'],
+      examTip:'Choose partition placement for Hadoop-, Cassandra-, or Kafka-style systems that need explicit rack-aware failure domains.'
+    },
+    {
+      ready:true,title:'Elastic Network Interfaces',
+      summary:'Treat the ENI as the VPC network identity that carries addresses, security groups, and a MAC address.',
+      explanation:['An Elastic Network Interface is a virtual network card with a primary private IPv4 address, optional secondary addresses, security groups, and other interface attributes. Public and Elastic IPv4 mappings relate to its private addresses.','Additional ENIs can support management networks, network appliances, or failover patterns. An ENI is bound to an Availability Zone, so it can move between compatible instances in that AZ but not across AZ boundaries.'],
+      takeaways:['An ENI holds VPC addresses and security-group associations.','An instance can use multiple interfaces.','An ENI is scoped to one Availability Zone.'],
+      examTip:'Moving an ENI can preserve a private network identity during same-AZ failover, but it is not a cross-AZ resilience mechanism.'
+    },
+    {
+      ready:true,title:'EC2 stop, start, reboot, and terminate behavior',
+      summary:'Predict which compute, memory, addressing, and EBS state survives each instance lifecycle action.',
+      explanation:['A reboot restarts the guest operating system. Stopping an EBS-backed instance releases its compute while retaining attached EBS data; a later start may use new physical hardware and a new auto-assigned public IPv4 address.','Termination permanently removes the instance and deletes volumes whose delete-on-termination flag is enabled. Instance-store data is ephemeral and does not survive stop or termination, so durable state belongs on persistent storage or managed services.'],
+      takeaways:['Stop preserves EBS but releases running compute.','Auto-assigned public IPv4 can change after stop/start.','Termination and instance-store loss require deliberate data protection.'],
+      examTip:'Check both volume type and delete-on-termination settings before deciding whether data survives a lifecycle event.'
+    },
+    {
+      ready:true,title:'EC2 hibernation',
+      summary:'Persist an instance memory image to encrypted EBS so a slow-to-initialize workload can resume faster.',
+      explanation:['Hibernation writes RAM contents to the root EBS volume before the instance stops. On resume, the operating system and in-memory application state are restored instead of beginning a normal cold boot.','The root volume must be encrypted and large enough for the memory image, and the instance, AMI, and other attributes must support hibernation. It helps long initialization or in-memory processing but does not replace application-level durability or high availability.'],
+      takeaways:['Hibernation preserves RAM state on the root EBS volume.','The root EBS volume must be encrypted and adequately sized.','Support and hibernation duration have platform constraints.'],
+      examTip:'Choose hibernation for faster resume with preserved memory, not as a disaster-recovery or multi-AZ solution.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -474,4 +540,5 @@
   window.AWS_COURSE_CURRICULUM[2].lectures=sectionThreeLectures;
   window.AWS_COURSE_CURRICULUM[3].lectures=sectionFourLectures;
   window.AWS_COURSE_CURRICULUM[4].lectures=sectionFiveLectures;
+  window.AWS_COURSE_CURRICULUM[5].lectures=sectionSixLectures;
 })();
