@@ -149,6 +149,59 @@
     }
   ];
 
+  const sectionThreeLectures=[
+    {
+      ready:true,
+      title:'AWS cloud overview and common use cases',
+      summary:'Understand why organizations use AWS and how on-demand infrastructure supports applications of very different sizes.',
+      explanation:[
+        'AWS developed from Amazon solving its own infrastructure challenges into a public cloud platform. The important idea is not the timeline itself: reusable computing capabilities became services that customers can request without owning the underlying data centers.',
+        'Organizations use AWS for web and mobile applications, enterprise systems, backup and storage, analytics, media, and gaming. These workloads need different combinations of compute, storage, databases, networking, and managed application services.',
+        'Cloud resources can be provisioned when needed and adjusted as demand changes. This shortens the time required to experiment, but good architecture still requires deliberate choices about security, resilience, performance, operations, and cost.'
+      ],
+      takeaways:[
+        'AWS provides reusable technology services on demand.',
+        'Cloud use cases range from simple hosting to large data and enterprise platforms.',
+        'Elastic access to resources improves speed, but does not replace architecture decisions.'
+      ],
+      examTip:'A scenario usually describes a workload goal rather than asking for cloud history. Translate that goal into requirements before selecting AWS services.'
+    },
+    {
+      ready:true,
+      title:'AWS Regions, Availability Zones, and edge locations',
+      summary:'Learn the three geographic building blocks and use each one for the architectural problem it is designed to solve.',
+      explanation:[
+        'An AWS Region is a geographic area containing multiple Availability Zones. Most services and the resources you create in them are scoped to a selected Region, so Region choice becomes an early architecture decision.',
+        'Choose a Region by checking data residency and compliance, proximity to users, required service availability, and price. A Region that is closest may reduce latency, but it is not suitable if it fails a legal or product requirement.',
+        'Availability Zones are isolated locations within a Region, connected by high-bandwidth, low-latency networking. Distributing an application across AZs protects it from a single-location failure. Edge locations are a different layer: they bring cached content and network entry points closer to users to improve global delivery.'
+      ],
+      takeaways:[
+        'A Region is the geographic scope for most AWS resources.',
+        'Multiple Availability Zones provide isolation within one Region.',
+        'Edge locations reduce delivery latency; they do not replace Regions or AZs.',
+        'Compliance, latency, service availability, and price guide Region selection.'
+      ],
+      examTip:'“Highly available in one Region” usually points toward multiple Availability Zones. “Low latency for global users” often requires an edge service such as CloudFront.'
+    },
+    {
+      ready:true,
+      title:'Tour the AWS console and understand service scope',
+      summary:'Navigate the management console safely and distinguish global services from resources tied to a selected Region.',
+      explanation:[
+        'The AWS Management Console is a graphical interface to AWS service APIs. Use the service search, account menu, and Region selector deliberately. Before creating or troubleshooting a resource, confirm both the active account and active Region.',
+        'Some services operate globally, including core identity and global delivery services. Many workload services—including virtual servers, functions, and numerous data services—are Regional. Switching the console Region can therefore make a Regional resource appear to be missing even though it still exists elsewhere.',
+        'The console is useful for learning and inspection, while command-line tools, SDKs, and infrastructure as code make repeatable operations possible. All of these interfaces ultimately request actions from AWS APIs and are governed by permissions.'
+      ],
+      takeaways:[
+        'Always verify the account and Region before changing resources.',
+        'Global and Regional services have different geographic behavior.',
+        'The console, CLI, SDKs, and templates are different interfaces to AWS APIs.',
+        'Permissions apply regardless of which interface sends the request.'
+      ],
+      examTip:'If a design copies a Regional workload to another Region, expect an explicit replication or deployment step. AWS does not automatically make every Regional resource global.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -160,4 +213,5 @@
   });
   window.AWS_COURSE_CURRICULUM[0].lectures=sectionOneLectures;
   window.AWS_COURSE_CURRICULUM[1].lectures=sectionTwoLectures;
+  window.AWS_COURSE_CURRICULUM[2].lectures=sectionThreeLectures;
 })();
