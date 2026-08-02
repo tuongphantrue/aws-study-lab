@@ -2880,6 +2880,37 @@
     }
   ];
 
+  const sectionThirtyOneLectures=[
+    {
+      ready:true,title:'Apply the six Well-Architected pillars',
+      summary:'Evaluate workloads through operational excellence, security, reliability, performance, cost, and sustainability.',
+      explanation:['The AWS Well-Architected Framework organizes architectural decisions into six pillars: Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization, and Sustainability. A strong design balances them according to business context rather than maximizing one dimension in isolation.','General principles include automating operations, testing recovery, designing for change, using data to choose capacity, and learning from events. Reviews surface risks and tradeoffs; they are not pass-fail audits or a guarantee that AWS operates the workload for the customer.'],
+      takeaways:['The framework has six pillars.','Tradeoffs depend on workload context.','Reviews should recur as architecture changes.'],
+      examTip:'When an answer improves one pillar but violates a stated requirement in another, choose the balanced design that meets the business objective.'
+    },
+    {
+      ready:true,title:'Review workloads with the Well-Architected Tool',
+      summary:'Answer structured questions, identify risks, build improvement plans, and measure change over time.',
+      explanation:['AWS Well-Architected Tool records a workload and applies the core Framework lens plus optional AWS official or custom lenses. Answers and notes identify high- and medium-risk issues and generate an improvement plan that teams can prioritize by business impact.','A milestone is an immutable snapshot of review state at a point in time, useful after an initial review or major improvement. Reviews require honest evidence and workload owners across disciplines; copying ideal answers defeats the purpose and hides operational risk.'],
+      takeaways:['Lenses supply review questions and best practices.','Improvement plans turn findings into work.','Milestones record progress snapshots.'],
+      examTip:'A team wants a free structured review against AWS architectural best practices: use AWS Well-Architected Tool.'
+    },
+    {
+      ready:true,title:'Act on AWS Trusted Advisor recommendations',
+      summary:'Use account-specific checks to find cost, performance, security, resilience, quota, and operational issues.',
+      explanation:['AWS Trusted Advisor evaluates configured resources and usage against AWS checks and returns recommendations across categories such as cost optimization, performance, security, fault tolerance, service quotas, and operational excellence. Some checks and refresh capabilities depend on the AWS Support plan.','Recommendations are signals, not automatic changes. Validate business context before removing idle resources or changing controls, assign owners, suppress justified exceptions, and route supported organizational findings into governance workflows. Trusted Advisor complements service-specific monitoring and Well-Architected reviews.'],
+      takeaways:['Trusted Advisor analyzes the AWS account.','Check availability can depend on Support plan.','Recommendations need contextual review.'],
+      examTip:'Find underutilized resources, exposed security settings, and approaching quotas through managed account checks: use Trusted Advisor.'
+    },
+    {
+      ready:true,title:'Use reference architectures without copying blindly',
+      summary:'Adapt AWS guidance, whitepapers, and patterns to workload constraints and validate them continuously.',
+      explanation:['AWS Architecture Center, Prescriptive Guidance, Solutions Library, service decision guides, and Well-Architected lenses provide proven patterns and implementation considerations. They accelerate design vocabulary but represent starting points, not universally correct production blueprints.','Record assumptions about scale, consistency, compliance, failure domains, team capability, and cost, then test them through load, security, and recovery exercises. Revisit architecture after service changes and incidents; a diagram becomes trustworthy only when its operational procedures and failure behavior are understood.'],
+      takeaways:['Reference patterns are adaptable starting points.','Assumptions must be explicit and tested.','Architecture review is continuous work.'],
+      examTip:'Prefer AWS best-practice patterns, then use the scenario\'s stated constraints to select among their tradeoffs.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -2919,4 +2950,5 @@
   window.AWS_COURSE_CURRICULUM[27].lectures=sectionTwentyEightLectures;
   window.AWS_COURSE_CURRICULUM[28].lectures=sectionTwentyNineLectures;
   window.AWS_COURSE_CURRICULUM[29].lectures=sectionThirtyLectures;
+  window.AWS_COURSE_CURRICULUM[30].lectures=sectionThirtyOneLectures;
 })();
