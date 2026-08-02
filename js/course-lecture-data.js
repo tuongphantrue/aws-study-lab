@@ -1859,6 +1859,93 @@
     }
   ];
 
+  const sectionTwentyTwoLectures=[
+    {
+      ready:true,title:'Query S3 data with Amazon Athena',
+      summary:'Run serverless SQL over files in S3 and reduce cost by scanning only the data each query needs.',
+      explanation:['Amazon Athena reads structured and semi-structured data in S3 through schemas stored in a data catalog and writes query results to S3. It is well suited to ad hoc analytics, log investigation, reporting, and data-lake exploration without loading data into a database cluster. Current Athena engine versions incorporate Trino capabilities.','Query cost and speed depend heavily on bytes scanned. Convert text into compressed columnar Parquet or ORC, partition paths by frequently filtered dimensions, compact many tiny files, and select only required columns. Federated Query uses connectors, commonly Lambda-based, to query supported relational, NoSQL, log, and custom sources alongside S3 data.'],
+      takeaways:['Athena queries data in place in S3.','Columnar formats and partitions reduce scanned bytes.','Federated connectors reach non-S3 sources.'],
+      examTip:'Serverless SQL analysis of CloudTrail, load-balancer, or VPC Flow Logs already in S3 points to Athena.'
+    },
+    {
+      ready:true,title:'Build an OLAP warehouse with Amazon Redshift',
+      summary:'Use columnar, massively parallel SQL compute for repeated joins, aggregations, and business-intelligence workloads.',
+      explanation:['Amazon Redshift is an analytical warehouse rather than an OLTP database. Columnar storage, compression, distributed execution, and query optimization make it effective for scanning and aggregating large structured data sets through SQL and BI tools.','Provisioned deployments expose cluster capacity, while Redshift Serverless uses namespaces and workgroups with capacity measured in RPUs. Load large batches efficiently with COPY from S3 or supported streaming paths rather than issuing many small row inserts, and isolate transactional systems from analytical scans.'],
+      takeaways:['Redshift targets OLAP, not transactional request processing.','Columnar MPP execution accelerates analytics.','COPY and batch loading outperform tiny inserts.'],
+      examTip:'Complex BI joins over terabytes or petabytes with predictable repeated queries favor Redshift over an OLTP RDS database.'
+    },
+    {
+      ready:true,title:'Protect and extend Redshift analytics',
+      summary:'Use snapshots and multi-AZ options for recovery, and query S3 data through integrated data-lake access.',
+      explanation:['Redshift automated and manual snapshots capture recovery points and restore into a new warehouse. Retention and cross-Region snapshot copy support disaster-recovery goals, while supported Multi-AZ provisioned configurations improve local availability without replacing backups.','Redshift Spectrum and integrated data-lake queries expose external S3 tables through the Glue Data Catalog without first loading all data into warehouse storage. Provisioned clusters and Redshift Serverless supply compute for these queries, letting architectures combine hot warehouse tables with a much larger S3 lake.'],
+      takeaways:['Snapshots restore into a separate warehouse.','Cross-Region copies support regional recovery.','Spectrum queries external S3 tables.'],
+      examTip:'Keep historical data cheaply in S3 but join it from existing Redshift SQL: create external tables and query through Spectrum.'
+    },
+    {
+      ready:true,title:'Search and analyze text with Amazon OpenSearch Service',
+      summary:'Index fields and free text for partial matching, relevance, log exploration, and dashboards alongside a source database.',
+      explanation:['Amazon OpenSearch Service provides managed-cluster and Serverless deployment modes for search, log analytics, and observability. Unlike primary-key access in DynamoDB, an index can search many fields, tokenize text, rank matches, aggregate documents, and power OpenSearch Dashboards.','OpenSearch is commonly a derived index rather than the system of record. DynamoDB Streams with Lambda can project table changes, while CloudWatch Logs subscriptions, Kinesis Data Firehose, and streaming consumers can ingest operational data. Plan replay or reconciliation so a failed indexing event does not permanently diverge from the source.'],
+      takeaways:['OpenSearch supports free-text and multi-field search.','Dashboards visualize indexed documents.','A durable source should be able to rebuild the index.'],
+      examTip:'Users must search products by partial text across several attributes while DynamoDB remains authoritative: replicate changes into OpenSearch.'
+    },
+    {
+      ready:true,title:'Process big data with Amazon EMR',
+      summary:'Run managed Hadoop ecosystem frameworks for large-scale Spark, Hive, HBase, Flink, and related workloads.',
+      explanation:['Amazon EMR provisions and configures distributed data-processing frameworks on EC2, EKS, or serverless options depending on the selected service mode. It fits Spark ETL, machine learning preparation, web indexing, large batch analytics, and applications already built for the Hadoop ecosystem.','In an EC2 cluster, the primary node coordinates work, core nodes process and store cluster data, and optional task nodes add compute without HDFS storage responsibility. Stable nodes favor On-Demand or committed capacity, while interruption-tolerant task nodes are good Spot candidates. Transient clusters reduce idle cost for finite jobs.'],
+      takeaways:['EMR manages distributed open-source analytics frameworks.','Core and task nodes have different storage roles.','Transient clusters fit finite batch processing.'],
+      examTip:'A company already has Apache Spark jobs that need hundreds of scalable workers: choose EMR rather than rewriting them as SQL queries.'
+    },
+    {
+      ready:true,title:'Visualize insights with Amazon Quick Sight',
+      summary:'Create interactive analyses, publish dashboards, and embed scalable business intelligence over diverse data sources.',
+      explanation:['Amazon QuickSight was rebranded as Amazon Quick Sight, a core component of the Amazon Quick analytics and AI platform. It connects to Athena, Redshift, RDS, Aurora, S3, OpenSearch, SaaS sources, and JDBC databases to create analyses and interactive visualizations.','SPICE imports data into an in-memory engine for fast, scalable dashboard interaction. An analysis is the editable authoring workspace; a dashboard is a published read-oriented view shared with users or groups. Row- and column-level security must protect underlying data, because dashboard viewers may otherwise see more than the visual alone suggests.'],
+      takeaways:['Quick Sight is AWS business intelligence and visualization.','SPICE accelerates imported analytical data.','Dashboards are published from editable analyses.'],
+      examTip:'Executives need serverless dashboards over Athena and Redshift data: use Amazon Quick Sight.'
+    },
+    {
+      ready:true,title:'Transform analytics data with AWS Glue',
+      summary:'Discover, clean, convert, and load data through serverless ETL jobs and visual preparation tools.',
+      explanation:['AWS Glue runs managed ETL jobs that extract data from sources such as S3 and JDBC databases, transform it using supported engines, and load analytics targets. A common pattern converts incoming CSV or JSON into compressed Parquet in partitioned S3 paths for cheaper Athena queries.','Job bookmarks track previously processed input to reduce duplicate work. Glue Studio provides visual job authoring and monitoring, DataBrew offers no-code data cleaning, and streaming ETL processes Kinesis or Kafka records continuously. Triggers and workflows coordinate jobs, but pipelines still need idempotent output and data-quality checks.'],
+      takeaways:['Glue supplies managed ETL execution.','Parquet conversion improves lake analytics.','Bookmarks help avoid reprocessing old input.'],
+      examTip:'Transform daily S3 CSV files into partitioned Parquet without managing Spark servers: use an AWS Glue ETL job.'
+    },
+    {
+      ready:true,title:'Catalog shared data with AWS Glue Data Catalog',
+      summary:'Store reusable table, schema, partition, and location metadata for multiple analytics engines.',
+      explanation:['The Glue Data Catalog is a managed metadata repository. Crawlers inspect supported sources and create or update database and table definitions, while ETL pipelines and schema-management processes can write metadata explicitly for tighter control.','Athena, Redshift external schemas, EMR, Glue jobs, and other integrations reuse the same definitions instead of each maintaining a separate map of S3 files. The catalog stores metadata, not the underlying records; permissions must cover both catalog resources and the actual S3 or database data.'],
+      takeaways:['Crawlers infer metadata from data sources.','Multiple engines share catalog table definitions.','Catalog authorization does not replace data-location access.'],
+      examTip:'Athena and Redshift Spectrum must query the same S3 table definition: register it in the Glue Data Catalog.'
+    },
+    {
+      ready:true,title:'Govern an S3 data lake with Lake Formation',
+      summary:'Centralize ingestion, cataloging, and fine-grained permissions across lake data and analytics consumers.',
+      explanation:['AWS Lake Formation builds on S3 and the Glue Data Catalog to simplify data-lake setup and governance. It can help register locations, ingest and catalog data, and define centrally managed access for services such as Athena, Redshift, EMR, Glue, and Quick Sight.','Lake Formation permissions can restrict databases, tables, columns, rows, and governed data cells rather than distributing broad bucket permissions to every analyst. IAM still controls service API access, so effective authorization combines IAM, Lake Formation grants, catalog metadata, and S3 registration.'],
+      takeaways:['Lake Formation governs data stored in S3.','Fine-grained grants can restrict rows and columns.','It builds on Glue catalog metadata and IAM.'],
+      examTip:'Many analytics services need centralized table-, row-, and column-level data-lake permissions: choose Lake Formation.'
+    },
+    {
+      ready:true,title:'Process streams with Managed Service for Apache Flink',
+      summary:'Run stateful Apache Flink applications for real-time transformations, windows, joins, and event-time analytics.',
+      explanation:['Amazon Managed Service for Apache Flink, formerly Kinesis Data Analytics for Apache Flink, manages compute, scaling, checkpoints, and snapshots for Flink applications written with supported APIs and languages. Sources commonly include Kinesis Data Streams and Amazon MSK.','Flink maintains state across records and supports event-time windows, streaming joins, and complex transformations that exceed simple per-record Lambda processing. Amazon Data Firehose is a delivery destination rather than a Flink source, so route records through Kinesis Data Streams or Kafka when Flink must consume them.'],
+      takeaways:['Flink performs stateful stream processing.','Checkpoints and snapshots protect application state.','Kinesis Data Streams and MSK are common sources.'],
+      examTip:'A real-time application needs windowed aggregation and stateful joins over events: use Managed Service for Apache Flink.'
+    },
+    {
+      ready:true,title:'Run Kafka workloads with Amazon MSK',
+      summary:'Preserve Apache Kafka clients, topics, partitions, and ecosystem integrations with managed brokers or serverless capacity.',
+      explanation:['Amazon Managed Streaming for Apache Kafka operates Kafka infrastructure in a customer VPC with multi-AZ replication and automated recovery. Existing producers and consumers use Kafka protocols, allowing migrations and ecosystem tools that would otherwise require rewriting for Kinesis APIs.','Provisioned MSK offers Standard or Express broker choices and current clusters may use ZooKeeper or KRaft metadata modes; MSK Serverless abstracts broker capacity and scales compute and storage. Kafka partitions define ordering and parallelism and can only be added, so key selection and initial partition strategy remain important.'],
+      takeaways:['MSK is managed Apache Kafka.','Topics and partitions determine ordering and concurrency.','Serverless removes broker capacity management.'],
+      examTip:'An application depends on native Kafka clients and topic semantics: choose Amazon MSK rather than Kinesis Data Streams.'
+    },
+    {
+      ready:true,title:'Assemble a serverless analytics pipeline',
+      summary:'Connect real-time ingestion, transformation, lake storage, SQL analysis, warehousing, and dashboards with decoupled stages.',
+      explanation:['IoT Core or applications publish real-time events into Kinesis Data Streams. Amazon Data Firehose buffers delivery into an S3 ingestion zone and can invoke Lambda for lightweight transformation. S3 events can enqueue downstream work in SQS so processing survives bursts and retries independently.','Athena queries curated S3 data and writes results to a reporting bucket; Glue maintains formats and catalog metadata. Quick Sight can visualize Athena or Redshift data, while Redshift loads repeated analytical models or queries lake tables. Each boundary needs encryption, least privilege, partitioning, failure storage, replay, and observability.'],
+      takeaways:['Streams ingest; Firehose delivers.','S3 is the durable analytics lake.','Athena, Redshift, and Quick Sight serve different analysis layers.'],
+      examTip:'For fully managed real-time ingestion into S3 followed by SQL and dashboards, combine Kinesis, Firehose, Athena, and Quick Sight rather than one monolithic service.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -1889,4 +1976,5 @@
   window.AWS_COURSE_CURRICULUM[18].lectures=sectionNineteenLectures;
   window.AWS_COURSE_CURRICULUM[19].lectures=sectionTwentyLectures;
   window.AWS_COURSE_CURRICULUM[20].lectures=sectionTwentyOneLectures;
+  window.AWS_COURSE_CURRICULUM[21].lectures=sectionTwentyTwoLectures;
 })();
