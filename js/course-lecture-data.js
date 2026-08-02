@@ -2772,6 +2772,114 @@
     }
   ];
 
+  const sectionThirtyLectures=[
+    {
+      ready:true,title:'Model infrastructure with AWS CloudFormation',
+      summary:'Declare desired AWS resources in versioned templates and let CloudFormation order their lifecycle.',
+      explanation:['A CloudFormation template describes resources, properties, parameters, mappings, conditions, outputs, and dependencies. A stack is one deployed instance of that template; CloudFormation resolves references, creates resources in dependency order, and records their state.','Infrastructure as code makes environments reviewable, repeatable, and disposable, but templates still need least privilege, secret-safe parameters, testing, and rollback planning. Use outputs and cross-stack references carefully because they can couple stack lifecycles.'],
+      takeaways:['Templates declare desired resources.','Stacks are deployed template instances.','References establish dependencies.'],
+      examTip:'Repeatably deploy the same governed infrastructure across environments: use CloudFormation.'
+    },
+    {
+      ready:true,title:'Control CloudFormation changes and drift',
+      summary:'Preview updates, detect out-of-band edits, and protect important state during stack operations.',
+      explanation:['A change set shows proposed stack actions before execution, helping reviewers spot replacements and destructive updates. Drift detection compares supported live resource properties with the template, while rollback returns a failed operation toward the last stable stack state.','DeletionPolicy and UpdateReplacePolicy can retain, snapshot, or delete stateful resources when stacks or replacements occur. Stack policies protect critical resources from updates, and termination protection prevents accidental stack deletion; none replaces backups or a recovery plan.'],
+      takeaways:['Change sets preview updates.','Drift reveals manual divergence.','Deletion policies protect resource state.'],
+      examTip:'Before applying a template update that might replace a database, create and review a CloudFormation change set.'
+    },
+    {
+      ready:true,title:'Delegate and visualize CloudFormation deployment',
+      summary:'Use service roles, visual composition, and multi-account deployment controls appropriately.',
+      explanation:['A CloudFormation service role supplies the permissions used to create, update, and delete stack resources. Users allowed to operate a stack can indirectly use that role, so restrict iam:PassRole, template sources, macros, and stack actions rather than treating the role as harmless plumbing.','AWS Infrastructure Composer provides visual authoring for supported application resources and can generate or edit infrastructure templates. StackSets deploy stacks across accounts and Regions with self-managed or Organizations-integrated permissions, adding rollout concurrency and failure-tolerance controls.'],
+      takeaways:['Service roles determine deployment power.','Infrastructure Composer assists visual template design.','StackSets deploy across accounts and Regions.'],
+      examTip:'Centrally deploy one baseline template to every organization account: use CloudFormation StackSets.'
+    },
+    {
+      ready:true,title:'Send transactional email with Amazon SES',
+      summary:'Deliver application email at scale while managing identities, reputation, feedback, and compliance.',
+      explanation:['Amazon Simple Email Service sends transactional, marketing, or bulk email through APIs or SMTP and can receive mail in supported Regions. Verify sending domains, configure DKIM and SPF alignment, and move an account from sandbox restrictions only after the workload is prepared.','Configuration sets publish delivery, bounce, complaint, and engagement events to monitoring destinations. Suppression lists and reputation dashboards help protect deliverability, while applications must process complaints and bounces, honor consent, and keep credentials narrowly scoped.'],
+      takeaways:['SES provides managed email sending.','Domains and identities require verification.','Bounce and complaint handling protects reputation.'],
+      examTip:'An application needs high-volume transactional email rather than general pub/sub notifications: choose SES.'
+    },
+    {
+      ready:true,title:'Transition from Amazon Pinpoint messaging',
+      summary:'Recognize the course engagement service while designing new messaging on its supported successors.',
+      explanation:['Amazon Pinpoint historically provided audience endpoints, segments, templates, campaigns, journeys, analytics, and multichannel messaging. It stopped accepting new customers on May 20, 2025 and reaches end of support on October 30, 2026, after which its console and engagement resources are unavailable.','SMS, MMS, push, WhatsApp, voice, OTP, and phone-validation APIs continue under AWS End User Messaging. AWS directs engagement use cases such as segments, campaigns, journeys, and analytics toward Amazon Connect Customer capabilities. Keep Pinpoint recognizable for older exam material but do not choose it for a new implementation.'],
+      takeaways:['Pinpoint engagement is nearing end of support.','Messaging APIs continue as AWS End User Messaging.','New engagement workflows should use the recommended successor.'],
+      examTip:'For current architecture, separate message delivery through AWS End User Messaging from proactive customer engagement through Amazon Connect Customer.'
+    },
+    {
+      ready:true,title:'Open managed sessions with Session Manager',
+      summary:'Access managed nodes through IAM without inbound SSH, bastions, or distributed private keys.',
+      explanation:['Systems Manager Session Manager establishes interactive shell or port-forwarding sessions through the SSM Agent and outbound service connectivity. Nodes need a managed identity and access to Systems Manager endpoints through internet egress or interface VPC endpoints.','IAM controls who can start sessions and against which nodes, while logs can be sent to S3 or CloudWatch Logs subject to session encryption limitations. Session Manager reduces exposed administration paths but still requires operating-system authorization, agent health, patching, and emergency access planning.'],
+      takeaways:['Session Manager requires no inbound administration port.','IAM authorizes sessions.','Managed nodes need outbound SSM connectivity.'],
+      examTip:'Administrators need auditable access to private EC2 instances without SSH keys: use Session Manager.'
+    },
+    {
+      ready:true,title:'Execute fleet tasks with Systems Manager Run Command',
+      summary:'Run documents across tagged managed nodes without logging into each server.',
+      explanation:['Run Command executes an SSM document or command on selected managed nodes, with targets based on IDs, tags, or resource groups and controlled concurrency and error thresholds. Output and status can flow to CloudWatch Logs, S3, SNS, or EventBridge-supported workflows.','The service removes direct shell connectivity but commands still run with powerful local privileges through the agent. Restrict permitted documents and parameters, use maintenance controls for disruptive actions, and prefer idempotent scripts that tolerate partial fleet completion and retry.'],
+      takeaways:['Run Command performs remote fleet operations.','Targets can be selected dynamically.','Concurrency and error limits control blast radius.'],
+      examTip:'Run one approved command on hundreds of private instances without SSH: use Systems Manager Run Command.'
+    },
+    {
+      ready:true,title:'Patch fleets with Patch Manager policies',
+      summary:'Define approved updates, schedules, scanning, installation, reboot behavior, and compliance reporting.',
+      explanation:['Systems Manager Patch Manager compares managed nodes with operating-system-specific patch baselines and can scan or scan-and-install missing updates. AWS currently recommends Quick Setup patch policies for centralized schedules and baselines across organization accounts and Regions.','Stage deployment rings, set maintenance windows and concurrency, test application compatibility, and choose reboot behavior explicitly. Compliance status reflects the most recent scan method, so avoid overlapping policies with conflicting baselines and monitor failures rather than equating task launch with successful patching.'],
+      takeaways:['Patch baselines define approved updates.','Patch policies centralize fleet schedules.','Patching needs staged rollout and compliance review.'],
+      examTip:'Standardize recurring OS patches across organization accounts: use a Systems Manager Quick Setup patch policy.'
+    },
+    {
+      ready:true,title:'Schedule and automate Systems Manager operations',
+      summary:'Use Maintenance Windows for timing and Automation runbooks for repeatable multi-step workflows.',
+      explanation:['A Maintenance Window defines when registered targets may receive tasks such as Run Command, Automation, Lambda, or Step Functions operations. Scheduling, duration, cutoff, priority, concurrency, and error thresholds constrain change execution.','Systems Manager Automation runbooks coordinate AWS API actions, scripts, approvals, branching, and output across resources. They support tasks such as creating AMIs, restarting fleets, or remediating Config findings. Use scoped service roles and idempotent steps because automation can amplify both good and bad changes.'],
+      takeaways:['Maintenance Windows control when work runs.','Automation runbooks coordinate multiple steps.','Approvals and error limits reduce risk.'],
+      examTip:'Patch only during an approved overnight change period: target the operation through a Systems Manager Maintenance Window.'
+    },
+    {
+      ready:true,title:'Analyze spend with AWS Cost Explorer',
+      summary:'Group, filter, forecast, and investigate historical AWS cost and usage through interactive reports.',
+      explanation:['AWS Cost Explorer visualizes cost and usage by dimensions such as service, account, Region, tag, purchase option, and charge type. Daily and monthly views reveal trends, while resource-level and hourly data are available for supported scopes and configuration.','Forecasts extrapolate historical patterns and are not budget guarantees. Use consistent cost-allocation tags and cost categories, separate amortized commitment cost from cash charges, and combine Cost Explorer with detailed Cost and Usage Reports when line-item analysis is required.'],
+      takeaways:['Cost Explorer analyzes historical spend.','Dimensions and filters isolate cost drivers.','Forecasts are estimates, not controls.'],
+      examTip:'Identify which service or linked account caused a monthly cost increase: start with Cost Explorer.'
+    },
+    {
+      ready:true,title:'Detect unusual spend automatically',
+      summary:'Use machine-learning baselines and routed alerts to surface unexpected cost changes.',
+      explanation:['AWS Cost Anomaly Detection creates monitors for overall services, linked accounts, cost categories, or tags and learns expected spend patterns. Detected anomalies include likely root causes and estimated impact rather than relying only on a static monthly threshold.','Alert subscriptions set frequency and impact thresholds and can notify through email or SNS. Detection is not prevention and can lag usage, so combine it with AWS Budgets, service quotas, preventive governance, and rapid ownership metadata for a complete cost-control process.'],
+      takeaways:['Anomaly Detection learns normal spend.','Monitors define analyzed scope.','Subscriptions route impact-based alerts.'],
+      examTip:'Alert on an unexpected service cost spike without manually selecting a fixed threshold for every service: use Cost Anomaly Detection.'
+    },
+    {
+      ready:true,title:'Run AWS infrastructure on premises with Outposts',
+      summary:'Bring AWS-managed racks or servers to a customer site for low latency, local processing, and residency needs.',
+      explanation:['AWS Outposts extends selected AWS infrastructure, services, APIs, and operating models into an approved on-premises location. The customer provides power, cooling, space, physical security, and resilient network connectivity, while AWS delivers and maintains the managed hardware.','Workloads can process data locally and access their parent Region for control-plane and regional service dependencies. Outposts is not a disconnected cloud by default; architects must understand service availability, network interruption behavior, capacity ordering, and which data or operations remain regional.'],
+      takeaways:['Outposts places AWS-managed hardware on premises.','It serves latency and residency requirements.','Regional connectivity remains important.'],
+      examTip:'A workload must use familiar AWS APIs while compute and data remain at the factory: consider AWS Outposts.'
+    },
+    {
+      ready:true,title:'Run containerized batch jobs with AWS Batch',
+      summary:'Schedule finite jobs onto managed compute environments instead of operating a job cluster.',
+      explanation:['AWS Batch accepts container job definitions and queues, evaluates dependencies and priorities, and schedules jobs onto managed EC2, Fargate, or supported EKS compute environments. EC2 environments can mix On-Demand and Spot capacity for cost-aware large-scale processing.','Batch jobs may run much longer and use broader container runtimes and compute shapes than Lambda functions. Lambda fits short event-driven functions with a managed runtime limit; Batch fits queued, resource-intensive, retryable jobs with a defined start and finish.'],
+      takeaways:['Batch schedules container jobs.','Compute environments supply capacity.','Spot suits interruption-tolerant batch work.'],
+      examTip:'A multi-hour Dockerized scientific job needs hundreds of workers: use AWS Batch rather than Lambda.'
+    },
+    {
+      ready:true,title:'Transfer SaaS data with Amazon AppFlow',
+      summary:'Move and transform records between supported SaaS applications and AWS services without custom connectors.',
+      explanation:['Amazon AppFlow creates managed flows between supported SaaS sources and destinations such as S3, Redshift, and Salesforce-related endpoints. Flows can run on demand, on schedules, or from supported events and can map, filter, validate, aggregate, and mask fields.','Use AppFlow when a supported connector and transformation model fits the integration. Configure private connectivity where available, encrypt data, restrict connector credentials, and design incremental fields and error handling to avoid duplicates or missed changes.'],
+      takeaways:['AppFlow integrates supported SaaS and AWS data.','Flows support scheduling and transformations.','Connector support determines applicability.'],
+      examTip:'Transfer Salesforce records into S3 on a schedule without building an ETL connector: use Amazon AppFlow.'
+    },
+    {
+      ready:true,title:'Build front ends and schedule resources economically',
+      summary:'Use Amplify for full-stack web delivery and managed scheduling patterns for nonproduction cost control.',
+      explanation:['AWS Amplify provides tools for hosting and deploying web applications with Git-based workflows, previews, custom domains, and integrations for authentication, data, storage, and serverless backends. It accelerates front-end teams while the underlying AWS resources still need security, observability, and environment separation.','Instance Scheduler on AWS is a deployable solution, not a standalone service, that uses schedules and tags to stop and start supported EC2 and RDS resources. Systems Manager Quick Setup also offers scheduled EC2 start and stop. Use these for idle nonproduction capacity, not workloads whose availability or licensing prevents interruption.'],
+      takeaways:['Amplify accelerates web application delivery.','Instance Scheduler is an AWS Solution.','Scheduling reduces idle nonproduction cost.'],
+      examTip:'For predictable office-hours development instances, schedule start and stop rather than paying for continuous runtime.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -2810,4 +2918,5 @@
   window.AWS_COURSE_CURRICULUM[26].lectures=sectionTwentySevenLectures;
   window.AWS_COURSE_CURRICULUM[27].lectures=sectionTwentyEightLectures;
   window.AWS_COURSE_CURRICULUM[28].lectures=sectionTwentyNineLectures;
+  window.AWS_COURSE_CURRICULUM[29].lectures=sectionThirtyLectures;
 })();
