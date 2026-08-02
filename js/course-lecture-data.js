@@ -2033,6 +2033,135 @@
     }
   ];
 
+  const sectionTwentyFourLectures=[
+    {
+      ready:true,title:'Measure resources with CloudWatch metrics',
+      summary:'Organize time-series measurements by namespace, metric name, dimensions, timestamp, and resolution.',
+      explanation:['Amazon CloudWatch metrics represent numeric observations such as CPU utilization, request count, latency, or network throughput. A namespace isolates related metrics, dimensions identify the resource or context, and statistics aggregate data points over a selected period. Dashboards combine metrics into operational views.','AWS services publish selected metrics automatically, but the exact coverage and frequency vary. Applications can publish custom metrics for business or system data that AWS does not expose, such as queue age or memory utilization. High-resolution custom metrics support shorter alarm periods but increase ingestion and monitoring cost.'],
+      takeaways:['Metrics are time-series numeric data.','Dimensions identify a metric context.','Custom metrics cover application-specific signals.'],
+      examTip:'CPU and network are standard EC2 metrics, but guest-memory or application-order counts require an agent or custom metric.'
+    },
+    {
+      ready:true,title:'Stream metrics with CloudWatch Metric Streams',
+      summary:'Continuously deliver selected CloudWatch metrics to external analytics and monitoring destinations.',
+      explanation:['CloudWatch Metric Streams sends near-real-time metric updates through Amazon Data Firehose to supported destinations such as S3 or partner observability platforms. This push model avoids repeatedly polling CloudWatch APIs across many accounts and Regions.','Include and exclude filters control which namespaces or metrics leave CloudWatch, reducing cost and noise. A stream transports metrics; it does not replace CloudWatch alarms or dashboards, and the Firehose delivery path still needs buffering, retry, encryption, and destination failure handling.'],
+      takeaways:['Metric Streams pushes metrics continuously.','Data Firehose handles delivery.','Filters limit streamed metrics.'],
+      examTip:'A monitoring vendor needs low-latency access to metrics from many AWS services without API polling: use CloudWatch Metric Streams.'
+    },
+    {
+      ready:true,title:'Organize and retain CloudWatch Logs',
+      summary:'Structure application events into log groups and streams with controlled retention and encryption.',
+      explanation:['A CloudWatch Logs log group usually represents an application or workload, while log streams separate producers such as instances, containers, or files. Retention is configured per log group so operational data does not remain forever by accident; encryption is automatic and a customer-managed KMS key can provide additional key control.','Many AWS services integrate directly with CloudWatch Logs, while applications use SDKs or agents. Lambda, API Gateway, Route 53 query logging, VPC Flow Logs, CloudTrail, and container platforms each require their own logging configuration and permissions. Logs should exclude unnecessary secrets and sensitive payloads at the source.'],
+      takeaways:['Log groups contain log streams.','Retention is configured at the group level.','Sources need permissions and logging configuration.'],
+      examTip:'CloudWatch receives no operating-system log files merely because an EC2 instance exists; install and authorize an agent.'
+    },
+    {
+      ready:true,title:'Investigate logs with CloudWatch Logs Insights',
+      summary:'Run interactive queries over stored log events to filter, parse, aggregate, sort, and visualize findings.',
+      explanation:['CloudWatch Logs Insights is an on-demand query engine for CloudWatch Logs. It automatically discovers fields in common AWS and JSON events and supports parsing, filtering, aggregation, sorting, and limits across one or more selected log groups. Saved queries and dashboard widgets make recurring investigations easier.','It analyzes events already ingested into log groups and is not a continuous delivery engine. Limit the time range and selected fields to improve responsiveness and control scanned-data cost; use subscription filters when events must trigger downstream processing as they arrive.'],
+      takeaways:['Logs Insights queries stored logs.','It supports field discovery and aggregation.','Narrow time ranges reduce scanned data.'],
+      examTip:'An operator must count recent ERROR messages or find requests from one IP in CloudWatch Logs: use Logs Insights.'
+    },
+    {
+      ready:true,title:'Export and subscribe to CloudWatch Logs',
+      summary:'Choose batch S3 export for historical copies or subscriptions for continuous downstream processing.',
+      explanation:['A CloudWatch Logs export task copies an available time range to S3 for archival or later analysis, but it is not a real-time path. Subscription filters continuously match new events and deliver them to supported destinations such as Lambda, Kinesis Data Streams, or Amazon Data Firehose.','Subscriptions can centralize logs from multiple accounts and Regions, but cross-account delivery requires a destination policy and an authorized role or resource path. Build for retries, duplicates, throttling, and failed records, and avoid creating recursive delivery loops back into the same log group.'],
+      takeaways:['S3 export is a batch operation.','Subscriptions process new logs continuously.','Cross-account aggregation needs explicit trust.'],
+      examTip:'New log events must reach a central stream with low latency: choose a subscription filter, not an S3 export task.'
+    },
+    {
+      ready:true,title:'Collect host telemetry with the CloudWatch agent',
+      summary:'Send operating-system logs and guest-level metrics from EC2 and on-premises servers.',
+      explanation:['EC2 publishes hypervisor-visible metrics but does not automatically send arbitrary files or guest-memory statistics. The unified CloudWatch agent collects logs plus metrics such as memory, disk usage, processes, swap, and detailed network statistics from supported hosts.','Store shared agent configuration in Systems Manager Parameter Store and attach an IAM role with only the required CloudWatch and Logs actions. The older Logs agent sends logs only; prefer the unified agent for new installations that require both logs and system metrics.'],
+      takeaways:['EC2 does not automatically ship guest logs.','The unified agent collects logs and system metrics.','IAM authorizes telemetry publication.'],
+      examTip:'An alarm needs Linux memory or disk-space utilization from EC2: install the unified CloudWatch agent and publish those metrics.'
+    },
+    {
+      ready:true,title:'Create actionable CloudWatch alarms',
+      summary:'Evaluate metric statistics over time and trigger notifications, scaling, or EC2 actions.',
+      explanation:['A metric alarm compares a statistic against a threshold for configured evaluation periods and moves among OK, ALARM, and INSUFFICIENT_DATA. Missing-data treatment matters for sparse metrics, while M-out-of-N evaluation reduces reactions to isolated spikes.','Alarm actions can notify SNS, invoke Auto Scaling policies, or perform supported EC2 stop, terminate, reboot, and recovery actions. Alarms should represent a condition that has a clear response; dashboards explain behavior but do not trigger remediation by themselves.'],
+      takeaways:['Alarms evaluate metrics over periods.','Missing-data treatment affects state.','Actions connect detection to response.'],
+      examTip:'A threshold must send a notification or scale capacity automatically: create a CloudWatch alarm on the relevant metric.'
+    },
+    {
+      ready:true,title:'Reduce noise with composite alarms and metric filters',
+      summary:'Combine alarm states and turn matching log events into metrics for higher-signal alerting.',
+      explanation:['A composite alarm applies AND, OR, and NOT logic to other alarm states. It can notify only when several symptoms agree or suppress downstream alarms during maintenance, reducing alert storms without altering the underlying metric alarms.','A CloudWatch Logs metric filter converts matching events into metric values, allowing an alarm on patterns such as authorization failures. For EC2 infrastructure failure, an alarm on the system status check can initiate instance recovery while retaining key instance attributes; instance status failures instead point to the guest workload.'],
+      takeaways:['Composite alarms combine other alarm states.','Metric filters derive metrics from log patterns.','System and instance status checks diagnose different layers.'],
+      examTip:'Notify only when both high CPU and high I/O alarms are active: use a composite alarm with AND logic.'
+    },
+    {
+      ready:true,title:'Monitor hybrid links with Network Synthetic Monitor',
+      summary:'Measure packet loss and round-trip latency between VPC subnets and on-premises destinations without agents.',
+      explanation:['Amazon CloudWatch Network Synthetic Monitor creates managed probes from a selected VPC subnet to on-premises IP destinations across AWS Direct Connect or Site-to-Site VPN paths. It publishes latency and packet-loss metrics to CloudWatch for dashboards, thresholds, and alarms.','For Direct Connect, the network health indicator helps distinguish degradation within the AWS network. The monitor improves diagnosis but does not perform automatic failover, and it addresses private hybrid paths rather than public end-user internet performance.'],
+      takeaways:['Managed probes require no host agent.','It measures hybrid packet loss and latency.','Monitoring does not provide failover.'],
+      examTip:'Diagnose latency on a Direct Connect or Site-to-Site VPN path without installing agents: use Network Synthetic Monitor.'
+    },
+    {
+      ready:true,title:'Route events with Amazon EventBridge rules',
+      summary:'Match service and application events or schedules and fan them out to decoupled targets.',
+      explanation:['Amazon EventBridge receives JSON events and evaluates rules against event patterns. Matching events can reach targets such as Lambda, SQS, SNS, Step Functions, ECS tasks, API destinations, or other event buses. EventBridge Scheduler is the dedicated current option for large-scale one-time and recurring schedules.','A rule responds to an event rather than polling for state. Configure retries and a dead-letter queue for delivery failures, grant EventBridge permission to invoke its target, and make consumers idempotent because delivery is at least once.'],
+      takeaways:['Rules match JSON event patterns.','One event can reach multiple targets.','Consumers must tolerate duplicate delivery.'],
+      examTip:'Run automation when an EC2 instance changes state or a CloudTrail API event occurs: create an EventBridge rule.'
+    },
+    {
+      ready:true,title:'Design EventBridge buses, archives, and schemas',
+      summary:'Separate event sources, permit cross-account publishing, replay retained events, and formalize contracts.',
+      explanation:['The default bus receives supported AWS service events, custom buses organize application events, and partner event sources connect supported SaaS providers. Resource-based policies allow selected accounts or organizations to publish to a central bus for multi-account aggregation.','Archives retain matching bus events and can replay them later for recovery or testing. Schema Registry discovers or stores event structures and can generate language bindings, but producers and consumers still need compatible versioning. Archive replay is not a substitute for a durable application command queue.'],
+      takeaways:['Different buses separate event domains.','Resource policies enable cross-account publishing.','Archives support later replay.'],
+      examTip:'Centralize events from many accounts and replay them after a consumer fix: use a central EventBridge bus with a resource policy and archive.'
+    },
+    {
+      ready:true,title:'Observe containers and Lambda runtimes',
+      summary:'Add workload-level telemetry for container platforms and serverless execution environments.',
+      explanation:['CloudWatch Container Insights collects and summarizes telemetry across ECS and Kubernetes clusters, services, tasks, pods, nodes, and containers. Collection setup depends on the platform: EKS and self-managed Kubernetes commonly use a containerized agent or observability add-on, while ECS and Fargate have their own enablement paths.','CloudWatch Lambda Insights adds system-level CPU, memory, disk, network, cold-start, and worker diagnostics beyond standard Lambda metrics. Both features must be enabled and authorized, and their added detail increases monitoring cost; structured application logs and tracing still provide request and business context.'],
+      takeaways:['Container Insights organizes container telemetry.','Lambda Insights adds execution-environment diagnostics.','Both require explicit enablement.'],
+      examTip:'Choose Container Insights for cluster-to-container visibility and Lambda Insights for unexplained function runtime behavior.'
+    },
+    {
+      ready:true,title:'Find top contributors and application problems',
+      summary:'Use Contributor Insights for top talkers and Application Insights for application-centered diagnosis.',
+      explanation:['CloudWatch Contributor Insights evaluates structured logs or supported metrics to create time series for the top contributors, such as source IPs, URLs, users, or resources generating errors. Rules make high-cardinality operational data easier to rank without manually scanning every event.','CloudWatch Application Insights groups supported application resources, builds dashboards, and highlights likely problems across components. Its findings can integrate with EventBridge and Systems Manager OpsCenter. Choose Contributor Insights for who or what contributes most; choose Application Insights for correlated application health and troubleshooting.'],
+      takeaways:['Contributor Insights identifies top-N contributors.','Application Insights correlates supported application resources.','The two tools answer different diagnostic questions.'],
+      examTip:'Find the IP addresses producing the most rejected requests from flow logs: use Contributor Insights.'
+    },
+    {
+      ready:true,title:'Audit account activity with AWS CloudTrail',
+      summary:'Record who called AWS APIs, what they requested, when they acted, and where the call originated.',
+      explanation:['AWS CloudTrail event history is enabled automatically and provides 90 days of management events in each Region. Event records identify the principal, API operation, source, request parameters, response elements, and time, making CloudTrail the first place to investigate resource creation, modification, or deletion.','A trail continuously delivers selected events to S3 and can integrate with CloudWatch Logs and EventBridge. Multi-Region and organization trails provide broader coverage; protect the destination with restricted access, encryption, log-file validation, retention controls, and monitoring for changes to the trail itself.'],
+      takeaways:['CloudTrail records AWS API activity.','Event history covers recent management events.','Trails provide ongoing durable delivery.'],
+      examTip:'Determine which identity deleted a resource or changed a security group: inspect CloudTrail.'
+    },
+    {
+      ready:true,title:'Choose CloudTrail event types and detect anomalies',
+      summary:'Separate control-plane, high-volume resource, network, and unusual-activity records.',
+      explanation:['Management events describe control-plane actions such as creating a subnet or attaching a policy and can be split into reads and writes. Data events record high-volume resource activity such as S3 object access and Lambda invocation and require explicit selection. Network activity events can capture supported VPC endpoint access outcomes.','CloudTrail Insights learns normal write-management API patterns and creates Insights events when activity changes unusually. These detections can be delivered and routed through EventBridge, but they are an anomaly signal rather than proof of compromise. Selectors should capture the required evidence without logging every expensive high-volume operation unnecessarily.'],
+      takeaways:['Management events cover control-plane operations.','Data events cover resource-level activity.','Insights detects unusual API-rate patterns.'],
+      examTip:'Auditing S3 GetObject calls requires CloudTrail data events; ordinary management-event history is insufficient.'
+    },
+    {
+      ready:true,title:'Retain and analyze CloudTrail events',
+      summary:'Extend beyond recent event history with trails and account for the current CloudTrail Lake restriction.',
+      explanation:['CloudTrail event history retains 90 days of management events per Region. For longer retention, a trail can deliver files to S3, where lifecycle policies, Object Lock, and Athena support durable evidence and SQL investigation. EventBridge can react to API events exposed through CloudTrail for near-real-time automation.','CloudTrail Lake provides managed event data stores and SQL analysis for existing customers, but it stopped accepting new customers on May 31, 2026. New architectures should use durable trails and AWS-recommended alternatives appropriate to their query and security-analytics needs rather than assuming a new Lake event data store can be created.'],
+      takeaways:['Event history is limited to 90 days.','S3 trails support long-term retention.','CloudTrail Lake is closed to new customers.'],
+      examTip:'Keep audit events for years and query them with a broadly available course pattern: deliver a trail to S3 and analyze with Athena.'
+    },
+    {
+      ready:true,title:'Record compliance with AWS Config',
+      summary:'Track supported resource configurations and evaluate them against desired rules over time.',
+      explanation:['AWS Config records configuration items and relationships for supported resources, producing a history that answers what a resource looked like and how it changed. Managed and custom Config rules evaluate that state for compliance either when configurations change or on a schedule.','Config does not prevent changes by itself. Conformance packs group rules and remediation actions, while Systems Manager Automation can correct supported noncompliant resources. EventBridge or SNS can notify operators about compliance and configuration changes; scope and recording frequency affect cost.'],
+      takeaways:['Config records resource configuration history.','Rules evaluate compliance.','Remediation can use Systems Manager Automation.'],
+      examTip:'Determine whether every EBS volume is encrypted and see when a resource became noncompliant: use AWS Config.'
+    },
+    {
+      ready:true,title:'Distinguish CloudWatch, CloudTrail, and Config',
+      summary:'Select operational telemetry, API auditing, or configuration compliance based on the question being asked.',
+      explanation:['CloudWatch answers how a system is behaving through metrics, logs, alarms, dashboards, and traces. CloudTrail answers who performed an AWS API action and from where. AWS Config answers what a supported resource configuration was, how it changed, and whether it complies with a rule.','The services complement one another. For a load balancer, CloudWatch graphs request and error metrics, CloudTrail records configuration API calls, and Config tracks listener or security-group state over time. EventBridge can route relevant events from these systems into automated response workflows.'],
+      takeaways:['CloudWatch is operational observability.','CloudTrail is API activity auditing.','Config is configuration history and compliance.'],
+      examTip:'Map performance to CloudWatch, actor and API call to CloudTrail, and resource state over time to AWS Config.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -2065,4 +2194,5 @@
   window.AWS_COURSE_CURRICULUM[20].lectures=sectionTwentyOneLectures;
   window.AWS_COURSE_CURRICULUM[21].lectures=sectionTwentyTwoLectures;
   window.AWS_COURSE_CURRICULUM[22].lectures=sectionTwentyThreeLectures;
+  window.AWS_COURSE_CURRICULUM[23].lectures=sectionTwentyFourLectures;
 })();
