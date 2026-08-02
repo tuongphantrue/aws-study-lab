@@ -1786,6 +1786,79 @@
     }
   ];
 
+  const sectionTwentyOneLectures=[
+    {
+      ready:true,title:'Choose a database from the access pattern',
+      summary:'Start with data relationships, queries, scale, latency, consistency, durability, and operational constraints—not a familiar product name.',
+      explanation:['Relational OLTP workloads needing transactions and joins fit RDS or Aurora. Key-value and document access at massive scale may fit DynamoDB, graph traversal fits Neptune, MongoDB-compatible documents fit DocumentDB, Cassandra-compatible wide columns fit Keyspaces, and time-series measurements need a time-oriented engine or supported alternative.','Object storage, caches, search indexes, warehouses, and databases solve different contracts even when they can all retain data. Define the source of truth, read/write ratio, growth, item size, query shapes, schema flexibility, recovery objective, consistency, concurrency, licensing, and team expertise before selecting a service. Amazon QLDB, named in older course comparisons, reached end of support in July 2025 and should not be chosen for new ledger designs.'],
+      takeaways:['Data model and query shape lead the decision.','A cache or search index is not automatically the source of truth.','Operational and licensing needs matter alongside performance.'],
+      examTip:'Translate scenario nouns into access patterns first: joins, key lookup, graph traversal, document query, time window, object, or analytical scan.'
+    },
+    {
+      ready:true,title:'Run relational OLTP with Amazon RDS',
+      summary:'Use managed standard database engines when SQL transactions, joins, and engine compatibility are core requirements.',
+      explanation:['Amazon RDS manages supported PostgreSQL, MySQL, MariaDB, Oracle, SQL Server, and Db2 database instances. The customer selects instance and storage capacity while AWS automates common provisioning, patching, monitoring, backup, and replacement operations.','Multi-AZ deployments improve availability and failover; read replicas scale reads and support selected disaster-recovery patterns. Automated backups enable point-in-time restore, manual snapshots support longer retention, and RDS Custom provides deeper operating-system and database access for supported Oracle and SQL Server workloads that cannot use the standard managed boundary.'],
+      takeaways:['RDS supports familiar relational engines.','Multi-AZ addresses availability; read replicas address reads.','Backups and snapshots restore into a separate database instance.'],
+      examTip:'A commercial application requires standard SQL Server or Oracle compatibility and relational transactions: choose the matching RDS engine.'
+    },
+    {
+      ready:true,title:'Use Aurora for cloud-native relational scale',
+      summary:'Separate distributed storage from MySQL- or PostgreSQL-compatible compute for faster failover, read scaling, and global options.',
+      explanation:['Amazon Aurora maintains replicated, self-healing cluster storage across three Availability Zones and attaches a writer plus optional readers through stable cluster endpoints. Its MySQL- and PostgreSQL-compatible APIs ease many migrations while the distributed architecture supplies managed read scaling and failover.','Aurora Serverless v2 adjusts database capacity for variable workloads, Aurora Global Database supports cross-Region reads and disaster recovery, and database cloning creates copy-on-write test or development clusters quickly. Compatibility is not identity: extensions, versions, limits, and licensing assumptions must still be validated.'],
+      takeaways:['Aurora separates cluster storage and DB instances.','Reader and writer endpoints route distinct workloads.','Serverless, Global Database, and cloning solve different needs.'],
+      examTip:'MySQL- or PostgreSQL-compatible OLTP needs high availability, many readers, and rapid cross-Region recovery: evaluate Aurora Global Database.'
+    },
+    {
+      ready:true,title:'Cache hot data with Amazon ElastiCache',
+      summary:'Add managed in-memory Valkey, Redis OSS, or Memcached when sub-millisecond access and database offload justify application changes.',
+      explanation:['ElastiCache stores frequently accessed key-value data in memory for sessions, computed results, leaderboards, rate limits, and database query caching. Applications must implement cache-aside or another caching strategy, including TTL, invalidation, miss handling, and graceful fallback when cached data disappears.','Current ElastiCache supports Valkey, Redis OSS, and Memcached with serverless or node-based deployment choices. Valkey and Redis OSS provide richer data structures, replication, persistence options, and clustering; Memcached offers a simpler distributed cache. Serverless removes node and shard capacity planning, while node-based clusters provide finer topology control.'],
+      takeaways:['ElastiCache requires explicit application cache logic.','Valkey and Redis OSS provide richer features than Memcached.','Serverless and node-based deployments trade simplicity for control.'],
+      examTip:'A relational database is overloaded by repeated reads of the same results and the app can tolerate cache loss: add ElastiCache.'
+    },
+    {
+      ready:true,title:'Scale key-value workloads with DynamoDB',
+      summary:'Use a serverless multi-AZ NoSQL table for predictable key access, flexible items, and event-driven applications.',
+      explanation:['DynamoDB provides millisecond key-value and document operations with on-demand or provisioned capacity. IAM controls data-plane access, transactions coordinate selected items, TTL removes expired data, and flexible attributes let schemas evolve within the fixed primary-key design.','DAX accelerates repeated reads, Streams or Kinesis integration publishes item changes, and Global Tables provide multi-Region replicas. PITR and on-demand backups restore to new tables, while S3 export and import move snapshots without consuming normal read or write units. It is not a relational engine and should not be chosen for arbitrary joins.'],
+      takeaways:['Primary-key design determines scalable access.','Capacity modes address predictable and variable traffic.','Streams and Global Tables extend the core table.'],
+      examTip:'A serverless application needs massive key-based scale, flexible items, TTL, and IAM authorization: choose DynamoDB.'
+    },
+    {
+      ready:true,title:'Store large immutable objects in Amazon S3',
+      summary:'Treat S3 as an object key-value store for files and blobs rather than a transactional record database.',
+      explanation:['S3 maps a bucket and object key to object bytes plus metadata. It scales without database instance management and fits media, documents, backups, data lakes, static assets, logs, and other large objects, with storage classes and lifecycle policies controlling long-term cost.','Versioning, replication, encryption, Object Lock, event notifications, Batch Operations, Inventory, multipart transfer, and Access Points add protection and management. S3 does not provide relational joins, record-level transactions across objects, or low-latency updates to fields inside an object; an application usually stores searchable metadata in a database or index.'],
+      takeaways:['S3 addresses objects by bucket and key.','Lifecycle classes optimize retention cost.','Queryable metadata often belongs in another service.'],
+      examTip:'Store large images or documents in S3 and keep their searchable attributes and relationships in DynamoDB or a relational database.'
+    },
+    {
+      ready:true,title:'Run MongoDB-compatible documents with DocumentDB',
+      summary:'Use a managed document database when MongoDB API compatibility and JSON-like document queries drive the workload.',
+      explanation:['Amazon DocumentDB is a managed document database with MongoDB compatibility. It stores and indexes flexible document structures and separates cluster compute from distributed storage, with replicas supporting read scale and managed failover across Availability Zones.','MongoDB compatibility is workload dependent rather than complete equivalence. Before migration, test drivers, commands, indexes, aggregation behavior, change streams, extensions, and performance characteristics. Choose native DynamoDB instead when the application can use AWS key-value APIs and needs that serverless scale model.'],
+      takeaways:['DocumentDB targets MongoDB-compatible applications.','Replicas support reads and high availability.','Compatibility must be tested against required MongoDB features.'],
+      examTip:'A lift-and-shift application already uses MongoDB drivers and document queries: evaluate DocumentDB before redesigning it for DynamoDB.'
+    },
+    {
+      ready:true,title:'Traverse relationships with Amazon Neptune',
+      summary:'Use a graph database for paths, neighborhoods, recommendations, fraud rings, and highly connected knowledge.',
+      explanation:['Amazon Neptune is a managed graph database optimized for querying relationships across billions of vertices and edges. It supports common graph models and query languages, making multi-hop questions far more natural than repeated joins or application-side traversal.','Typical uses include social relationships, knowledge graphs, identity graphs, fraud detection, and recommendation engines. Neptune Streams exposes an ordered, non-duplicated sequence of graph changes through an HTTP API so applications can update search indexes, caches, analytics stores, or cross-Region replicas.'],
+      takeaways:['Graphs model entities and relationships directly.','Neptune optimizes multi-hop traversal.','Neptune Streams exposes ordered graph mutations.'],
+      examTip:'Find connections among accounts across several relationship hops to identify a fraud ring: choose Neptune.'
+    },
+    {
+      ready:true,title:'Preserve Cassandra access with Amazon Keyspaces',
+      summary:'Use a managed Cassandra-compatible wide-column service without operating database clusters.',
+      explanation:['Amazon Keyspaces supports Cassandra Query Language and drivers for applications built around Cassandra-compatible tables. AWS manages replication across Availability Zones, patching, server replacement, and elastic table capacity.','On-demand capacity fits variable traffic, while provisioned capacity with auto scaling fits planned workloads. Encryption, backup, and point-in-time recovery support protection, but Cassandra feature compatibility and data-model limits must be assessed before migration. Common patterns include IoT state, high-volume operational records, and time-oriented wide rows.'],
+      takeaways:['Keyspaces uses Cassandra Query Language.','AWS manages the underlying distributed database fleet.','Capacity can be on-demand or provisioned.'],
+      examTip:'An existing application depends on Cassandra drivers and CQL but the team wants no cluster operations: choose Amazon Keyspaces.'
+    },
+    {
+      ready:true,title:'Store time-series measurements with Timestream patterns',
+      summary:'Model timestamped metrics for time-window queries while accounting for current Timestream service availability.',
+      explanation:['A time-series engine organizes measurements by time, dimensions, and measures and optimizes retention tiers, windowed aggregation, interpolation, and trend analysis. The course\'s Timestream for LiveAnalytics pattern ingests telemetry from IoT, streams, or applications and serves operational analytics through SQL-compatible queries and downstream visualization tools.','Amazon Timestream for LiveAnalytics stopped accepting new customers on June 20, 2025, although existing customers can continue using it. AWS recommends new customers evaluate Amazon Timestream for InfluxDB for similar managed time-series needs; alternatives may also include OpenSearch, managed Prometheus, DynamoDB, or an analytics lake depending on query and retention requirements.'],
+      takeaways:['Time-series databases optimize timestamped measurements.','Recent and historical data often use different storage tiers.','New customers cannot adopt Timestream for LiveAnalytics.'],
+      examTip:'Recognize Timestream for the course\'s IoT time-series scenario, but select a currently available supported alternative for a new real-world workload.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -1815,4 +1888,5 @@
   window.AWS_COURSE_CURRICULUM[17].lectures=sectionEighteenLectures;
   window.AWS_COURSE_CURRICULUM[18].lectures=sectionNineteenLectures;
   window.AWS_COURSE_CURRICULUM[19].lectures=sectionTwentyLectures;
+  window.AWS_COURSE_CURRICULUM[20].lectures=sectionTwentyOneLectures;
 })();
