@@ -37,12 +37,29 @@
   setText('lectureSummary',lecture.summary);
   setText('lecturePosition',`Lecture ${lectureNumber} of ${section.lectures.length}`);
   setText('lectureExamTip',lecture.examTip);
+  const source=document.getElementById('lectureSource');
+  if(lecture.sourcePages){source.textContent=`PDF slides ${lecture.sourcePages}`;source.hidden=false}
   document.getElementById('lectureBack').href=`../study-guide.html?section=${sectionNumber}`;
 
   const explanation=document.getElementById('lectureExplanation');
   lecture.explanation.forEach(copy=>{const paragraph=document.createElement('p');paragraph.textContent=copy;explanation.appendChild(paragraph)});
   const takeaways=document.getElementById('lectureTakeaways');
   lecture.takeaways.forEach(copy=>{const item=document.createElement('li');item.textContent=copy;takeaways.appendChild(item)});
+  const slideOutline=document.getElementById('lectureSlideOutline');
+  const slideTopics=document.getElementById('lectureSlideTopics');
+  if(Array.isArray(lecture.slideTopics)&&lecture.slideTopics.length){
+    lecture.slideTopics.forEach(topic=>{
+      const card=document.createElement('article');
+      const heading=document.createElement('h3');
+      const list=document.createElement('ul');
+      heading.textContent=topic.heading;
+      (topic.bullets||[]).forEach(copy=>{const item=document.createElement('li');item.textContent=copy;list.appendChild(item)});
+      card.append(heading,list);
+      slideTopics.appendChild(card);
+    });
+    slideOutline.hidden=false;
+  }
+  if(lecture.sourcePages)setText('lectureSourceNote',`Original study notes derived from PDF slides ${lecture.sourcePages} supplied by the learner. The wording is summarized rather than transcribed.`);
 
   const previous=document.getElementById('previousLecture');
   const next=document.getElementById('nextLecture');

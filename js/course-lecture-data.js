@@ -61,7 +61,7 @@
     ['Review',topic=>`Summarize the decision rules and key facts to remember about ${topic}.`]
   ];
 
-  const sectionOneLectures=[
+  const legacySectionOneLectures=[
     {
       ready:true,
       title:'Welcome to the SAA-C03 journey',
@@ -130,7 +130,77 @@
     }
   ];
 
-  const sectionTwoLectures=[
+  const sectionOneLectures=[
+    {
+      ready:true,title:'Welcome to the SAA-C03 journey',sourcePages:'6–9',
+      summary:'Follow the supplied course introduction: exam target, expected background, course scale, and instructor context.',
+      explanation:['The slides introduce this as the AWS Certified Solutions Architect – Associate SAA-C03 course. It is presented as a challenging and lengthy certification path that mixes shared foundations from Cloud Practitioner, Developer, and SysOps material with architecture topics specific to Solutions Architect.','Beginners are welcome, but the deck recommends basic IT knowledge and a patient pace. The course covers more than 30 AWS services. The instructor context explains that the material comes from experience as an IT consultant, AWS solutions architect, developer, SysOps practitioner, and builder of websites, applications, and streaming platforms.'],
+      slideTopics:[
+        {heading:'Course target',bullets:['Prepare specifically for the SAA-C03 Solutions Architect Associate exam.','Expect a long course because the certification covers both shared AWS foundations and architecture-specific material.']},
+        {heading:'Starting level',bullets:['Basic IT knowledge is expected.','AWS and IT beginners can follow the course, but should slow down when concepts are new.']},
+        {heading:'Instructor context',bullets:['Background includes consulting and AWS architecture, development, and operations.','Examples draw on building web, application, and streaming workloads.']}
+      ],
+      takeaways:['The target certification is SAA-C03.','The course covers more than 30 AWS services.','Beginners should prioritize understanding over speed.'],
+      examTip:'The opening slides set expectations rather than testable service details; use them to plan enough time for broad architecture coverage.'
+    },
+    {
+      ready:true,title:'How to study a long AWS course',sourcePages:'7, 13',
+      summary:'Apply the pace and course-platform guidance emphasized by the welcome and Udemy tips slides.',
+      explanation:['The welcome slide explicitly says the certification is challenging, the course will be long, and learning is not a race. Some videos reuse foundational knowledge that applies across AWS certifications, while other lessons concentrate on Solutions Architect design decisions.','The deck includes a dedicated Udemy Tips slide but no detailed tip text in the supplied PDF. The faithful takeaway is therefore limited: use the course platform to support a deliberate pace, and revisit shared foundation lessons instead of skipping them merely because they appear in another certification track.'],
+      slideTopics:[
+        {heading:'Pace stated in the welcome',bullets:['The course is intentionally long because SAA-C03 is broad.','Take time with unfamiliar IT and AWS concepts.','Shared certification knowledge remains part of the required foundation.']},
+        {heading:'Udemy Tips slide',bullets:['The supplied deck contains the heading only; it does not provide additional written instructions to reproduce.']}
+      ],
+      takeaways:['Do not treat the course as a race.','Foundational lessons support later architecture topics.','The supplied Udemy Tips slide contains no detailed body text.'],
+      examTip:'Move forward only when you can explain the current concept without relying on playback or copied wording.'
+    },
+    {
+      ready:true,title:'What Amazon Web Services provides',sourcePages:'10',
+      summary:'Match the deck’s definition of AWS as an on-demand, easily scalable cloud provider.',
+      explanation:['The “What’s AWS?” slide defines Amazon Web Services as a cloud provider that supplies servers and services on demand. Instead of waiting for owned infrastructure, customers can request the capabilities they need and scale them more easily as demand changes.','The slide frames AWS as a major change in how IT is delivered and points to Amazon.com and Netflix as examples of very large websites associated with AWS-scale infrastructure. Detailed service mechanics are intentionally deferred to later sections.'],
+      slideTopics:[
+        {heading:'What AWS is',bullets:['A cloud provider.','A source of servers and managed services on demand.','A platform designed to scale resources more easily.']},
+        {heading:'Why it matters',bullets:['AWS changed the traditional IT provisioning model.','The platform supports very large internet workloads.']}
+      ],
+      takeaways:['AWS is a cloud provider.','Resources and services are available on demand.','Easy scaling is a central cloud benefit.'],
+      examTip:'At this stage, remember the cloud model: request and scale services when needed instead of purchasing every server in advance.'
+    },
+    {
+      ready:true,title:'Build a mental map of AWS services',sourcePages:'11',
+      summary:'Use the exact service families introduced on the course overview slide as the first map of the syllabus.',
+      explanation:['The course overview names EC2, ECR, ECS, Elastic Load Balancing, Elastic Beanstalk, Lambda, S3, RDS, DynamoDB, ElastiCache, Aurora, CloudFront, Route 53, CloudWatch, CloudFormation, CloudTrail, IAM, KMS, Kinesis, API Gateway, Step Functions, Auto Scaling, SQS, SNS, and SES.','These names preview the course rather than explaining each product. A useful reading of the slide is to recognize the families: compute and containers, storage and databases, delivery and networking, monitoring and infrastructure automation, security, streaming and APIs, workflow, scaling, and messaging.'],
+      slideTopics:[
+        {heading:'Compute and application platforms',bullets:['Amazon EC2, Amazon ECR, Amazon ECS, Elastic Load Balancing, Elastic Beanstalk, AWS Lambda, and Auto Scaling.']},
+        {heading:'Data services',bullets:['Amazon S3, Amazon RDS, Amazon DynamoDB, Amazon ElastiCache, and Amazon Aurora.']},
+        {heading:'Networking, operations, and security',bullets:['Amazon CloudFront, Route 53, CloudWatch, CloudFormation, CloudTrail, IAM, and AWS KMS.']},
+        {heading:'Integration and messaging',bullets:['Amazon Kinesis, API Gateway, Step Functions, SQS, SNS, and SES.']}
+      ],
+      takeaways:['The slide previews the named AWS services used throughout the course.','Services span compute, data, networking, operations, security, and integration.','Definitions and comparisons arrive in later sections.'],
+      examTip:'Do not memorize the overview as one flat list; first recognize which service family a scenario is asking about.'
+    },
+    {
+      ready:true,title:'Think like a solutions architect',sourcePages:'12',
+      summary:'Understand the “AWS spaghetti bowl” warning: many service names overlap and only become clear through relationships and use cases.',
+      explanation:['The supplied slide is titled “Navigating the AWS spaghetti bowl.” It visually communicates that AWS has many connected services and that the catalog can feel confusing when encountered as logos and names without an architecture context.','The purpose of the course is to untangle those relationships progressively. Later sections explain what each service does, which services integrate, and how to choose between nearby options. The slide itself does not present a formal decision framework or additional bullet points.'],
+      slideTopics:[{heading:'AWS spaghetti bowl',bullets:['The large catalog is difficult to understand as isolated service logos.','Service relationships and architecture use cases provide the organizing structure.','The course will untangle the catalog section by section.']}],
+      takeaways:['A large service catalog can look confusing initially.','Relationships are more useful than isolated names.','The deck promises progressive clarification rather than instant memorization.'],
+      examTip:'When several unfamiliar services appear, first identify their broad category and the job each component performs.'
+    },
+    {
+      ready:true,title:'Prepare for the first AWS building blocks',sourcePages:'3–5, 14',
+      summary:'Follow the table of contents from AWS foundations into the full Solutions Architect syllabus.',
+      explanation:['The table of contents starts with Getting Started with AWS, IAM, EC2 basics and associate-level compute, instance storage, high availability, databases, Route 53, architecture discussions, and the S3 and CloudFront storage-delivery sequence.','It then continues through messaging, containers, serverless, analytics, machine learning, monitoring, advanced identity, encryption and security, VPC networking, disaster recovery, solution patterns, supporting services, whitepapers, and exam preparation. Slide 14 marks the transition into “Getting started with AWS.”'],
+      slideTopics:[
+        {heading:'Foundation sequence',bullets:['Getting Started, IAM, EC2, storage, high availability, databases, Route 53, and S3.']},
+        {heading:'Architecture and application sequence',bullets:['Messaging, containers, serverless, analytics, machine learning, monitoring, identity, security, VPC, and disaster recovery.']},
+        {heading:'Course transition',bullets:['The next PDF divider is “Getting started with AWS.”']}
+      ],
+      takeaways:['The course follows a deliberate progression from foundations to architecture.','Networking, security, and operations reappear across later topics.','The next section begins with AWS history, use cases, and global infrastructure.'],
+      examTip:'Use the table of contents as a dependency map: later designs build on IAM, networking, compute, storage, and resilience fundamentals.'
+    }
+  ];
+
+  const legacySectionTwoLectures=[
     {
       ready:true,
       title:'Code & Slides Download',
@@ -149,7 +219,7 @@
     }
   ];
 
-  const sectionThreeLectures=[
+  const legacySectionThreeLectures=[
     {
       ready:true,
       title:'AWS cloud overview and common use cases',
@@ -199,6 +269,60 @@
         'Permissions apply regardless of which interface sends the request.'
       ],
       examTip:'If a design copies a Regional workload to another Region, expect an explicit replication or deployment step. AWS does not automatically make every Regional resource global.'
+    }
+  ];
+
+  const sectionTwoLectures=[
+    {
+      ready:true,title:'Code & Slides Download',sourcePages:'1–5',
+      summary:'Use the supplied course resources within the personal-use limits stated in the deck and understand the syllabus they contain.',
+      explanation:['The opening PDF pages contain course links, a copyright notice, and the full table of contents. The notice states that the slides are reserved for enrolled learners, must not be copied or redistributed, and remain the instructor’s intellectual property.','The contents pages outline the course from AWS foundations through IAM, EC2, storage, databases, networking, messaging, containers, serverless, analytics, security, disaster recovery, architecture reviews, and exam preparation. They are a syllabus index rather than lecture explanations.'],
+      slideTopics:[
+        {heading:'Resource and copyright notice',bullets:['The deck is supplied for the enrolled learner’s personal study.','Do not publish, copy, or redistribute the original slides.','The study lab should contain transformed notes, not the source PDF.']},
+        {heading:'Table of contents',bullets:['Pages 3–5 enumerate the major AWS sections covered by the course.','The sequence moves from foundations to service architecture and final exam review.']}
+      ],
+      takeaways:['Keep the supplied PDF private.','Use the table of contents as the course index.','Publish original summaries rather than copied slide text or images.'],
+      examTip:'The resource lesson is administrative; use the syllabus to locate a weak topic, then study the corresponding service section.'
+    }
+  ];
+
+  const sectionThreeLectures=[
+    {
+      ready:true,title:'AWS cloud overview and common use cases',sourcePages:'14–17',
+      summary:'Follow the deck’s AWS history, slide-era market facts, and list of common cloud workloads.',
+      explanation:['The history slide traces Amazon’s internal infrastructure work in 2002–2003, the public launch of SQS in 2004, and the broader 2006 launch with SQS, S3, and EC2. It also marks later expansion into Europe and major enterprise usage milestones. These dates provide context for AWS’s development as a cloud platform.','The deck’s dated figures say AWS earned about $90 billion in 2023 and held roughly 31% of the cloud market in Q1 2024. Its use-case list includes enterprise IT, backup and storage, big data analytics, website hosting, mobile and social applications, and gaming. Treat the numbers as slide-era context, not permanent limits or current market data.'],
+      slideTopics:[
+        {heading:'History shown in the deck',bullets:['2002–2003: Amazon formalized internal infrastructure capabilities and the idea of offering them externally.','2004: SQS launched publicly.','2006: AWS relaunched with SQS, S3, and EC2.']},
+        {heading:'Slide-era scale facts',bullets:['The slides cite approximately $90 billion in 2023 annual revenue.','They cite a 31% market share for Q1 2024 and describe AWS as a cloud pioneer and leader.']},
+        {heading:'Cloud use cases',bullets:['Enterprise IT, backup and storage, big data analytics, websites, mobile and social applications, and gaming.']}
+      ],
+      takeaways:['AWS grew from Amazon’s internal infrastructure capabilities.','SQS, S3, and EC2 were early public services.','The course presents AWS as a platform for many workload types.'],
+      examTip:'History and market figures are orientation material; architecture questions focus on matching a workload to services and constraints.'
+    },
+    {
+      ready:true,title:'AWS Regions, Availability Zones, and edge locations',sourcePages:'18–22',
+      summary:'Use the exact global-infrastructure hierarchy and Region-selection criteria introduced in the slides.',
+      explanation:['The deck separates AWS global infrastructure into Regions, Availability Zones, data centers, and edge locations or points of presence. A Region is a geographic cluster of data centers, has a code such as us-east-1 or eu-west-3, and is the scope for most AWS services.','The slides select a Region by data-governance and legal requirements, proximity and latency, service availability, and pricing. Availability Zones are isolated groups of data centers within a Region connected by low-latency, high-bandwidth links. Edge locations and regional caches place content closer to users; the numeric edge counts on the slide are time-specific.'],
+      slideTopics:[
+        {heading:'AWS Region',bullets:['A geographic cluster of data centers.','Identified by codes such as us-east-1 and eu-west-3.','Most AWS services are Region-scoped.']},
+        {heading:'How the deck chooses a Region',bullets:['Compliance and data-governance requirements.','Proximity to customers for lower latency.','Availability of required services.','Regional pricing differences.']},
+        {heading:'Availability Zones',bullets:['Each AZ contains one or more discrete data centers with redundant power, networking, and connectivity.','AZs within a Region are isolated yet connected with fast, low-latency networking.']},
+        {heading:'Points of presence',bullets:['Edge locations and regional caches improve content delivery to end users.','The deck’s location counts are dated capacity figures rather than architectural limits.']}
+      ],
+      takeaways:['Regions are geographic service scopes.','AZs provide isolated locations inside a Region.','Edge locations serve content closer to users.','Compliance, latency, service support, and price guide Region choice.'],
+      examTip:'Multi-AZ answers address resilience within one Region; edge services address delivery near geographically distributed users.'
+    },
+    {
+      ready:true,title:'Tour the AWS console and understand service scope',sourcePages:'23',
+      summary:'Match the console-tour slide’s distinction between global services and Region-scoped workload services.',
+      explanation:['The console-tour slide identifies IAM, Route 53, CloudFront, and WAF as global services for the purpose of the course overview. It contrasts them with Region-scoped services such as EC2, Elastic Beanstalk, Lambda, and Rekognition.','The practical lesson is to check the selected account and Region when using the console. A Regional resource can appear absent when the console is viewing another Region, while global-service configuration is not organized through the same regional resource switch.'],
+      slideTopics:[
+        {heading:'Global services named on the slide',bullets:['IAM, Route 53, CloudFront, and AWS WAF.']},
+        {heading:'Regional services named on the slide',bullets:['Amazon EC2, Elastic Beanstalk, AWS Lambda, and Amazon Rekognition.']},
+        {heading:'Console behavior',bullets:['Use the Region selector deliberately for Region-scoped services.','Verify the active account before creating or changing resources.']}
+      ],
+      takeaways:['The console exposes both global and Regional services.','Most workload resources belong to a selected Region.','A wrong Region selection can make a resource seem missing.'],
+      examTip:'When a scenario requires another Region, expect explicit deployment or replication for Region-scoped resources.'
     }
   ];
 

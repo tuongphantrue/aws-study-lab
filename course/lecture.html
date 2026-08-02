@@ -22,7 +22,7 @@
         <span class="lecture-eyebrow" id="lectureEyebrow"></span>
         <h1 id="lectureTitle"></h1>
         <p id="lectureSummary"></p>
-        <div class="lecture-meta"><span id="lecturePosition"></span><span>Original study notes</span></div>
+        <div class="lecture-meta"><span id="lecturePosition"></span><span>Original study notes</span><span id="lectureSource" hidden></span></div>
       </header>
 
       <div class="lecture-body">
@@ -30,6 +30,12 @@
           <span class="lecture-label">CONCEPT</span>
           <h2 id="explanationTitle">Understand the idea</h2>
           <div id="lectureExplanation"></div>
+        </section>
+
+        <section class="lecture-slide-outline" id="lectureSlideOutline" aria-labelledby="slideOutlineTitle" hidden>
+          <span class="lecture-label">SLIDE COVERAGE</span>
+          <h2 id="slideOutlineTitle">From the supplied slides</h2>
+          <div class="lecture-slide-topics" id="lectureSlideTopics"></div>
         </section>
 
         <section class="lecture-takeaways" aria-labelledby="takeawaysTitle">
@@ -43,7 +49,7 @@
           <div><span class="lecture-label">EXAM FOCUS</span><h2 id="examTitle">How this appears in a scenario</h2><p id="lectureExamTip"></p></div>
         </aside>
 
-        <p class="lecture-source-note">This is an original study summary based on the course slides supplied by the learner. It is not an official AWS or Udemy transcript.</p>
+        <p class="lecture-source-note" id="lectureSourceNote">This is an original study summary based on the course slides supplied by the learner. It is not an official AWS or Udemy transcript.</p>
       </div>
 
       <footer class="lecture-footer">
