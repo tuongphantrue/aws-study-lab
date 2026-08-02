@@ -1045,6 +1045,107 @@
     }
   ];
 
+  const sectionTwelveLectures=[
+    {
+      ready:true,title:'Amazon S3 object storage and use cases',
+      summary:'Store durable objects at massive scale for applications, backup, archives, analytics, and content delivery.',
+      explanation:['Amazon S3 is regional object storage accessed through APIs rather than a mounted block device. It stores complete objects inside buckets and scales without customers provisioning disks or storage servers.','Common uses include backups, disaster recovery copies, data lakes, media, software distribution, static assets, and integration between AWS services. Object storage is not a drop-in replacement for a transactional filesystem or database.'],
+      takeaways:['S3 stores objects in regional buckets.','Capacity scales without disk provisioning.','Object semantics differ from block and file storage.'],
+      examTip:'Choose S3 for durable, highly scalable blobs and datasets—not when an application requires in-place block updates or POSIX file locking.'
+    },
+    {
+      ready:true,title:'Buckets, keys, objects, and multipart uploads',
+      summary:'Understand the S3 namespace and the metadata that travels with every stored object.',
+      explanation:['A bucket name follows S3 naming rules and must be unique within its namespace. An object key is the full string after the bucket name; slash characters create useful prefixes but not real nested directories.','An object includes its body, system and user metadata, optional tags, and a version ID when versioning is enabled. Large uploads should use multipart upload, which transfers parts independently and can resume failed work.'],
+      takeaways:['Keys are complete names, not filesystem paths.','Metadata and tags support management and policy.','Multipart upload improves large transfer reliability.'],
+      examTip:'Uploads larger than the single-request limit require multipart upload; it is also recommended for smaller large objects to improve resilience.'
+    },
+    {
+      ready:true,title:'S3 authorization model',
+      summary:'Evaluate identity policies, bucket policies, ACLs, ownership, and explicit denies for each object request.',
+      explanation:['Identity-based IAM policies grant an AWS principal permission to call S3 APIs. Bucket policies are resource-based and can grant account, cross-account, service, or public access while applying conditions to the bucket and its objects.','Modern buckets generally use Object Ownership with ACLs disabled. A request still needs an applicable Allow and must survive explicit Deny statements, organization guardrails, public-access controls, encryption-key policy, and endpoint policies.'],
+      takeaways:['IAM policies grant identity permissions.','Bucket policies grant resource-based access.','Explicit Deny and guardrails override Allow.'],
+      examTip:'For cross-account S3 access, verify both the resource policy and the caller identity permissions unless the specific resource-policy model provides the needed grant.'
+    },
+    {
+      ready:true,title:'Bucket policies, roles, and Block Public Access',
+      summary:'Grant the intended application or account access while preventing accidental public exposure.',
+      explanation:['Use an IAM role for an EC2 workload rather than storing access keys. Use a bucket policy for cross-account access, service delivery, encryption enforcement, or other bucket-wide conditions.','S3 Block Public Access settings prevent policy or ACL configurations from making data public and can be enforced at account and bucket levels. Leave them enabled unless a reviewed public use case explicitly requires otherwise.'],
+      takeaways:['Workloads should access S3 through IAM roles.','Bucket policies support cross-account and conditional access.','Block Public Access is a protective guardrail.'],
+      examTip:'A private application bucket should keep Block Public Access enabled even when authorized roles need full object access.'
+    },
+    {
+      ready:true,title:'Host a static website on S3',
+      summary:'Serve HTML, CSS, JavaScript, and media directly when no server-side runtime is required.',
+      explanation:['S3 website hosting publishes a regional website endpoint and supports index and error documents. The content must be readable through an appropriate policy, which conflicts with Block Public Access unless the design uses a private origin through another service.','The S3 website endpoint supports static content and does not execute server code. For HTTPS, custom domains, caching, and private-origin patterns, place CloudFront in front of the bucket rather than exposing it directly.'],
+      takeaways:['S3 website hosting serves static files only.','Direct public hosting requires public-read authorization.','CloudFront adds HTTPS and a stronger private-origin pattern.'],
+      examTip:'A 403 from a direct S3 website often indicates missing public-read permission, but production designs should consider CloudFront with private S3 access.'
+    },
+    {
+      ready:true,title:'S3 versioning and delete markers',
+      summary:'Preserve previous object states so overwrites and accidental deletions can be recovered.',
+      explanation:['Versioning assigns a new version ID whenever the same key is uploaded again. Deleting without a version ID places a delete marker that hides prior versions rather than erasing them.','Objects created before versioning have a null version. Suspending versioning stops new numbered versions but does not remove existing history, and every retained version continues to consume storage.'],
+      takeaways:['Overwrites create new object versions.','Delete markers can be removed to reveal previous data.','Suspension does not delete version history.'],
+      examTip:'Versioning protects against logical mistakes, while lifecycle rules are still needed to control the cost of old versions.'
+    },
+    {
+      ready:true,title:'Cross-Region and Same-Region Replication',
+      summary:'Copy versioned objects asynchronously for compliance, isolation, aggregation, or regional access.',
+      explanation:['S3 replication requires versioning on source and destination and an IAM role that allows S3 to read and copy the data. CRR sends objects to another Region; SRR copies within the same Region, including into another account.','Replication is asynchronous. Common uses include compliance boundaries, account isolation, lower-latency regional copies, log aggregation, and production-to-test separation.'],
+      takeaways:['Source and destination must be versioned.','CRR crosses Regions and SRR stays within one Region.','S3 needs permission to perform replication.'],
+      examTip:'If the requirement is automatic object copies into another AWS Region, choose CRR—not a lifecycle transition.'
+    },
+    {
+      ready:true,title:'Replication behavior and Batch Replication',
+      summary:'Predict which existing objects and deletions copy, and avoid assuming chained replication.',
+      explanation:['A new replication rule applies to new qualifying writes. S3 Batch Replication can copy eligible existing objects and retry objects that previously failed replication.','Delete-marker replication is optional, explicit deletion of a particular version is not replicated, and objects received from another replication rule do not automatically continue into a third bucket. Design each required replication path directly.'],
+      takeaways:['Existing objects require Batch Replication.','Delete-marker copying is configurable.','Replication does not chain automatically.'],
+      examTip:'For a populated bucket that just gained CRR, use S3 Batch Replication to backfill older objects.'
+    },
+    {
+      ready:true,title:'S3 durability, availability, and storage classes',
+      summary:'Separate the probability of data loss from the probability that an object is immediately reachable.',
+      explanation:['Durability describes preservation of stored objects and is designed to be extremely high across S3 classes. Availability describes successful access at a moment in time and differs by class and resilience scope.','Storage classes trade storage price, retrieval price, minimum duration, access latency, and AZ coverage. Choose from the access pattern and recovery requirement rather than from storage cost alone.'],
+      takeaways:['Durability and availability are different metrics.','Classes share strong durability but vary in access characteristics.','Retrieval and minimum-duration charges affect total cost.'],
+      examTip:'A lower storage price can be the expensive answer if objects are retrieved frequently or deleted before the minimum billed duration.'
+    },
+    {
+      ready:true,title:'S3 Standard and Infrequent Access classes',
+      summary:'Use Standard for active data and IA classes for less frequent data that still needs millisecond retrieval.',
+      explanation:['S3 Standard spans multiple Availability Zones and suits frequently accessed content with low latency and high throughput. Standard-IA also spans multiple AZs but lowers storage cost in exchange for retrieval fees and a minimum storage duration.','One Zone-IA stores data in one AZ at lower cost. It suits recreatable data or secondary copies, not the only copy of critical information that must survive an AZ loss.'],
+      takeaways:['Standard serves frequent access.','Standard-IA retains multi-AZ resilience with retrieval charges.','One Zone-IA accepts one-AZ loss risk.'],
+      examTip:'A rarely accessed but immediately retrievable primary backup copy usually fits Standard-IA; recreatable secondary data may fit One Zone-IA.'
+    },
+    {
+      ready:true,title:'S3 Glacier archive classes',
+      summary:'Choose instant, flexible, or deep archive retrieval according to how long the business can wait.',
+      explanation:['Glacier Instant Retrieval keeps millisecond access for archive data read only occasionally. Glacier Flexible Retrieval offers retrieval options from minutes to hours, while Deep Archive targets the lowest-cost long retention with recovery measured in many hours.','Archive classes include minimum storage durations and retrieval charges. The recovery-time objective must therefore be set before choosing the lowest storage price.'],
+      takeaways:['Instant Retrieval provides millisecond archive access.','Flexible Retrieval trades wait time and retrieval cost.','Deep Archive targets long-term, slow-recovery data.'],
+      examTip:'Regulatory records accessed perhaps once a year with a 48-hour restore allowance point to Deep Archive.'
+    },
+    {
+      ready:true,title:'S3 Intelligent-Tiering',
+      summary:'Let S3 move objects among access tiers when usage is unknown or changes over time.',
+      explanation:['Intelligent-Tiering monitors access and automatically moves objects between frequent, infrequent, and instant-archive access tiers. Optional asynchronous archive tiers support colder data with configurable timing.','The class adds a per-object monitoring fee but avoids retrieval charges for its automatic access tiers. It is most valuable when access patterns are unpredictable and objects are large or valuable enough for monitoring economics to make sense.'],
+      takeaways:['Tiering responds automatically to observed access.','Optional archive tiers add slower retrieval choices.','Monitoring cost matters for many tiny objects.'],
+      examTip:'Unknown or changing access patterns with a desire to automate cost optimization suggest Intelligent-Tiering.'
+    },
+    {
+      ready:true,title:'S3 Express One Zone directory buckets',
+      summary:'Co-locate high-performance object storage and compute in one Availability Zone for latency-sensitive workloads.',
+      explanation:['S3 Express One Zone uses directory buckets tied to a selected Availability Zone and is designed for very high request rates with single-digit millisecond latency. Compute in the same AZ avoids cross-AZ latency and transfer.','The one-AZ scope is an explicit resilience tradeoff. It suits scratch analytics, ML training, media processing, and HPC data that has another durable source or can tolerate the selected failure domain.'],
+      takeaways:['Directory buckets are Availability Zone scoped.','Express One Zone prioritizes request performance.','Applications must accept or mitigate the one-AZ failure scope.'],
+      examTip:'Use Express One Zone when extreme S3 performance and AZ co-location matter more than multi-AZ storage availability.'
+    },
+    {
+      ready:true,title:'Select an S3 storage class by total cost',
+      summary:'Match frequency, latency, resilience, retention, and retrieval economics to one defensible class.',
+      explanation:['Begin with required retrieval time and whether an AZ loss must be tolerated. Then estimate access frequency, object lifetime, object size, monitoring fees, early-deletion charges, and data-retrieval volume.','Lifecycle policies can transition predictable aging data, while Intelligent-Tiering addresses uncertain usage. Keep independent backups or replication when a storage class alone does not satisfy the recovery design.'],
+      takeaways:['Recovery time eliminates unsuitable archive classes.','AZ resilience distinguishes One Zone choices.','Total cost includes requests, retrieval, monitoring, and duration.'],
+      examTip:'Do not memorize only class prices; scenario keywords about access time, recreation, and retention determine the answer.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -1065,4 +1166,5 @@
   window.AWS_COURSE_CURRICULUM[8].lectures=sectionNineLectures;
   window.AWS_COURSE_CURRICULUM[9].lectures=sectionTenLectures;
   window.AWS_COURSE_CURRICULUM[10].lectures=sectionElevenLectures;
+  window.AWS_COURSE_CURRICULUM[11].lectures=sectionTwelveLectures;
 })();
