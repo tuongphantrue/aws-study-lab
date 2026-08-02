@@ -3118,6 +3118,171 @@
     }
   ];
 
+  const sectionFourSlideOverrides={
+    'IAM foundations: identities and permissions':{
+      sourcePages:'24–26',
+      summary:'Start the IAM chapter with the deck’s global-service model: users and groups receive JSON permission policies, and access should follow least privilege.',
+      explanation:['The chapter opens with AWS Identity and Access Management (IAM). The slides define IAM as a global service and immediately distinguish the root account, individual users, and user groups.','Permissions are expressed in JSON policy documents attached to users or groups. The deck’s governing rule is least privilege: grant only the permissions a person needs.'],
+      slideTopics:[{heading:'IAM chapter opening',bullets:['IAM stands for Identity and Access Management.','IAM is presented as a global AWS service.','The root account exists by default and should not be used or shared for routine work.']},{heading:'Permission model',bullets:['Users and groups can receive JSON policy documents.','Policies define what their identities are permitted to do.','Least privilege avoids granting unnecessary permissions.']}],
+      takeaways:['IAM is global.','Users represent people and groups collect users.','Policies carry permissions.','Least privilege is the chapter’s core security rule.'],
+      examTip:'For shared human permissions, attach an appropriately scoped policy to a group and place the users in that group.'
+    },
+    'Protect the AWS account root user':{
+      sourcePages:'25, 30, 39',
+      summary:'Apply the three root-user rules repeated in the deck: do not share it, avoid routine use, and protect it with MFA.',
+      explanation:['The root account is created automatically and has exceptional authority. The users-and-groups slide says it should not be used or shared, while the best-practices slide reserves it for account setup.','The MFA slide specifically calls out protecting root accounts and IAM users. Normal administration should use attributable IAM identities rather than shared root credentials.'],
+      slideTopics:[{heading:'Root account rule',bullets:['Created with the AWS account by default.','Not intended for everyday service administration.','Must not be shared among operators.']},{heading:'Protection in the slides',bullets:['Enable MFA for the root account.','Use individual AWS users for people.','Return to root only for the exceptional account tasks that require it.']}],
+      takeaways:['Root is created by default.','Do not share root credentials.','Do not use root for routine administration.','Protect root with MFA.'],
+      examTip:'Reject designs that use the root user for normal operations, CLI automation, or application access.'
+    },
+    'IAM users and groups':{
+      sourcePages:'25',
+      summary:'Follow the deck’s exact user/group rules, including multiple memberships and the prohibition on nested groups.',
+      explanation:['IAM users represent people within an organization. Groups are collections used to organize users, but a group may contain users only—not another group.','A user does not have to belong to a group and may belong to multiple groups. The slide’s example shows developers and operations users, including one user whose responsibilities span both groups.'],
+      slideTopics:[{heading:'Users',bullets:['Represent people in the organization.','Each person should have an individual AWS user.','A user may be outside all groups or belong to several.']},{heading:'Groups',bullets:['Contain users only.','Cannot contain other groups.','Organize people with common permission needs.']}],
+      takeaways:['Users map to people.','Groups contain users, not groups.','Group membership is optional.','A user can join multiple groups.'],
+      examTip:'Nested IAM groups are not supported; use multiple group memberships when a user spans job functions.'
+    },
+    'Assign group membership with least privilege':{
+      sourcePages:'25–27, 39',
+      summary:'Use group membership to inherit only the policies required by each job function, as illustrated by the deck’s inheritance diagram.',
+      explanation:['The slides group users by function, such as Developers, Operations, and Audit Team. A policy attached to a group is inherited by every user in that group.','A user in more than one group receives permissions from each membership; a user can also have an inline policy. The best-practices slide recommends assigning permissions to groups and keeping one AWS user per physical person.'],
+      slideTopics:[{heading:'Inheritance diagram',bullets:['Alice, Bob, and Charles inherit the Developers group policy.','David and Edward inherit the Operations group policy.','Charles is shown in both Developers and Audit Team, so both group policies apply.','Fred is shown with an inline policy.']},{heading:'Least-privilege use',bullets:['Choose memberships from actual job responsibilities.','Centralize common permissions on groups.','Avoid broad or shared identities.']}],
+      takeaways:['Group policies flow to member users.','Multiple memberships combine permissions.','Inline user policies are possible.','Membership should reflect required work only.'],
+      examTip:'When several people need the same permissions, group assignment is the deck’s preferred pattern.'
+    },
+    'How IAM policies authorize requests':{
+      sourcePages:'26, 28',
+      summary:'Read policies as JSON documents whose statements name an effect, API actions, target resources, and optional conditions.',
+      explanation:['The permissions slide introduces policies as JSON documents assigned to users or groups. The structure slide then breaks each policy into a language version, optional identifier, and one or more required statements.','Within a statement, Effect is Allow or Deny; Action names API operations; Resource identifies the resources to which the statement applies; and Condition optionally controls when the rule applies.'],
+      slideTopics:[{heading:'Policy purpose',bullets:['A policy defines permissions for a user or group.','The document is written in JSON.','Least privilege determines how broad its permissions should be.']},{heading:'Statement decision fields',bullets:['Effect selects Allow or Deny.','Action lists the API calls affected.','Resource lists affected AWS resources.','Condition is optional and narrows when the statement applies.']}],
+      takeaways:['Policies are JSON permission documents.','Statements contain the authorization rules.','Effect, Action, and Resource are central fields.','Condition is optional.'],
+      examTip:'Translate a requirement into the smallest necessary Action and Resource set, then add conditions when the scenario needs context.'
+    },
+    'Read the structure of an IAM policy':{
+      sourcePages:'28',
+      summary:'Decode every field identified by the supplied IAM policy-structure slide.',
+      explanation:['At the document level, Version identifies the policy language version, Id is optional, and Statement is a required list of individual rules. The slide says to include policy language version 2012-10-17.','At statement level, Sid is an optional statement identifier, Effect is Allow or Deny, Principal identifies the account, user, or role to which a policy applies, Action lists API calls, Resource lists targets, and Condition is optional.'],
+      slideTopics:[{heading:'Document fields',bullets:['Version: policy-language version; the slide uses 2012-10-17.','Id: optional policy identifier.','Statement: one or more required permission statements.']},{heading:'Statement fields',bullets:['Sid is optional.','Effect is Allow or Deny.','Principal identifies an account, user, or role where applicable.','Action, Resource, and optional Condition complete the rule.']}],
+      takeaways:['Version and Statement organize the document.','Sid and Id are optional labels.','Effect states Allow or Deny.','Action and Resource define the operation and target.'],
+      examTip:'When reading a policy, inspect Effect, Action, Resource, and Condition together rather than judging it by its name.'
+    },
+    'Managed policies, inline policies, and inheritance':{
+      sourcePages:'27–28',
+      summary:'Center this lesson on the inheritance modes actually pictured in the deck: group-attached policies and a direct inline user policy.',
+      explanation:['The inheritance slide shows policies attached to three groups and inherited by their members. It also labels Fred with an inline policy, demonstrating a policy attached directly to that identity.','The supplied IAM slides do not separately compare AWS-managed and customer-managed policy lifecycles. Their exam focus here is predicting which policies a user receives from group membership plus any direct policy.'],
+      slideTopics:[{heading:'Group policy inheritance',bullets:['Developers, Operations, and Audit Team each have a policy.','Every member inherits the policy of each group they join.','A user in two groups receives both sets of group permissions.']},{heading:'Inline example',bullets:['Fred has an inline policy attached directly.','The diagram contrasts this direct assignment with group inheritance.','The next slide supplies the JSON fields inside such policies.']}],
+      takeaways:['Group policies are inherited by all members.','Multiple memberships add multiple policy sources.','An inline policy can be attached directly to a user.','The deck does not expand this page into a managed-policy taxonomy.'],
+      examTip:'Calculate a user’s permissions from every group shown plus any direct policy shown on that user.'
+    },
+    'Design least-privilege permissions':{
+      sourcePages:'26, 28, 38–39',
+      summary:'Implement the deck’s least-privilege rule and use access history to refine permissions over time.',
+      explanation:['The permissions slide defines least privilege plainly: do not give a user more permissions than needed. Policy structure supplies the controls for narrowing access—Action, Resource, and optional Condition.','The best-practices slide tells administrators to apply least privilege, while Access Advisor reports granted service permissions and when services were last accessed. That history supports evidence-based permission reduction.'],
+      slideTopics:[{heading:'Build a narrow policy',bullets:['Allow only the required API actions.','Target only the resources needed by the role.','Use conditions when the request must satisfy additional criteria.']},{heading:'Review access',bullets:['Access Advisor is user-level.','It shows service permissions and last-accessed information.','Use review evidence to remove permissions no longer needed.']}],
+      takeaways:['Least privilege limits permissions to the task.','Action and Resource determine scope.','Condition can narrow a rule further.','Access Advisor supports later review.'],
+      examTip:'Choose the policy that satisfies the stated job while granting the fewest unrelated actions and resources.'
+    },
+    'IAM password policies':{
+      sourcePages:'29',
+      summary:'Cover every password control listed on the deck’s password-policy slide.',
+      explanation:['AWS can define an account password policy for IAM users. The slide lists minimum length and required character categories: uppercase, lowercase, numbers, and non-alphanumeric characters.','It also lists allowing users to change their own passwords, requiring password expiration, and preventing password reuse. These settings raise the baseline for console credentials but remain separate from MFA.'],
+      slideTopics:[{heading:'Complexity settings',bullets:['Set a minimum password length.','Require uppercase and lowercase letters.','Require numbers and non-alphanumeric characters.']},{heading:'Lifecycle settings',bullets:['Allow IAM users to change their passwords.','Require passwords to expire after a chosen interval.','Prevent reuse of old passwords.']}],
+      takeaways:['Password policy is an IAM account control.','It can enforce length and character categories.','It can govern expiration and reuse.','It can permit self-service password changes.'],
+      examTip:'Use the password policy for password quality and lifecycle; use MFA when the requirement is protection after password theft.'
+    },
+    'Multi-factor authentication':{
+      sourcePages:'30',
+      summary:'Use the slide’s two-factor equation: a password the user knows plus a device the user possesses.',
+      explanation:['The MFA slide warns that users who reach an account may change configuration or delete resources. It therefore emphasizes protecting both root accounts and IAM users.','MFA combines a password with a security device. If a password is stolen or hacked, the account remains protected because the attacker still lacks the device.'],
+      slideTopics:[{heading:'Why MFA matters',bullets:['Authenticated users may change or delete AWS resources.','Root and IAM user access therefore require stronger protection.','A stolen password should not be sufficient by itself.']},{heading:'Two factors',bullets:['Password: something the user knows.','Security device: something the user owns.','Both must be presented for MFA-protected access.']}],
+      takeaways:['MFA protects root and IAM users.','It combines knowledge and possession factors.','It reduces damage from a stolen password.','MFA complements a password policy.'],
+      examTip:'A scenario asking how to remain protected after password compromise points directly to MFA.'
+    },
+    'Choose and manage MFA devices':{
+      sourcePages:'31–32',
+      summary:'Compare only the MFA device categories pictured in the supplied slides and recognize that named vendors are slide-era examples.',
+      explanation:['The deck shows virtual authenticator applications, a Universal 2nd Factor security key, and hardware key-fob devices. Its examples include Google Authenticator, Authy, a YubiKey, Gemalto, and a GovCloud key fob from SurePassID.','The slide notes that one virtual authenticator device can support multiple tokens for multiple root and IAM users. Vendor names and supported device catalogs can change; the enduring distinction is virtual software versus physical security hardware.'],
+      slideTopics:[{heading:'Virtual MFA device',bullets:['Phone authenticator apps generate verification codes.','The slide says one device can hold tokens for multiple root and IAM users.']},{heading:'Physical devices',bullets:['A U2F security key is shown as one option.','Hardware key fobs are shown for standard AWS and AWS GovCloud (US).','Specific vendor examples reflect the slide’s publication period.']}],
+      takeaways:['Virtual authenticators are supported.','Physical security keys are supported.','Hardware key fobs appear in the deck.','Device/vendor examples may evolve over time.'],
+      examTip:'Focus on satisfying the second-factor requirement; do not memorize a vendor as though it were an architectural constraint.'
+    },
+    'Console, CLI, and SDK access':{
+      sourcePages:'33',
+      summary:'Use the three access paths and credential types exactly as the slide presents them.',
+      explanation:['The Management Console is the interactive browser path and is protected by a password plus MFA. The AWS CLI sends commands from a shell and uses access keys.','The AWS SDK is the application-code path and also uses programmatic credentials. The slide stresses that users manage their own access keys and that access keys are secrets, like passwords.'],
+      slideTopics:[{heading:'Three ways to access AWS',bullets:['Management Console: password and MFA.','Command Line Interface: shell commands protected by access keys.','Software Development Kit: application code protected by access keys.']},{heading:'Credential ownership',bullets:['Access keys are generated through the console.','Users manage their own access keys.','The secret must not be shared.']}],
+      takeaways:['Console access uses password and MFA.','CLI access is programmatic.','SDK access is embedded in code.','Access keys must remain secret.'],
+      examTip:'Match interactive work to the console, shell scripting to the CLI, and application integration to an SDK.'
+    },
+    'Access keys and credential safety':{
+      sourcePages:'33–34, 39',
+      summary:'Treat the access key ID and secret access key as the programmatic credential pair shown in the deck, and never share them.',
+      explanation:['The access-method slide says CLI and SDK usage is protected by access keys generated through the AWS Console. The example slide displays a deliberately fake access key ID and secret access key to teach the two-part format.','The explicit lesson beneath that example is not to share access keys. The best-practices slide adds that access keys should be used for programmatic access rather than shared human console access.'],
+      slideTopics:[{heading:'Credential pair',bullets:['Access key ID identifies the programmatic credential.','Secret access key is the confidential half of the pair.','The displayed values in the source deck are labeled fake examples.']},{heading:'Safety rule',bullets:['Do not share access keys.','Do not confuse programmatic credentials with console passwords.','Create credentials for the intended IAM identity.']}],
+      takeaways:['An access key has an ID and a secret.','The secret must remain private.','The slide’s sample values are fake.','Access keys support CLI and SDK requests.'],
+      examTip:'Never choose an answer that shares or embeds a person’s long-lived access key as a general workload solution.'
+    },
+    'Configure and use the AWS CLI safely':{
+      sourcePages:'35, 39–40',
+      summary:'Keep this lecture anchored to the deck’s CLI definition: a command-shell tool that calls public AWS service APIs and enables scripts.',
+      explanation:['The AWS CLI lets a user interact with AWS services through commands in a command-line shell. The slide describes this as direct access to public AWS service APIs and highlights scripting for resource management.','It is an open-source tool with an alternative to the browser console. The IAM best-practices and summary slides tie CLI access to access keys, so those credentials must be protected and scoped by IAM permissions.'],
+      slideTopics:[{heading:'CLI definition',bullets:['Runs AWS service commands from a command-line shell.','Calls public AWS service APIs.','Supports scripts that manage resources.']},{heading:'Deck comparison',bullets:['The CLI is open source.','It is an alternative to the Management Console.','Its programmatic access uses access keys governed by IAM.']}],
+      takeaways:['The CLI is a shell interface.','It calls AWS public APIs.','It supports automation scripts.','Installing it does not itself grant permissions.'],
+      examTip:'The IAM identity behind the CLI determines what its commands can do.'
+    },
+    'Use AWS CloudShell for browser-based commands':{
+      sourcePages:'33, 35',
+      summary:'Place browser-based command work in the access model while clearly noting that this supplied IAM chapter has no dedicated CloudShell slide.',
+      explanation:['The deck contrasts browser console access with command-line access and then defines the AWS CLI. Those concepts explain the purpose of a browser-hosted command environment: it exposes command-line interaction while the learner is working through AWS.','CloudShell itself is not named on pages 24–40 of the supplied slides. For strict slide study, retain the examinable points from these pages: CLI commands call public APIs, programmatic access is permission-controlled, and credentials must not be shared.'],
+      slideTopics:[{heading:'What the supplied pages establish',bullets:['Console is the browser-based management interface.','CLI is the command-shell interface to AWS public APIs.','IAM authorization still controls the commands.']},{heading:'Coverage boundary',bullets:['The IAM chapter does not contain a dedicated CloudShell slide.','Do not substitute extra CloudShell feature claims for the slide’s CLI and credential lessons.']}],
+      takeaways:['Browser and command-line access are distinct interfaces.','CLI requests reach AWS public APIs.','Permissions still come from IAM.','CloudShell is not a dedicated topic in this deck chapter.'],
+      examTip:'For this slide set, memorize the console/CLI/SDK distinction rather than product details not shown in the IAM chapter.'
+    },
+    'Use AWS SDKs in application code':{
+      sourcePages:'33, 36',
+      summary:'Follow the SDK slide’s language-library model and its examples of supported SDK categories.',
+      explanation:['The AWS Software Development Kit provides language-specific APIs and libraries so applications can access and manage AWS services programmatically. Unlike a standalone shell command, SDK calls are embedded inside application code.','The slide lists server-side languages including JavaScript, Python, PHP, .NET, Ruby, Java, Go, Node.js, and C++, mobile SDKs for Android and iOS, and device SDKs for embedded C and Arduino. It also says the AWS CLI is built on the AWS SDK for Python.'],
+      slideTopics:[{heading:'SDK purpose',bullets:['Provides language-specific AWS APIs and libraries.','Lets applications access and manage AWS services programmatically.','Is embedded within application code.']},{heading:'Examples in the deck',bullets:['General SDKs span major server-side languages.','Mobile SDKs include Android and iOS.','IoT device SDKs include embedded C and Arduino.','The CLI is described as using the AWS SDK for Python.']}],
+      takeaways:['SDKs are language-specific libraries.','SDK calls live inside applications.','The deck includes mobile and IoT SDK categories.','SDK access is programmatic and credential-protected.'],
+      examTip:'Choose an SDK when application code itself must call AWS services.'
+    },
+    'IAM roles for AWS services':{
+      sourcePages:'37',
+      summary:'Use IAM roles when an AWS service must perform actions on the customer’s behalf, matching the three examples on the slide.',
+      explanation:['The roles slide explains that some AWS services need permissions to perform actions on your behalf. IAM roles assign those permissions to the service rather than treating the service like a human user.','Its common examples are EC2 instance roles, Lambda function roles, and roles for CloudFormation. The diagram shows an EC2 instance using an IAM role to access AWS.'],
+      slideTopics:[{heading:'Why service roles exist',bullets:['An AWS service sometimes needs to call another AWS action for you.','A role supplies the service with the required permissions.','Permissions should match the service task.']},{heading:'Examples named on the slide',bullets:['EC2 instance role.','Lambda function role.','Role for CloudFormation.']}],
+      takeaways:['Roles grant permissions to AWS services.','Services act on the customer’s behalf.','EC2, Lambda, and CloudFormation are the slide examples.','A service role replaces a shared human identity.'],
+      examTip:'When an EC2 instance or Lambda function needs AWS API access, select a role for that service.'
+    },
+    'Role trust policies and permission policies':{
+      sourcePages:'28, 37',
+      summary:'Connect the policy fields in the deck to the service-role diagram without adding a trust-policy deep dive that is absent from this chapter.',
+      explanation:['The policy-structure slide introduces Principal as the account, user, or role to which a policy applies, along with Effect, Action, Resource, and Condition. The roles slide then shows a service receiving permissions through a role.','The supplied IAM chapter does not separately diagram trust policies versus permissions policies. Its required takeaway is narrower: the AWS service uses the role, and the role supplies permissions for actions performed on your behalf.'],
+      slideTopics:[{heading:'Policy connection',bullets:['Principal identifies who a relevant policy applies to.','Action and Resource describe permitted operations and targets.','Condition may narrow when a statement applies.']},{heading:'Role connection',bullets:['The service is assigned an IAM role.','The role carries permissions needed for delegated actions.','EC2, Lambda, and CloudFormation are the chapter’s examples.']}],
+      takeaways:['Roles are the service permission mechanism in the deck.','Policies describe the allowed operations.','Principal, Action, and Resource have different jobs.','Detailed trust-policy mechanics are outside this slide chapter.'],
+      examTip:'For the supplied slides, identify the service that needs the role and the permissions required for its delegated task.'
+    },
+    'Audit credentials and permissions':{
+      sourcePages:'38',
+      summary:'Distinguish the account-level credentials report from the user-level Access Advisor exactly as the security-tools slide does.',
+      explanation:['The IAM credentials report is account-level. It lists all users in the account and the status of their various credentials, supporting an account-wide credential review.','IAM Access Advisor is user-level. It shows the service permissions granted to a user and when those services were last accessed, which helps revise policies toward least privilege.'],
+      slideTopics:[{heading:'Credentials report',bullets:['Scope: the AWS account.','Lists all account users.','Shows the status of their credentials.']},{heading:'Access Advisor',bullets:['Scope: an individual user.','Shows granted service permissions.','Shows when those services were last accessed.','Supports policy revision.']}],
+      takeaways:['Credentials report is account-level.','It audits user credential status.','Access Advisor is user-level.','Last-accessed data supports least privilege.'],
+      examTip:'Choose the credentials report for account-wide credential status and Access Advisor for a user’s service-permission history.'
+    },
+    'IAM review and security decision rules':{
+      sourcePages:'39–40',
+      summary:'Finish with the deck’s own IAM checklist and section summary rather than a broader identity catalog.',
+      explanation:['The guidelines slide says to reserve root for account setup, create one AWS user per physical person, assign users to groups, attach permissions to groups, establish a strong password policy, use MFA, use access keys for programmatic access, audit with credentials reports, and apply least privilege.','The summary connects each concept: users map to people, groups contain users only, policies are JSON permission documents, roles serve EC2 or other AWS services, MFA and password policy secure access, CLI and SDK provide programmatic interfaces, and access keys enable API access.'],
+      slideTopics:[{heading:'Guidelines checklist',bullets:['Do not use root except for account setup.','One physical person maps to one AWS user.','Assign permissions through groups.','Use a strong password policy and MFA.','Audit credentials and apply least privilege.']},{heading:'Section summary',bullets:['Users and groups organize human identities.','Policies define permissions.','Roles grant AWS services permissions.','CLI and SDK calls use programmatic access.']}],
+      takeaways:['Root is exceptional.','People need individual users.','Groups and policies organize permissions.','Roles serve AWS workloads.','MFA, reports, and least privilege improve security.'],
+      examTip:'Map the requirement to the deck’s control: group for shared human permissions, role for a service, MFA for stronger login, or a report for auditing.'
+    }
+  };
+
+  sectionFourLectures.forEach(lecture=>Object.assign(lecture,sectionFourSlideOverrides[lecture.title]||{}));
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
