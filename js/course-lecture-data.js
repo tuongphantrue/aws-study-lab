@@ -2385,6 +2385,275 @@
     }
   ];
 
+  const sectionTwentySevenLectures=[
+    {
+      ready:true,title:'Build regional networks with Amazon VPC',
+      summary:'Create an isolated regional network from subnets, routes, gateways, interfaces, and layered controls.',
+      explanation:['An Amazon VPC spans the Availability Zones of one Region, while each subnet belongs to exactly one Availability Zone. Route tables decide the next hop for destination prefixes, network interfaces attach workloads, and gateways connect the VPC to the internet, other VPCs, or external networks.','High availability requires resources and subnets across multiple AZs; a VPC alone does not create redundancy. Address plans must leave room for growth and avoid overlap with networks that may later connect through peering, Transit Gateway, VPN, or Direct Connect.'],
+      takeaways:['A VPC is regional.','A subnet is tied to one AZ.','Routes and gateways determine connectivity.'],
+      examTip:'Design multi-AZ applications with at least one workload subnet per participating Availability Zone.'
+    },
+    {
+      ready:true,title:'Plan IPv4 ranges with CIDR',
+      summary:'Translate prefix lengths into address ranges and reserve non-overlapping space for future connectivity.',
+      explanation:['CIDR combines a base address with a prefix length. A longer prefix fixes more network bits and creates a smaller range: /32 identifies one IPv4 address, /24 contains 256 addresses, and /16 contains 65,536. Security rules and route tables use CIDR destinations and sources.','Choose VPC and subnet blocks from an intentional enterprise address plan. Overlapping CIDRs prevent normal routing across peering and complicate Transit Gateway, VPN, and Direct Connect designs; renumbering a deployed network is much harder than reserving adequate space early.'],
+      takeaways:['Longer prefixes represent smaller ranges.','CIDR appears in routes and firewall rules.','Connected networks should not overlap.'],
+      examTip:'When comparing routes, the most specific matching prefix—the longest prefix—wins.'
+    },
+    {
+      ready:true,title:'Distinguish public, private, and Elastic IPv4 addresses',
+      summary:'Understand address scope, translation, persistence, and internet reachability.',
+      explanation:['Private IPv4 ranges are not routed directly on the public internet. An EC2 public IPv4 address maps through AWS edge translation to the instance private address and may change when the instance is stopped and started; an Elastic IP is a static public IPv4 allocation that can be remapped.','A public address does not make a resource reachable by itself. The subnet route table needs a route to an internet gateway, security controls must allow the traffic, and the operating system or application must listen. Conversely, a private instance can initiate internet traffic through NAT without accepting unsolicited inbound sessions.'],
+      takeaways:['Private IPv4 is not internet-routable.','Elastic IPs are static allocations.','Reachability requires routes and security permission.'],
+      examTip:'A public subnet is defined by routing to an internet gateway, not merely by its name or CIDR.'
+    },
+    {
+      ready:true,title:'Choose a default or custom VPC',
+      summary:'Use the default network for quick experimentation and custom designs for deliberate production boundaries.',
+      explanation:['A default VPC includes public default subnets, an internet gateway, a main route table, a default security group, a default network ACL, and DNS settings intended to make launches easy. Instances may receive public IPv4 addresses automatically depending on subnet configuration.','A custom VPC begins with controlled address space and lets architects explicitly define public, private, isolated, inspection, and database tiers. Production environments favor custom VPCs because routing, exposure, logging, and IP allocation are visible design decisions rather than inherited conveniences.'],
+      takeaways:['Default VPCs optimize ease of launch.','Custom VPCs optimize intentional architecture.','Every VPC has default route and security resources.'],
+      examTip:'Do not assume a private workload belongs in the default VPC; design custom subnets and routes for production isolation.'
+    },
+    {
+      ready:true,title:'Design subnets and usable address capacity',
+      summary:'Divide a VPC CIDR across Availability Zones while accounting for AWS-reserved addresses.',
+      explanation:['A subnet uses a non-overlapping CIDR contained within a VPC address range and cannot span AZs. AWS reserves the first four and final IPv4 addresses in every subnet, so a nominal block has fewer assignable addresses than its mathematical size.','Allow capacity for instances, load balancer nodes, NAT and endpoint interfaces, Kubernetes pods, failover, and rolling deployments. Small subnets can exhaust silently as managed services add ENIs; distribute tiers across AZs and monitor available IP address counts.'],
+      takeaways:['Subnet CIDRs cannot overlap.','Five IPv4 addresses per subnet are reserved.','Managed services also consume subnet IPs.'],
+      examTip:'A /28 has 16 total IPv4 addresses but only 11 are assignable in an AWS subnet.'
+    },
+    {
+      ready:true,title:'Route traffic with VPC route tables',
+      summary:'Associate subnets with destination-to-target rules and rely on longest-prefix matching.',
+      explanation:['Every subnet is associated with one route table, explicitly or through the VPC main table. The automatic local route enables communication inside the VPC CIDR, while additional routes target internet, NAT, peering, Transit Gateway, virtual private gateway, endpoint, or appliance resources.','Routing is destination based: AWS chooses the longest matching prefix, and a propagated route can coexist with static routes. A route may become blackholed when its target is unavailable or deleted. Return paths and stateful or stateless filtering must also permit the connection.'],
+      takeaways:['One route table applies to each subnet.','The local route connects VPC address space.','Longest-prefix match selects the route.'],
+      examTip:'When two routes match, AWS uses the more specific CIDR before considering a broader default route.'
+    },
+    {
+      ready:true,title:'Provide internet access with an internet gateway',
+      summary:'Attach a horizontally scaled gateway and route public-subnet traffic to it.',
+      explanation:['An internet gateway attaches to one VPC and provides a route target for IPv4 and IPv6 internet traffic. A typical public subnet has a default IPv4 route to the IGW, and an IPv4 instance also needs a public or Elastic IP for one-to-one edge translation.','The IGW itself is redundant and managed, but it is not a firewall and does not override security groups or NACLs. Private subnets should not route directly to it for IPv4 internet egress; they use a NAT design or private service endpoint instead.'],
+      takeaways:['An IGW attaches to a VPC.','Public IPv4 instances need public addressing and a route.','Security controls still apply.'],
+      examTip:'An instance has a public IP but no internet connection: verify the subnet default route points to an attached internet gateway.'
+    },
+    {
+      ready:true,title:'Administer private instances without exposing SSH',
+      summary:'Prefer managed access paths and tightly constrain any bastion host that remains necessary.',
+      explanation:['A bastion host sits in a public subnet and accepts administrative connections from a narrow trusted source, then reaches private instances over their private addresses. Its security group should expose only required ports and targets should accept administration only from the bastion security group.','Systems Manager Session Manager often removes the need for inbound SSH, public IPs, and private keys. It uses an authorized agent and outbound connectivity through NAT or VPC endpoints, logs sessions, and integrates with IAM; choose it when requirements permit a managed, auditable control-plane path.'],
+      takeaways:['Bastions are hardened entry hosts.','Target rules can reference the bastion security group.','Session Manager avoids inbound administration ports.'],
+      examTip:'For secure shell access with no public IP or open port 22, use Systems Manager Session Manager.'
+    },
+    {
+      ready:true,title:'Recognize legacy NAT instance designs',
+      summary:'Understand self-managed IPv4 translation and why managed NAT is preferred.',
+      explanation:['A NAT instance is an EC2 instance configured to forward traffic from private subnets. It must reside in a public subnet, have a public address, disable source/destination checking, and receive the private route-table default route. Security groups and operating-system firewall rules govern it.','Capacity, patching, failure recovery, and scaling belong to the customer. NAT instances can support custom software, port forwarding, or bastion use that a NAT gateway does not, but old preconfigured NAT AMIs are unsupported and AWS recommends NAT gateways for normal outbound translation.'],
+      takeaways:['NAT instances require source/destination check disabled.','They are customer managed.','They allow customization unavailable in NAT gateways.'],
+      examTip:'Select a NAT instance only when the scenario explicitly needs custom NAT software or behavior.'
+    },
+    {
+      ready:true,title:'Provide zonal egress with NAT gateways',
+      summary:'Let private IPv4 workloads initiate external connections through a managed Availability Zone resource.',
+      explanation:['A public zonal NAT gateway is created in a public subnet with an Elastic IP and sends internet-bound traffic through the VPC internet gateway. Private subnet route tables point their default IPv4 route to the NAT gateway; unsolicited inbound internet connections are not translated back to private workloads.','A zonal NAT gateway is redundant within its AZ but is not cross-AZ. For zone-independent architecture, place one in each active AZ and route each private subnet to its local gateway, avoiding a single-AZ dependency and unnecessary cross-AZ data transfer.'],
+      takeaways:['NAT gateway provides initiated outbound access.','A public NAT gateway needs an EIP and IGW.','Per-AZ deployment isolates failures.'],
+      examTip:'Private EC2 instances need managed IPv4 software updates from the internet without inbound exposure: use NAT gateways.'
+    },
+    {
+      ready:true,title:'Simplify egress with regional NAT gateways',
+      summary:'Use one regional NAT identity that expands across workload Availability Zones automatically.',
+      explanation:['A regional NAT gateway is associated with a VPC instead of one public subnet. It has its own route table and automatically expands or contracts across AZs based on workload presence, preserving zonal affinity while offering a single route target and high availability by default.','Regional NAT gateways remove the need to build public NAT subnets and manage a separate gateway per AZ for public egress. They do not support private NAT, and expansion into a newly used AZ is not instantaneous, so verify feature availability, migration interruption, address strategy, and pricing for the workload.'],
+      takeaways:['Regional NAT spans workload AZs automatically.','It does not require a public subnet.','Private NAT still uses zonal gateways.'],
+      examTip:'For a current greenfield multi-AZ public-egress design with minimal NAT routing administration, evaluate a regional NAT gateway.'
+    },
+    {
+      ready:true,title:'Filter instance traffic with security groups',
+      summary:'Apply stateful allow rules to elastic network interfaces and reference workload identities.',
+      explanation:['Security groups are stateful virtual firewalls attached to ENIs. They contain allow rules only; return traffic for an allowed connection is automatically permitted regardless of the opposite-direction rule. Multiple attached groups combine their allowed traffic.','Rules can reference CIDRs, prefix lists, or other security groups in supported network relationships. Referencing an application-tier group from a database group is safer and more scalable than tracking instance IPs. Security groups do not process traffic addressed to Amazon DNS or several reserved infrastructure paths in the usual way.'],
+      takeaways:['Security groups are stateful.','They support allow rules only.','Group references express workload relationships.'],
+      examTip:'Allow database connections only from the application fleet by referencing the application security group as the source.'
+    },
+    {
+      ready:true,title:'Control subnet traffic with network ACLs',
+      summary:'Use ordered stateless allow and deny rules as a coarse subnet boundary.',
+      explanation:['A network ACL associates with one or more subnets, and each subnet uses one NACL. Inbound and outbound numbered rules are evaluated from the lowest number until the first match; both allow and deny actions are available, followed by an implicit deny.','NACLs are stateless, so response traffic must be allowed explicitly in the reverse direction. The default NACL permits traffic, while a new custom NACL initially denies it. Use NACLs for coarse CIDR blocks and defense in depth, not as a replacement for workload-level security groups.'],
+      takeaways:['NACLs operate at subnet boundaries.','Rules are ordered and can deny.','Return traffic needs an explicit reverse rule.'],
+      examTip:'A requirement to deny one source CIDR at the subnet boundary points to a network ACL.'
+    },
+    {
+      ready:true,title:'Handle ephemeral ports and compare firewalls',
+      summary:'Design bidirectional NACL rules while relying on stateful security groups for connection tracking.',
+      explanation:['A client connects to a well-known server port but receives responses on the client operating system\'s ephemeral source port. Because NACLs are stateless, the client-side subnet must allow response traffic to the relevant ephemeral range and the server-side subnet must allow corresponding outbound traffic.','Security groups remember established flows and need no explicit ephemeral response rule. Diagnose failures by checking route tables, security groups, both NACL directions, host firewalls, and whether the packet is a request or response; a flow-log REJECT shows filtering but not always which control rejected it.'],
+      takeaways:['Clients use ephemeral source ports.','NACLs require both traffic directions.','Security groups track established connections.'],
+      examTip:'Requests reach a server but responses fail after adding restrictive NACLs: open the appropriate ephemeral return-port range.'
+    },
+    {
+      ready:true,title:'Connect VPCs with peering',
+      summary:'Create private one-to-one connectivity between non-overlapping VPC networks.',
+      explanation:['VPC peering routes traffic privately between two VPCs in supported Regions and accounts. After accepting the connection, both sides need routes for the peer CIDR and compatible security rules; DNS resolution options may also need configuration.','Peering uses the AWS network and has no gateway bottleneck, but it is a point-to-point relationship. CIDRs cannot overlap, and each peering connection is an explicit trust and routing boundary suitable for a small number of direct relationships.'],
+      takeaways:['Peering requires non-overlapping CIDRs.','Both sides need routes.','Cross-account and inter-Region peering are supported.'],
+      examTip:'Two non-overlapping VPCs need simple private direct connectivity: use VPC peering.'
+    },
+    {
+      ready:true,title:'Respect VPC peering limitations',
+      summary:'Avoid transitive routing and edge-to-edge gateway assumptions in point-to-point topologies.',
+      explanation:['VPC peering is non-transitive: if A peers with B and B peers with C, A cannot reach C through B. A full mesh grows rapidly as VPC count rises, and overlapping address ranges remain impossible even if routes appear otherwise viable.','A peer generally cannot use the other VPC as a transit path to its internet gateway, NAT gateway, VPN, or Direct Connect gateway. Use Transit Gateway or another supported centralized routing architecture when many networks or hybrid connections must share transit services.'],
+      takeaways:['Peering is non-transitive.','A peer is not a general gateway transit path.','Meshes become hard to manage at scale.'],
+      examTip:'Many VPCs need hub-and-spoke transitive routing: choose Transit Gateway, not chains of VPC peerings.'
+    },
+    {
+      ready:true,title:'Keep AWS service traffic private with VPC endpoints',
+      summary:'Reach supported services without routing through an internet gateway or NAT device.',
+      explanation:['A VPC endpoint gives workloads private connectivity to a supported AWS or endpoint service over the AWS network. It removes public-path and NAT dependencies, although the service remains regional and the workload still needs DNS, route, security, IAM, and service-policy authorization.','Endpoint policies can limit which principals, resources, or actions use an endpoint, while the target service policy can require requests to arrive through a named endpoint or VPC. Endpoint connectivity does not itself grant application permission.'],
+      takeaways:['Endpoints avoid internet and NAT paths.','IAM authorization still applies.','Endpoint policies add a network-path control.'],
+      examTip:'Private workloads need an AWS service without internet egress: use the appropriate VPC endpoint.'
+    },
+    {
+      ready:true,title:'Use gateway endpoints for S3 and DynamoDB',
+      summary:'Add free route-table targets for private in-Region access to S3 and DynamoDB.',
+      explanation:['Gateway endpoints support Amazon S3 and DynamoDB. Selecting route tables adds service prefix-list routes whose target is the endpoint, so matching traffic stays on the AWS network and bypasses NAT gateway processing.','They do not create ENIs or use security groups and are scoped to the VPC and Region. For on-premises, cross-Region, or some centralized endpoint patterns, an interface endpoint may be needed instead. Bucket policies can use endpoint conditions to restrict access carefully without locking out required administration.'],
+      takeaways:['Gateway endpoints support S3 and DynamoDB.','They modify selected route tables.','They have no hourly endpoint charge.'],
+      examTip:'Reduce NAT charges for private subnets accessing regional S3: use an S3 gateway endpoint.'
+    },
+    {
+      ready:true,title:'Use interface endpoints and AWS PrivateLink',
+      summary:'Expose supported services through private IP addresses and controlled endpoint network interfaces.',
+      explanation:['An interface endpoint creates ENIs with private IPs in selected subnets and attaches security groups. Private DNS can map the normal regional service hostname to those endpoint addresses so applications need no endpoint-specific URL changes. Hourly and data-processing charges apply.','AWS PrivateLink also lets service providers place Network Load Balancers behind endpoint services that consumers reach through interface endpoints. It provides private service-oriented connectivity without full network routing or CIDR coordination, making it useful for SaaS and shared internal services.'],
+      takeaways:['Interface endpoints use private ENIs.','Security groups filter endpoint traffic.','PrivateLink exposes services without joining networks.'],
+      examTip:'Consumers need private access to one provider service despite overlapping VPC CIDRs: use PrivateLink.'
+    },
+    {
+      ready:true,title:'Give VPC-connected Lambda functions service access',
+      summary:'Separate Lambda-to-VPC attachment from outbound paths to public and AWS service endpoints.',
+      explanation:['A Lambda function attached to customer subnets uses managed Hyperplane ENIs to reach VPC resources. This attachment does not give the function a public IP, even in a public subnet; internet-bound IPv4 traffic needs a route through NAT from private subnets.','Prefer gateway or interface endpoints for supported AWS services to avoid NAT cost and exposure. Size subnets for concurrent network interfaces, attach focused security groups, and remember that a Lambda function outside the VPC can already call public AWS service APIs without customer VPC networking.'],
+      takeaways:['VPC attachment enables private resource access.','A public subnet does not give Lambda public internet access.','Endpoints can replace NAT for supported services.'],
+      examTip:'A VPC Lambda must call DynamoDB privately: associate suitable subnets and use a DynamoDB gateway endpoint.'
+    },
+    {
+      ready:true,title:'Capture network metadata with VPC Flow Logs',
+      summary:'Record accepted and rejected IP flow metadata at VPC, subnet, or network-interface scope.',
+      explanation:['VPC Flow Logs capture fields such as source and destination addresses, ports, protocol, packets, bytes, timestamps, and ACCEPT or REJECT status. They can publish to CloudWatch Logs, S3, or Amazon Data Firehose using supported formats and aggregation settings.','Flow logs are metadata, not full packet payloads, and omit some AWS-managed traffic. Creating a flow log does not interrupt traffic. Choose scope, fields, aggregation, destination, retention, and partitioning based on troubleshooting, security, and cost requirements.'],
+      takeaways:['Flow logs record connection metadata.','They can capture accepted and rejected flows.','They do not capture packet payloads.'],
+      examTip:'Identify IPs, ports, and accept or reject outcomes without packet contents: enable VPC Flow Logs.'
+    },
+    {
+      ready:true,title:'Analyze flow logs and delivery permissions',
+      summary:'Send network records to the right analytics destination and interpret them with surrounding context.',
+      explanation:['CloudWatch Logs supports near-real-time queries, metric filters, alarms, and Contributor Insights for top talkers. S3 supports long retention, partitioned Athena analysis, and lake integration, while Data Firehose supports managed streaming delivery. Each destination needs the correct service role or resource policy.','An ACCEPT record proves a network control permitted the observed flow, not that the application succeeded. A REJECT can point toward a security group or NACL, but correlate ENI ownership, direction, routes, ephemeral ports, and host behavior. Use custom fields and enrichment to make centralized multi-account records actionable.'],
+      takeaways:['Destination choice follows latency and retention needs.','Delivery needs explicit permission.','Flow outcomes require network context.'],
+      examTip:'Find the top source IPs producing rejected traffic in near real time: deliver flow logs to CloudWatch Logs and use Contributor Insights.'
+    },
+    {
+      ready:true,title:'Connect on premises with Site-to-Site VPN',
+      summary:'Build redundant encrypted IPsec tunnels over the internet between customer and AWS gateways.',
+      explanation:['A Site-to-Site VPN connection has two tunnels between a customer gateway device and an AWS-side virtual private gateway or Transit Gateway attachment. Static routes or BGP advertise reachable prefixes, and route tables must direct hybrid traffic toward the gateway.','The customer gateway resource represents the on-premises device and routing information; the actual appliance must support the VPN configuration. Use both tunnels, monitor their state, avoid overlapping CIDRs, and design redundant customer devices and internet paths because AWS tunnel redundancy alone does not remove on-premises failure points.'],
+      takeaways:['Site-to-Site VPN uses IPsec.','AWS supplies two tunnels.','BGP supports dynamic route exchange.'],
+      examTip:'A rapidly provisioned encrypted connection from a data center to a VPC points to Site-to-Site VPN.'
+    },
+    {
+      ready:true,title:'Connect multiple sites with VPN CloudHub',
+      summary:'Use a virtual private gateway as a simple BGP hub for several on-premises VPN locations.',
+      explanation:['VPN CloudHub lets multiple customer gateway devices establish Site-to-Site VPN connections to the same virtual private gateway and exchange routes through it. It creates a low-cost hub-and-spoke topology for branch communication over encrypted internet tunnels.','It fits a modest set of sites with non-overlapping prefixes and BGP-capable devices. Transit Gateway provides broader scale, segmentation, VPC integration, ECMP, and centralized routing, while accelerated Site-to-Site VPN can use Global Accelerator to improve internet path consistency where supported.'],
+      takeaways:['CloudHub uses multiple VPNs on one VGW.','BGP exchanges branch routes.','Transit Gateway is the scalable hub alternative.'],
+      examTip:'Several small branch offices need encrypted hub-and-spoke communication through one VPC gateway: consider VPN CloudHub.'
+    },
+    {
+      ready:true,title:'Establish dedicated links with Direct Connect',
+      summary:'Use a private physical connection for predictable hybrid bandwidth and routing.',
+      explanation:['AWS Direct Connect links a customer network to an AWS Direct Connect location through a dedicated or partner-hosted connection. Provisioning takes longer than a VPN and requires a carrier or colocation path, but it can provide more consistent bandwidth and latency than the public internet.','Direct Connect is private but not encrypted by default. It is not inherently a complete highly available design: physical ports, devices, locations, and regional attachments must be duplicated according to recovery objectives, often with VPN as an independent backup.'],
+      takeaways:['Direct Connect is a dedicated private path.','Provisioning requires physical connectivity.','Privacy does not imply encryption.'],
+      examTip:'A hybrid workload needs sustained predictable private bandwidth and can tolerate setup lead time: use Direct Connect.'
+    },
+    {
+      ready:true,title:'Choose Direct Connect virtual interfaces and gateways',
+      summary:'Map one physical connection to public AWS services, VPCs, or Transit Gateway attachments.',
+      explanation:['A private virtual interface reaches VPC resources through a virtual private gateway or Direct Connect gateway. A transit virtual interface reaches Transit Gateway through a Direct Connect gateway, while a public virtual interface advertises supported public AWS service prefixes without becoming general internet transit.','A Direct Connect gateway provides global association to supported virtual private gateways or Transit Gateways across Regions and accounts under defined rules. It does not itself provide transitive VPC routing; the attached gateway architecture and route propagation determine reachability.'],
+      takeaways:['Private VIFs reach VPC private addresses.','Transit VIFs connect to Transit Gateway.','Public VIFs reach public AWS prefixes.'],
+      examTip:'One Direct Connect must reach multiple regional VPCs: use a Direct Connect gateway with the appropriate VIF and gateway associations.'
+    },
+    {
+      ready:true,title:'Encrypt traffic over Direct Connect',
+      summary:'Add IPsec or supported link-layer encryption when a private circuit is not sufficient.',
+      explanation:['Direct Connect traffic does not receive encryption merely because it avoids the public internet. A Site-to-Site VPN over a Direct Connect public VIF combines dedicated transport with IPsec encryption and can reduce variability compared with an internet-based tunnel.','MAC Security can provide point-to-point Ethernet encryption on supported dedicated connections, port speeds, and locations. End-to-end TLS remains valuable regardless of link encryption. Choose based on compliance scope, device support, throughput, operational complexity, and which segments require cryptographic protection.'],
+      takeaways:['Direct Connect is unencrypted by default.','VPN over DX adds IPsec.','MACsec is available only for supported dedicated links.'],
+      examTip:'The requirement says dedicated private connectivity plus encryption: combine Direct Connect with VPN or supported MACsec.'
+    },
+    {
+      ready:true,title:'Design resilient hybrid connectivity',
+      summary:'Remove single points across connections, devices, facilities, and network providers.',
+      explanation:['High-resiliency Direct Connect designs use multiple connections at more than one location; maximum-resiliency designs also separate customer and AWS devices. BGP preferences control primary and backup paths, and Bidirectional Forwarding Detection can accelerate supported failure detection.','A Site-to-Site VPN can back up Direct Connect at lower cost, but it must be configured and tested before failure. Avoid asymmetric routing through stateful appliances, monitor tunnel and BGP state, and rehearse failover because a diagram with two lines is not evidence that routes converge correctly.'],
+      takeaways:['Redundant ports in one location do not cover a site failure.','VPN can back up Direct Connect.','Routing policy determines actual failover.'],
+      examTip:'For critical hybrid service, use redundant Direct Connect locations and an independently tested backup path.'
+    },
+    {
+      ready:true,title:'Create a routing hub with Transit Gateway',
+      summary:'Connect many VPCs and hybrid networks through a scalable regional transitive router.',
+      explanation:['AWS Transit Gateway uses attachments for VPCs, VPNs, Direct Connect gateways, peering, and supported appliances. Its route tables associate an attachment with one forwarding policy and accept propagated or static routes from selected attachments.','Multiple route tables create segmentation for production, development, inspection, and shared services without a full peering mesh. Transit Gateway is regional but supports inter-Region peering; account owners can share it through AWS RAM while retaining explicit attachment acceptance and routing control.'],
+      takeaways:['Transit Gateway provides transitive hub routing.','Attachments connect networks.','Multiple route tables enable segmentation.'],
+      examTip:'Hundreds of VPCs need centralized hybrid and transitive connectivity: choose Transit Gateway.'
+    },
+    {
+      ready:true,title:'Scale Transit Gateway with ECMP and sharing',
+      summary:'Aggregate VPN paths and centralize cross-account connectivity without losing route governance.',
+      explanation:['Transit Gateway supports equal-cost multipath routing across eligible BGP VPN tunnels, allowing aggregate throughput and path redundancy beyond a single tunnel. The customer devices must advertise equal prefixes with compatible attributes, and flows are distributed by hashing rather than split packet by packet.','AWS Resource Access Manager shares a Transit Gateway with organization accounts so application teams create VPC attachments to a central network. A networking account controls route tables and propagation, and a Direct Connect gateway can extend the shared hub to on-premises networks.'],
+      takeaways:['ECMP uses multiple equal BGP paths.','RAM enables cross-account TGW use.','Central route tables preserve segmentation.'],
+      examTip:'Increase aggregate VPN throughput into a hub using several tunnels that advertise the same routes: use Transit Gateway ECMP.'
+    },
+    {
+      ready:true,title:'Inspect packets with VPC Traffic Mirroring',
+      summary:'Copy selected ENI traffic to security and monitoring appliances for deep analysis.',
+      explanation:['VPC Traffic Mirroring duplicates inbound or outbound packets from supported network interfaces, applies a mirror filter, and sends them through a mirror session to a target such as a Network Load Balancer, Gateway Load Balancer endpoint, or monitoring ENI.','Unlike flow logs, mirrored traffic includes packet content and supports intrusion detection, protocol analysis, and troubleshooting. It adds processing, bandwidth, privacy, and appliance capacity considerations, so filter only required traffic and secure the monitoring destination.'],
+      takeaways:['Traffic Mirroring copies packet data.','Filters control captured flows.','Targets run inspection or monitoring tools.'],
+      examTip:'A security appliance needs full packet payloads rather than connection metadata: use VPC Traffic Mirroring.'
+    },
+    {
+      ready:true,title:'Adopt dual-stack IPv6 networking',
+      summary:'Add globally unique IPv6 ranges while continuing to support IPv4 where required.',
+      explanation:['A VPC can use IPv4-only or dual-stack addressing, and dual-stack subnets receive both IPv4 and IPv6 CIDRs. IPv6 addresses are globally unique and do not require NAT for address conservation, but public reachability still depends on routes, security groups, NACLs, and gateway choice.','Plan DNS records, application listeners, load balancers, endpoints, logging, and downstream dependencies for both families. IPv6 adoption does not automatically solve IPv4 subnet exhaustion unless workloads and services can operate IPv6-only or reduce their IPv4 interface demand.'],
+      takeaways:['Dual stack supports IPv4 and IPv6 together.','IPv6 does not require address-conservation NAT.','Security and routing remain explicit.'],
+      examTip:'A resource with a public IPv6 address is not reachable unless its route and security controls permit inbound traffic.'
+    },
+    {
+      ready:true,title:'Control IPv6 egress with an egress-only internet gateway',
+      summary:'Allow outbound-initiated IPv6 internet connections without accepting unsolicited inbound sessions.',
+      explanation:['An egress-only internet gateway is a VPC route target for IPv6. Private dual-stack subnets can route ::/0 to it, allowing workloads to initiate internet connections while blocking new inbound connections from the internet at the gateway.','It performs no address translation and does not handle IPv4. IPv4 private egress uses NAT, while IPv6-only workloads that must reach IPv4 services can use DNS64 with NAT64 on a NAT gateway. Security groups and NACLs still govern permitted flows.'],
+      takeaways:['Egress-only IGW is IPv6 specific.','It allows outbound-initiated connections.','NAT64 bridges IPv6 workloads to IPv4 destinations.'],
+      examTip:'Private IPv6 instances need outbound internet access without unsolicited inbound reachability: use an egress-only internet gateway.'
+    },
+    {
+      ready:true,title:'Understand AWS network data-transfer cost',
+      summary:'Treat path selection, Availability Zone boundaries, Regions, and internet egress as architecture inputs.',
+      explanation:['Data transfer into AWS is often free, while internet egress, inter-Region transfer, cross-AZ paths, NAT processing, Transit Gateway processing, and endpoint processing can add charges. Exact rates change by service and Region, so architecture should identify billable hops rather than memorize one price.','Keep chatty components in the same AZ when resilience allows, use caching and compression, select regional replicas near consumers, and avoid accidental hairpin routes through centralized appliances. Cost optimization must preserve failure isolation and security rather than collapsing everything into one zone.'],
+      takeaways:['Architecture determines billable network hops.','Cross-AZ and egress paths can add cost.','Current pricing must be verified by Region.'],
+      examTip:'Trace the complete packet path—including NAT, hubs, and AZ crossings—when comparing network cost.'
+    },
+    {
+      ready:true,title:'Reduce S3 and NAT transfer expense',
+      summary:'Use gateway endpoints, direct regional paths, and caching instead of unnecessary processed egress.',
+      explanation:['When private workloads reach regional S3 through a NAT gateway, the design can incur NAT data processing and potentially cross-AZ charges. An S3 gateway endpoint adds a direct route-table path without hourly endpoint or NAT processing charges and keeps traffic on the AWS network.','CloudFront caches frequently requested S3 content near external users and reduces repeated origin transfer. S3 Transfer Acceleration uses the edge network for faster long-distance uploads when its added charge is justified. Evaluate source, destination, acceleration, request, and retrieval costs together.'],
+      takeaways:['S3 gateway endpoints bypass NAT.','CloudFront reduces repeated origin transfer.','Acceleration trades added cost for transfer performance.'],
+      examTip:'Private EC2 instances transfer large volumes to S3 through NAT: add an S3 gateway endpoint first.'
+    },
+    {
+      ready:true,title:'Inspect VPC traffic with AWS Network Firewall',
+      summary:'Deploy managed stateful and stateless filtering for centralized ingress, egress, and east-west inspection.',
+      explanation:['AWS Network Firewall creates scalable firewall endpoints in selected subnets and applies stateless rule groups, stateful Suricata-compatible rules, domain lists, and managed rule groups. Route tables steer traffic through those endpoints before it reaches an internet, NAT, Transit Gateway, or workload destination.','Deploy an endpoint in every participating AZ and preserve symmetric routing so both directions of a stateful flow cross the same firewall path. Logging can record alerts and flows to supported destinations. Network Firewall adds deep network inspection but does not replace security groups, NACLs, or WAF.'],
+      takeaways:['Network Firewall inspects Layers 3 through 7.','Route tables insert firewall endpoints.','Stateful inspection needs symmetric routing.'],
+      examTip:'A VPC needs managed domain filtering and intrusion-prevention rules for outbound traffic: use AWS Network Firewall.'
+    },
+    {
+      ready:true,title:'Choose the correct network protection layer',
+      summary:'Match security groups, NACLs, WAF, Network Firewall, Shield, and inspection appliances to traffic scope.',
+      explanation:['Security groups provide stateful ENI-level allow rules; NACLs provide stateless subnet allow and deny rules. AWS WAF filters HTTP semantics on supported application front doors, Network Firewall inspects routed VPC traffic, and Shield mitigates denial-of-service attacks.','Gateway Load Balancer inserts third-party virtual appliances, while Traffic Mirroring sends copies for out-of-band inspection. Layer controls are complementary: define the threat, protocol, enforcement point, required state, and operational owner before selecting a product.'],
+      takeaways:['Security groups protect interfaces.','NACLs protect subnet boundaries.','WAF and Network Firewall inspect different traffic scopes.'],
+      examTip:'SQL injection is a WAF problem; a denied subnet CIDR is a NACL problem; routed domain inspection is a Network Firewall problem.'
+    },
+    {
+      ready:true,title:'Troubleshoot VPC connectivity systematically',
+      summary:'Follow the packet in both directions through DNS, addressing, routes, gateways, controls, and applications.',
+      explanation:['Start with name resolution and the resolved address family, then verify source and destination addresses, ENI attachment, subnet routes, gateway or endpoint state, and the longest-prefix path. Check security groups, both NACL directions, ephemeral ports, host firewalls, listeners, and return routing.','Use Reachability Analyzer for configuration-path analysis, Flow Logs for observed metadata, Network Access Analyzer for unintended exposure, Network Synthetic Monitor for hybrid performance, and packet mirroring when payload inspection is essential. Separate reachability failure from latency, DNS, TLS, and application errors.'],
+      takeaways:['Connectivity requires a valid forward and return path.','Stateful and stateless controls behave differently.','AWS analysis tools answer different questions.'],
+      examTip:'Do not fix a network problem by opening every rule; identify the first failed layer and change only that control.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -2420,4 +2689,5 @@
   window.AWS_COURSE_CURRICULUM[23].lectures=sectionTwentyFourLectures;
   window.AWS_COURSE_CURRICULUM[24].lectures=sectionTwentyFiveLectures;
   window.AWS_COURSE_CURRICULUM[25].lectures=sectionTwentySixLectures;
+  window.AWS_COURSE_CURRICULUM[26].lectures=sectionTwentySevenLectures;
 })();
