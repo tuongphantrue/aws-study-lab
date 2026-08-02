@@ -526,6 +526,107 @@
     }
   ];
 
+  const sectionSevenLectures=[
+    {
+      ready:true,title:'Amazon EBS volume fundamentals',
+      summary:'Use durable network-attached block storage for EC2 boot volumes and application data.',
+      explanation:['Amazon Elastic Block Store provides virtual block devices that an operating system formats and mounts like disks. Data persists independently of the running compute lifecycle, subject to the volume deletion configuration.','An EBS volume is provisioned with capacity and performance characteristics and resides in one Availability Zone. It can be detached and attached to a compatible instance in that AZ, making compute replacement independent from persistent disk data.'],
+      takeaways:['EBS is network-attached block storage.','Volumes are scoped to one Availability Zone.','Provisioned capacity is billed even when unattached.'],
+      examTip:'Choose EBS when one EC2 instance needs a persistent disk; choose a shared file service when many instances need the same filesystem.'
+    },
+    {
+      ready:true,title:'Attach, move, and retain EBS volumes',
+      summary:'Manage the Availability Zone boundary and deletion settings that determine where a volume can attach and whether it survives termination.',
+      explanation:['A volume attaches only to instances in its own Availability Zone. To move its data to another AZ or Region, create a snapshot and restore or copy that snapshot into the destination.','Delete on termination is an attachment setting. Root volumes commonly default to deletion when the instance terminates, while additional data volumes commonly persist; verify and change the flag when data-retention requirements differ.'],
+      takeaways:['Direct attachment cannot cross Availability Zones.','Snapshots move EBS data across AZ or Region boundaries.','Delete on termination is configurable per attachment.'],
+      examTip:'To preserve a root disk after instance termination, disable its delete-on-termination setting before the instance is removed.'
+    },
+    {
+      ready:true,title:'Create and restore EBS snapshots',
+      summary:'Capture point-in-time block backups and restore them as new volumes in the required location.',
+      explanation:['An EBS snapshot is a point-in-time backup stored by AWS. Snapshots are incremental after the first backup, although each snapshot can be used as a complete restore point.','A snapshot can be taken while a volume is attached, but application-consistent backup may require flushing writes or briefly pausing the workload. Restoring creates a new EBS volume, which can use a different size or Availability Zone.'],
+      takeaways:['Snapshots are point-in-time EBS backups.','Later snapshots store changed blocks incrementally.','Restores create new volumes rather than modifying the source.'],
+      examTip:'Use snapshots—not direct volume attachment—to copy an EBS dataset into another Availability Zone.'
+    },
+    {
+      ready:true,title:'Archive, protect, and accelerate snapshots',
+      summary:'Choose snapshot archive, Recycle Bin, or Fast Snapshot Restore for different cost, recovery, and performance goals.',
+      explanation:['Snapshot Archive lowers storage cost for long-retention backups but adds a substantial restore delay. Recycle Bin retention rules protect deleted snapshots from immediate permanent loss and support recovery from accidental deletion.','Volumes restored from normal snapshots may initialize blocks as they are first read. Fast Snapshot Restore prepares supported snapshots in selected Availability Zones so new volumes deliver full performance immediately, at additional cost.'],
+      takeaways:['Archive trades lower cost for slower restore.','Recycle Bin adds deletion recovery retention.','Fast Snapshot Restore removes first-access initialization latency.'],
+      examTip:'Match the requirement: cheap long retention suggests Archive, accidental deletion protection suggests Recycle Bin, and immediate full disk performance suggests FSR.'
+    },
+    {
+      ready:true,title:'Build reusable Amazon Machine Images',
+      summary:'Package an operating system and preinstalled software into a repeatable EC2 launch image.',
+      explanation:['An Amazon Machine Image defines the operating-system template, launch permissions, and block-device mappings for EC2 instances. A custom AMI can preinstall application dependencies and monitoring agents to reduce launch configuration time.','Creating an EBS-backed AMI produces snapshots of its configured volumes. AMIs are Regional resources but can be copied across Regions; use controlled image pipelines to patch, test, and replace images rather than modifying production servers manually.'],
+      takeaways:['AMIs are templates for launching EC2 instances.','Custom AMIs reduce repeated bootstrap work.','AMI copies support consistent multi-Region deployment.'],
+      examTip:'Use a prebuilt AMI when instances must launch quickly and consistently; use user data for smaller environment-specific configuration.'
+    },
+    {
+      ready:true,title:'Use EC2 instance store for ephemeral data',
+      summary:'Exploit very fast local disks only for data that can be lost and rebuilt.',
+      explanation:['Instance store volumes are physically attached to the host running an EC2 instance and can provide high local I/O performance. Availability and capacity depend on the chosen instance type.','Instance-store data is ephemeral: it can be lost when the instance stops, terminates, or its host fails. Suitable data includes caches, buffers, scratch files, and replicated shards; durable copies must live elsewhere.'],
+      takeaways:['Instance store is local to the EC2 host.','Its data does not survive stop or host loss.','Applications must replicate or rebuild important data.'],
+      examTip:'Choose instance store for the fastest temporary scratch space, never as the only copy of irreplaceable data.'
+    },
+    {
+      ready:true,title:'Choose an EBS volume family',
+      summary:'Select SSD or HDD storage according to IOPS, throughput, latency, boot, and cost requirements.',
+      explanation:['EBS SSD families serve transactional and boot workloads where small random I/O and low latency matter. Provisioned IOPS SSD targets sustained high-performance databases, while general-purpose SSD balances performance and cost.','HDD families optimize large sequential throughput at lower cost and cannot be boot volumes. Evaluate size, IOPS, throughput, latency consistency, durability, and current platform limits rather than choosing by capacity alone.'],
+      takeaways:['SSD suits transactional and boot workloads.','HDD suits large sequential throughput.','Only supported SSD families can serve as boot volumes.'],
+      examTip:'Database IOPS, log-stream throughput, and cheap cold sequential access point to different volume families.'
+    },
+    {
+      ready:true,title:'General Purpose SSD: gp3 and gp2',
+      summary:'Use gp3 for flexible baseline storage and understand the older gp2 size-to-performance relationship.',
+      explanation:['General Purpose SSD is the default fit for boot volumes, development systems, virtual desktops, and many application disks. gp3 lets capacity, IOPS, and throughput be configured more independently.','With gp2, baseline IOPS scales with volume size and smaller volumes can burst using credits. This coupling sometimes forced overprovisioning capacity just to gain performance, which gp3 often avoids.'],
+      takeaways:['gp3 separates performance tuning from capacity more effectively.','gp2 performance is linked to volume size.','General Purpose SSD fits broad low-latency workloads.'],
+      examTip:'When a workload needs more IOPS without more storage, gp3 is usually the cleaner general-purpose choice.'
+    },
+    {
+      ready:true,title:'Provisioned IOPS SSD: io1 and io2',
+      summary:'Provide sustained high IOPS and consistent low latency for critical transactional systems.',
+      explanation:['Provisioned IOPS volumes let architects request a defined IOPS level independently within size and ratio limits. They suit latency-sensitive databases and applications whose required performance exceeds general-purpose limits.','io2 and its Block Express capabilities offer higher durability and performance ceilings on supported configurations. Exact limits evolve, so the exam-relevant decision is the need for sustained, provisioned transactional performance.'],
+      takeaways:['Provisioned IOPS targets critical transactional workloads.','IOPS can be configured independently within platform ratios.','io2 provides higher durability and advanced performance options.'],
+      examTip:'A mission-critical database requiring sustained IOPS and low latency points to Provisioned IOPS SSD.'
+    },
+    {
+      ready:true,title:'Throughput Optimized and Cold HDD',
+      summary:'Reduce cost for large sequential data access while avoiding HDD for random-I/O or boot workloads.',
+      explanation:['Throughput Optimized HDD is designed for frequently accessed, throughput-intensive datasets such as logs, big-data processing, and data warehouses. Its strength is megabytes per second rather than small random IOPS.','Cold HDD costs less for infrequently accessed sequential data where low storage price dominates. Neither HDD family supports boot volumes, and both are poor fits for transactional databases.'],
+      takeaways:['st1 targets frequent sequential throughput.','sc1 targets colder sequential data at the lowest HDD cost.','HDD volumes cannot be EC2 boot volumes.'],
+      examTip:'Large streaming log files suggest st1; infrequently accessed sequential archives may suggest sc1.'
+    },
+    {
+      ready:true,title:'EBS Multi-Attach',
+      summary:'Attach one supported Provisioned IOPS volume to a small cluster in the same Availability Zone.',
+      explanation:['EBS Multi-Attach allows a supported io1 or io2 volume to connect to multiple compatible EC2 instances in one Availability Zone. Every attached instance can issue reads and writes.','The application must coordinate concurrent access using a cluster-aware filesystem or storage layer. A normal single-host filesystem can corrupt data, and Multi-Attach does not create multi-AZ storage resilience.'],
+      takeaways:['Multi-Attach uses supported Provisioned IOPS volumes.','All instances must be in the same Availability Zone.','Concurrent writers require cluster-aware coordination.'],
+      examTip:'Do not choose Multi-Attach for ordinary shared Linux files across AZs; EFS is the managed shared-file answer.'
+    },
+    {
+      ready:true,title:'Encrypt EBS volumes and snapshots',
+      summary:'Protect block data transparently with KMS-backed encryption across volumes, snapshots, and restores.',
+      explanation:['Encrypted EBS protects data at rest, data moving between supported instances and volumes, snapshots, and volumes restored from those snapshots. AWS performs encryption transparently using KMS keys.','To migrate an unencrypted volume, snapshot it, copy the snapshot while enabling encryption, and create a new encrypted volume. Permissions to the KMS key must accompany permissions to use the encrypted storage.'],
+      takeaways:['EBS encryption covers volumes, transport, and snapshots.','Encrypted snapshots produce encrypted restored volumes.','Snapshot copy can convert unencrypted data to encrypted storage.'],
+      examTip:'If an encrypted volume cannot be attached or restored, inspect both EBS permissions and access to its KMS key.'
+    },
+    {
+      ready:true,title:'Amazon EFS shared file storage',
+      summary:'Mount one managed POSIX filesystem from many Linux instances across multiple Availability Zones.',
+      explanation:['Amazon Elastic File System provides managed NFS file storage that scales capacity automatically. Regional EFS uses mount targets across Availability Zones so many Linux clients can share the same files.','Security groups control network access and POSIX permissions control file access. EFS suits shared web content, content management, home directories, and data exchange where block storage attached to one instance is insufficient.'],
+      takeaways:['EFS is managed NFS for Linux workloads.','Regional EFS supports multi-AZ shared access.','Capacity scales automatically with pay-for-use storage.'],
+      examTip:'Many Linux web servers sharing the same files across AZs is a direct EFS use case.'
+    },
+    {
+      ready:true,title:'EFS performance, lifecycle, and storage selection',
+      summary:'Tune shared-file behavior and choose among EFS, EBS, and instance store from access and durability requirements.',
+      explanation:['EFS performance and throughput modes address latency-sensitive general workloads, highly parallel access, provisioned throughput, or automatically changing demand. Lifecycle policies move colder files from Standard into lower-cost Infrequent Access or Archive tiers.','Regional storage offers multi-AZ resilience, while One Zone reduces cost for suitable data. Choose EBS for instance-oriented block storage, EFS for shared POSIX files, and instance store for temporary host-local performance.'],
+      takeaways:['EFS modes tune latency, parallelism, and throughput scaling.','Lifecycle tiers reduce the cost of colder files.','Access pattern and failure scope decide EFS versus EBS versus instance store.'],
+      examTip:'Ask three questions: block or file, one host or many, and persistent or disposable. Those answers usually identify the correct EC2 storage service.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -541,4 +642,5 @@
   window.AWS_COURSE_CURRICULUM[3].lectures=sectionFourLectures;
   window.AWS_COURSE_CURRICULUM[4].lectures=sectionFiveLectures;
   window.AWS_COURSE_CURRICULUM[5].lectures=sectionSixLectures;
+  window.AWS_COURSE_CURRICULUM[6].lectures=sectionSevenLectures;
 })();
