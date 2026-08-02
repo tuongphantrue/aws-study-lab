@@ -5413,6 +5413,50 @@
   };
   sectionTwentyEightLectures.forEach(lecture=>Object.assign(lecture,sectionTwentyEightSlideOverrides[lecture.title]||{}));
 
+  const sectionTwentyNineSlideOverrides={
+    'Combine Lambda, SNS, and SQS safely':{
+      sourcePages:'803–804',
+      summary:'Combine Lambda, SQS, SNS, retries, and dead-letter queues according to the delivery and fan-out behavior the workload needs.',
+      explanation:['The slides contrast asynchronous Lambda invocation, SQS polling by Lambda, and SNS invoking Lambda. Retries and dead-letter queues isolate repeated failures; a FIFO queue can preserve ordered processing, but a blocking failed message must be resolved for its message group to advance.','For fan-out, an application should publish one event to SNS and subscribe multiple SQS queues rather than issue a separate write to each queue. Every consumer then receives its own durable copy and can retry independently.'],
+      slideTopics:['Lambda with SQS','SNS with Lambda','Retries and DLQs','SQS FIFO blocking behavior','SNS-to-SQS fan-out'],
+      takeaways:['SQS buffers work for polling consumers.','SNS publishes one message to multiple subscribers.','A queue per subscriber isolates processing and retries.'],
+      examTip:'One event must reach several independently retryable consumers: use SNS fan-out to separate SQS queues.'
+    },
+    'Route S3 and API events without application glue':{
+      sourcePages:'805–808',
+      summary:'Route storage events, API activity, and client requests through native AWS integrations instead of unnecessary custom relay code.',
+      explanation:['S3 Event Notifications can react to object creation, removal, restore, and replication events, filter object names, and target Lambda, SQS, or SNS. Sending all S3 events to EventBridge adds JSON filtering, many targets, archives, replay, and reliable delivery capabilities.','CloudTrail can capture an API call such as DeleteTable and let EventBridge route it to an alert or workflow. API Gateway can also integrate directly with an AWS service; the slide example sends client records through API Gateway into Kinesis Data Streams, Firehose, and S3.'],
+      slideTopics:['S3 Event Notifications','Object-name filtering','S3 with EventBridge','CloudTrail API-call events','API Gateway AWS service integration'],
+      takeaways:['Native S3 notifications target Lambda, SQS, or SNS.','EventBridge adds advanced routing and replay.','API Gateway can call supported AWS services directly.'],
+      examTip:'If API Gateway only needs to put records into Kinesis, use an AWS service integration rather than a Lambda relay.'
+    },
+    'Place caching and IP controls at the right layer':{
+      sourcePages:'809–814',
+      summary:'Cache at the layer that removes repeated work and block unwanted IP traffic at a control that can actually see the client.',
+      explanation:['The caching slide spans CloudFront at the edge, API Gateway response caching, Redis or Memcached, DAX, S3, and application logic. TTL, latency, computation, network use, and cost determine which cache layer provides value.','For filtering, a NACL can deny a source CIDR at the subnet boundary, while security groups contain allow rules. Behind an ALB, WAF can filter client IPs at Layer 7; with CloudFront, WAF or geographic restrictions operate at the distribution, and the origin sees CloudFront public IPs rather than the viewer as its network peer.'],
+      slideTopics:['Multi-layer caching','TTL and latency tradeoffs','NACL deny rules','ALB and NLB network path','WAF and CloudFront filtering'],
+      takeaways:['Cache closest to repeated demand when practical.','Security groups do not express explicit deny rules.','WAF filters web requests at ALB or CloudFront.'],
+      examTip:'To block a public web client before traffic reaches the origin, attach AWS WAF to CloudFront or the ALB.'
+    },
+    'Assemble high-performance computing on AWS':{
+      sourcePages:'815–820',
+      summary:'Build HPC from high-scale transfer, optimized compute, low-latency networking, suitable storage, and automated cluster orchestration.',
+      explanation:['The slides use Direct Connect, Snowball or Snowmobile, and DataSync for large data movement. Compute- and GPU-optimized EC2, Spot Fleets, Auto Scaling, and cluster placement groups provide elastic compute with close network placement.','Enhanced Networking increases bandwidth and packets per second; Elastic Fabric Adapter supports tightly coupled Linux MPI workloads with OS bypass. Storage choices include EBS, instance store, S3, EFS, and S3-backed FSx for Lustre, while AWS Batch and ParallelCluster schedule and provision parallel jobs.'],
+      slideTopics:['HPC use cases','Direct Connect, Snow, and DataSync','Cluster placement groups','ENA and EFA','FSx for Lustre, Batch, and ParallelCluster'],
+      takeaways:['EFA serves tightly coupled MPI communication.','FSx for Lustre provides a parallel HPC filesystem.','Batch and ParallelCluster automate compute fleets.'],
+      examTip:'A tightly coupled Linux MPI job needing OS-bypass networking points to EFA in a cluster placement group.'
+    },
+    'Replace and restore a stateful EC2 instance':{
+      sourcePages:'821–823',
+      summary:'Replace a failed singleton EC2 instance and reattach its stable public identity and restored block data through automation.',
+      explanation:['The first slide monitors a public EC2 instance and starts a standby instance, then attaches the Elastic IP. The Auto Scaling version uses minimum, maximum, and desired capacity of one across at least two Availability Zones; user data and an instance role find and attach the tagged Elastic IP.','For state, an Auto Scaling termination lifecycle hook snapshots the old EBS volume and tags it. A launch lifecycle hook creates and attaches a replacement volume from that snapshot. This slide architecture illustrates recovery automation, although managed multi-AZ data services are generally safer than a stateful singleton.'],
+      slideTopics:['Standby EC2 recovery','Elastic IP reassociation','Single-instance Auto Scaling group','Launch and termination lifecycle hooks','EBS snapshot and volume restore'],
+      takeaways:['Auto Scaling can replace a failed singleton.','User data needs an IAM role to attach the Elastic IP.','Lifecycle hooks provide time to snapshot and restore EBS.'],
+      examTip:'For a self-healing single instance, use an ASG with desired capacity one and automate external identity and data recovery.'
+    }
+  };
+  sectionTwentyNineLectures.forEach(lecture=>Object.assign(lecture,sectionTwentyNineSlideOverrides[lecture.title]||{}));
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
