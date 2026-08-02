@@ -59,6 +59,26 @@
     slideOutline.hidden=false;
   }
 
+  const documentation=Array.isArray(section.awsDocs)?section.awsDocs:[];
+  const docExtension=document.getElementById('lectureDocExtension');
+  if(documentation.length&&Array.isArray(lecture.explanation)&&lecture.explanation.length){
+    setText('lectureDocSummary',lecture.summary);
+    const docCopy=document.getElementById('lectureDocCopy');
+    lecture.explanation.forEach(copy=>{const paragraph=document.createElement('p');paragraph.textContent=copy;docCopy.appendChild(paragraph)});
+    const docTakeaways=document.getElementById('lectureDocTakeaways');
+    (lecture.takeaways||[]).forEach(copy=>{const item=document.createElement('li');item.textContent=copy;docTakeaways.appendChild(item)});
+    const docSources=document.getElementById('lectureDocSources');
+    documentation.forEach(source=>{
+      const link=document.createElement('a');
+      link.href=source.url;
+      link.textContent=source.title;
+      link.target='_blank';
+      link.rel='noopener noreferrer';
+      docSources.appendChild(link);
+    });
+    docExtension.hidden=false;
+  }
+
   const previous=document.getElementById('previousLecture');
   const next=document.getElementById('nextLecture');
   if(lectureNumber>1){
