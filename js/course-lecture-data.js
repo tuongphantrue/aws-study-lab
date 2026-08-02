@@ -4042,6 +4042,101 @@
 
   sectionThirteenLectures.forEach(lecture=>Object.assign(lecture,sectionThirteenSlideOverrides[lecture.title]||{}));
 
+  const sectionFourteenSlideOverrides={
+    'Choose an S3 encryption model':{
+      sourcePages:'313–315, 318–319',summary:'Choose among SSE-S3, SSE-KMS, SSE-C, and client-side encryption by deciding who must own and operate the keys.',
+      explanation:['The deck defines four object-encryption methods. SSE-S3 uses S3-owned AES-256 keys; SSE-KMS uses KMS-managed keys; SSE-C accepts a customer-supplied key on each request without S3 storing it; client-side encryption encrypts before upload.','All four protect object data at rest, but key custody, auditability, request headers, and operational responsibility differ. The durable decision is whether AWS/S3, AWS KMS, the external customer, or the client application controls the key workflow.'],
+      slideTopics:[{heading:'Server-side choices',bullets:['SSE-S3: S3 owns and manages AES-256 keys.','SSE-KMS: KMS manages keys with customer control and audit.','SSE-C: customer supplies an external key for each operation.']},{heading:'Client-side choice',bullets:['Client encrypts before upload.','Client decrypts after download.','S3 never receives the plaintext or encryption key.']}],
+      takeaways:['SSE-S3 is AWS-owned key management.','SSE-KMS adds KMS control and audit.','SSE-C keeps keys outside AWS.','Client-side encryption moves cryptography to the client.'],examTip:'Identify the required key owner and audit boundary before choosing an S3 encryption method.'
+    },
+    'Control and audit keys with SSE-KMS':{
+      sourcePages:'316–317',summary:'Use KMS keys for S3 when key control and CloudTrail audit are required, while planning for KMS API quotas.',
+      explanation:['SSE-KMS encrypts objects server-side with keys managed in AWS KMS. Compared with SSE-S3, the slides emphasize user control of key policy and an audit trail of key usage in CloudTrail.','Uploads call GenerateDataKey and downloads call Decrypt, so very high S3 request rates can encounter KMS request quotas. The deck gives Region-dependent KMS request-rate examples and recommends requesting quota increases when necessary; numeric quotas are source-era details.'],
+      slideTopics:[{heading:'KMS benefits',bullets:['Customer control over the KMS key.','CloudTrail records key usage.','S3 performs server-side object encryption.','The request identifies SSE-KMS and the chosen key.']},{heading:'Scaling constraint',bullets:['Uploads invoke GenerateDataKey.','Downloads invoke Decrypt.','KMS request quotas can become the limiting dependency.']}],
+      takeaways:['SSE-KMS adds key governance.','CloudTrail provides key-use audit.','KMS API calls occur per object operation.','High throughput must account for KMS quotas.'],examTip:'When encryption is enabled but S3 throughput is unexpectedly throttled, check KMS API limits as well as S3.'
+    },
+    'Supply external keys with SSE-C':{
+      sourcePages:'318',summary:'Provide a customer-managed external key over HTTPS for every upload and retrieval while S3 stores no copy of that key.',
+      explanation:['SSE-C performs encryption and decryption on the S3 server, but the customer fully manages the key outside AWS. S3 does not store the supplied encryption key.','HTTPS is mandatory because the key travels with the request headers. Reading the object later requires providing the same key; losing it makes the ciphertext unusable.'],
+      slideTopics:[{heading:'Key custody',bullets:['Customer creates and stores the key outside AWS.','S3 uses but does not retain the key.','The same key must be supplied for decryption.']},{heading:'Request requirements',bullets:['Use HTTPS.','Send the key in HTTP headers.','Protect key availability and rotation outside S3.']}],
+      takeaways:['SSE-C keys remain external.','S3 performs server-side encryption.','HTTPS is required.','The customer owns key durability and availability.'],examTip:'Choose SSE-C only when externally held keys are a hard requirement and the customer can supply them securely on every request.'
+    },
+    'Encrypt objects before upload':{
+      sourcePages:'319',summary:'Perform client-side encryption and decryption in the application when S3 must receive only ciphertext.',
+      explanation:['With client-side encryption, the client encrypts object data before sending it to Amazon S3 and decrypts it after retrieval. The slide references client libraries such as the Amazon S3 Client-Side Encryption Library.','The client fully manages keys and the encryption cycle. S3 stores the already encrypted object, so application key loss or algorithm mistakes cannot be repaired by S3.'],
+      slideTopics:[{heading:'Upload path',bullets:['Client selects and manages the key.','Client encrypts plaintext locally.','Only ciphertext is uploaded to S3.']},{heading:'Download path',bullets:['S3 returns ciphertext.','Client retrieves the correct key.','Client decrypts outside S3.']}],
+      takeaways:['Encryption occurs before S3.','Decryption occurs after download.','Clients manage the complete key lifecycle.','S3 stores ciphertext only.'],examTip:'Choose client-side encryption when plaintext must never reach the S3 service boundary.'
+    },
+    'Enforce TLS for data in transit':{
+      sourcePages:'320–321',summary:'Use HTTPS and explicitly deny requests where aws:SecureTransport is false.',
+      explanation:['S3 exposes HTTP and HTTPS endpoints. HTTPS provides SSL/TLS encryption in flight and is mandatory for SSE-C; the deck recommends HTTPS generally.','A bucket policy can force TLS by using an explicit Deny when the aws:SecureTransport condition is false. The diagram allows HTTPS requests while denying HTTP requests regardless of another Allow.'],
+      slideTopics:[{heading:'Transport endpoints',bullets:['HTTP endpoint is not encrypted in transit.','HTTPS endpoint uses SSL/TLS.','Most clients use HTTPS by default.','SSE-C requires HTTPS.']},{heading:'Policy enforcement',bullets:['Condition key: aws:SecureTransport.','Explicitly deny when its value is false.','The deny overrides other allows for HTTP.']}],
+      takeaways:['TLS protects data in flight.','HTTPS is the secure S3 endpoint.','SecureTransport is a bucket-policy condition.','Explicit deny reliably enforces transport security.'],examTip:'To require HTTPS for every principal, deny s3 actions when aws:SecureTransport is false.'
+    },
+    'Combine default encryption and bucket policy controls':{
+      sourcePages:'322',summary:'Use default encryption as the fallback and bucket-policy conditions when requests must specify a required encryption mode.',
+      explanation:['The supplied slide says new objects receive SSE-S3 automatically through default encryption. A bucket policy can additionally force an encryption header or a particular encryption type.','The order shown is bucket policy evaluation before the default encryption setting. Therefore, a policy that requires a request header can reject an upload even though default encryption would otherwise encrypt it.'],
+      slideTopics:[{heading:'Default encryption',bullets:['Automatically encrypts new objects.','The deck uses SSE-S3 as the automatic default.','Protects objects even when the uploader omits an optional selection.']},{heading:'Bucket-policy enforcement',bullets:['Can require an encryption request header.','Can require a specific mode such as SSE-KMS.','Policy is evaluated before default encryption applies.']}],
+      takeaways:['Default encryption supplies a baseline.','Bucket policies enforce caller behavior.','Policy can require a stronger named mode.','Default encryption does not bypass an explicit policy denial.'],examTip:'Use a bucket policy when the requirement says uploads must explicitly use a designated KMS key or encryption method.'
+    },
+    'Allow browser access with S3 CORS':{
+      sourcePages:'323–325',summary:'Return the correct cross-origin response headers when browser code from one origin requests objects from another origin.',
+      explanation:['An origin is scheme, host, and port. Requests between different origins trigger browser Cross-Origin Resource Sharing checks, often including an OPTIONS preflight with the Origin header and requested method.','S3 CORS configuration lists allowed origins, methods, and headers so the bucket returns the required response headers. CORS is a browser rule and does not grant S3 authorization; permissions must already allow the operation. The deck recommends allowing only a specific origin or * when truly required.'],
+      slideTopics:[{heading:'Origin and preflight',bullets:['Origin = protocol + host + port.','Different origin triggers CORS evaluation.','Browser may send an OPTIONS preflight.']},{heading:'S3 configuration',bullets:['Allow the required origin.','Allow the required HTTP methods and headers.','S3 returns CORS response headers.','Authorization remains a separate requirement.']}],
+      takeaways:['CORS is enforced by browsers.','Origin includes scheme, host, and port.','S3 must allow the requesting origin.','CORS does not replace IAM or bucket policy.'],examTip:'A browser-only cross-origin failure with otherwise valid access points to CORS configuration.'
+    },
+    'Protect destructive actions with MFA Delete':{
+      sourcePages:'326',summary:'Require MFA for permanent version deletion and versioning-state changes on a versioned bucket.',
+      explanation:['MFA Delete adds a second-factor code to selected destructive S3 operations. It protects permanent deletion of object versions and suspension of versioning.','Listing deleted versions and enabling versioning do not require MFA in the slide. Versioning must first be enabled, and only the bucket owner’s root user can enable or disable MFA Delete through the CLI in the source workflow.'],
+      slideTopics:[{heading:'MFA-protected operations',bullets:['Permanently delete an object version.','Suspend versioning on the bucket.']},{heading:'Setup rules',bullets:['Bucket versioning must be enabled.','Root bucket owner enables/disables MFA Delete.','The source workflow uses the AWS CLI.']}],
+      takeaways:['MFA Delete protects permanent deletion.','It protects versioning suspension.','It depends on versioning.','Root configures the feature in the deck.'],examTip:'Use MFA Delete for an additional human-control barrier against irreversible version deletion, not for ordinary object reads.'
+    },
+    'Audit requests with S3 server access logging':{
+      sourcePages:'327–328',summary:'Deliver authorized and denied S3 request records into a separate logging bucket for audit and analysis.',
+      explanation:['S3 server access logging records requests from any account, including authorized and denied attempts, into another S3 bucket. The logs can later be analyzed with tools such as Athena.','The logging target must be in the same AWS Region in the source slide. It must not be the monitored bucket itself, because new log objects would generate more access logs and create an exponential logging loop.'],
+      slideTopics:[{heading:'Audit coverage',bullets:['Records requests from any account.','Includes authorized and denied requests.','Writes log objects to a target S3 bucket.','Logs can be queried for analysis.']},{heading:'Loop warning',bullets:['Use a separate logging bucket.','Keep the target in the same Region per the deck.','Never log a bucket into itself.']}],
+      takeaways:['Access logging captures request history.','Denied requests are included.','Logs live in a target bucket.','Self-logging creates a runaway loop.'],examTip:'When configuring server access logs, always choose a distinct destination bucket.'
+    },
+    'Delegate temporary access with presigned URLs':{
+      sourcePages:'329',summary:'Create a time-limited URL whose user temporarily inherits the signer’s permission for a specific S3 operation.',
+      explanation:['A presigned URL can be generated through the S3 console, CLI, or SDK with an expiration. The source slide gives console and CLI expiration examples that are tool/version-specific.','The recipient inherits the permissions of the identity that generated the URL for that operation. Uses include private downloads, temporarily allowing an upload, or sharing a purchased video without making the bucket public.'],
+      slideTopics:[{heading:'Delegation model',bullets:['Signer must have permission for the S3 operation.','URL embeds signed temporary authorization.','Recipient does not need separate AWS credentials.','Access ends at expiration.']},{heading:'Use cases',bullets:['Private file download.','Temporary upload to a precise location.','Time-limited access to paid or protected content.']}],
+      takeaways:['Presigned URLs are temporary.','They inherit signer permission.','They avoid public bucket access.','Expiration limits exposure.'],examTip:'Generate the URL with an identity that has only the exact object operation the recipient should inherit.'
+    },
+    'Lock Glacier archives with a Vault Lock policy':{
+      sourcePages:'330',summary:'Enforce an immutable Write Once Read Many compliance policy by locking an S3 Glacier vault policy against future edits.',
+      explanation:['Glacier Vault Lock creates a WORM model through a Vault Lock policy. After testing and locking the policy, it can no longer be changed or deleted.','The slide associates the feature with compliance and data retention. Its key distinction is policy-level immutability for the vault, rather than merely setting ordinary access permissions.'],
+      slideTopics:[{heading:'Lock sequence',bullets:['Create a Vault Lock policy.','Validate the intended retention controls.','Lock the policy.','The locked policy cannot be edited or deleted.']},{heading:'Purpose',bullets:['Write Once Read Many behavior.','Regulatory retention and compliance.','Protection from later policy weakening.']}],
+      takeaways:['Vault Lock creates WORM retention.','The policy becomes immutable.','It targets Glacier vault archives.','It supports compliance retention.'],examTip:'Choose Vault Lock when the scenario specifically uses Glacier vault archives and requires an unchangeable retention policy.'
+    },
+    'Retain object versions with S3 Object Lock':{
+      sourcePages:'331',summary:'Use version-enabled Object Lock retention or legal holds to prevent deletion of a specific object version.',
+      explanation:['S3 Object Lock requires versioning and provides WORM protection for individual object versions. A retention period blocks deletion for a fixed time; a legal hold protects the version without an expiration date.','Compliance mode prevents overwrite or deletion by any user, including root. Governance mode allows specially authorized users to alter retention. Legal holds are independent of retention mode and can be placed or removed by users with the appropriate permission.'],
+      slideTopics:[{heading:'Retention modes',bullets:['Compliance: no user, including root, can shorten or remove retention.','Governance: specially permitted users can alter retention.','Both protect the version until the retain-until date.']},{heading:'Legal hold',bullets:['No fixed expiration date.','Independent of retention mode.','Requires separate permission to place or remove.']}],
+      takeaways:['Object Lock requires versioning.','Protection applies to versions.','Compliance is stronger than Governance.','Legal holds have no expiration date.'],examTip:'Choose Compliance mode when even the root user must be unable to delete the protected version during retention.'
+    },
+    'Scale permissions with S3 Access Points':{
+      sourcePages:'332',summary:'Replace one growing bucket policy with named access endpoints and policies for teams or application prefixes.',
+      explanation:['S3 Access Points provide separate DNS endpoints and access-point policies over one bucket. The diagram gives Finance, Sales, and Analytics their own endpoints and policies for specific prefixes or read/write needs.','Each access point’s policy works with a simpler bucket policy that delegates to access points. This makes permissions easier to scale when many applications, teams, and data partitions share one bucket.'],
+      slideTopics:[{heading:'Per-consumer endpoints',bullets:['Finance Access Point grants finance-prefix access.','Sales Access Point grants sales-prefix access.','Analytics Access Point can read both prefixes.']},{heading:'Policy model',bullets:['Each access point has its own policy.','Access points have distinct DNS names.','Bucket policy delegates permitted access-point use.']}],
+      takeaways:['Access Points create scoped S3 endpoints.','Each endpoint has a policy.','They simplify large shared-bucket permissions.','Prefixes can separate team data.'],examTip:'Choose Access Points when one bucket policy is becoming unmanageable across many teams or applications.'
+    },
+    'Keep S3 access private with a VPC Access Point':{
+      sourcePages:'333',summary:'Restrict an S3 Access Point to a VPC and reach it through an S3 VPC endpoint whose policy also permits the operation.',
+      explanation:['An access point can use a VPC origin so it is accessible only from that VPC. Clients reach it through an S3 VPC endpoint, identified in the slide as a Gateway endpoint.','The VPC endpoint policy must allow access to both the target bucket and access point. The access-point policy, bucket policy, and endpoint policy therefore form separate authorization layers.'],
+      slideTopics:[{heading:'Private path',bullets:['Create an Access Point with VPC origin.','Create/use an S3 Gateway VPC endpoint.','Keep traffic on the private AWS path.']},{heading:'Policy layers',bullets:['Access Point policy scopes the caller and data.','Bucket policy permits delegated access.','VPC endpoint policy permits the bucket and Access Point.']}],
+      takeaways:['VPC-origin Access Points are private.','An S3 VPC endpoint is required.','Endpoint policy is an additional gate.','All applicable policies must allow access.'],examTip:'When a VPC Access Point request fails, inspect the endpoint policy as well as the S3 resource policies.'
+    },
+    'Transform responses with S3 Object Lambda':{
+      sourcePages:'334',summary:'Invoke Lambda during retrieval to return a transformed view of one stored object through an Object Lambda Access Point.',
+      explanation:['S3 Object Lambda places a Lambda function in the retrieval path. A supporting S3 Access Point reaches the underlying bucket, while an Object Lambda Access Point exposes the transformed response to the application.','The deck’s examples include redacting personally identifiable information, converting XML to JSON, and resizing or watermarking images according to the caller. Only one source object needs to be stored even when callers need different representations.'],
+      slideTopics:[{heading:'Request path',bullets:['Application calls an Object Lambda Access Point.','Lambda fetches through a supporting S3 Access Point.','Function transforms the object.','Caller receives the modified response.']},{heading:'Transformations',bullets:['PII redaction.','XML-to-JSON conversion.','Image resize and watermark.','Caller-specific presentation.']}],
+      takeaways:['Object Lambda transforms on retrieval.','One source object can serve multiple views.','Access Points form the access path.','Lambda code defines the transformation.'],examTip:'Choose S3 Object Lambda when stored data should remain unchanged but each requester needs a transformed response.'
+    }
+  };
+
+  sectionFourteenLectures.forEach(lecture=>Object.assign(lecture,sectionFourteenSlideOverrides[lecture.title]||{}));
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
