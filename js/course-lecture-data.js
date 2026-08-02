@@ -749,6 +749,107 @@
     }
   ];
 
+  const sectionNineLectures=[
+    {
+      ready:true,title:'Amazon RDS managed relational databases',
+      summary:'Run familiar SQL engines while AWS handles the undifferentiated database infrastructure work.',
+      explanation:['Amazon RDS provisions managed relational database instances for engines including PostgreSQL, MySQL, MariaDB, Oracle, SQL Server, and others. AWS manages the host, operating-system patching, database installation, monitoring integration, and backup automation.','You still design schemas, indexes, queries, users, and application connections. Unlike a self-managed database on EC2, standard RDS does not provide shell access to the underlying host because that layer is operated by the service.'],
+      takeaways:['RDS manages database infrastructure and engine operations.','Customers retain responsibility for data design and database access.','Standard RDS does not expose host-level SSH access.'],
+      examTip:'Choose RDS over EC2 when a supported relational engine is required and minimizing operational effort is a priority.'
+    },
+    {
+      ready:true,title:'RDS storage scaling and backup foundations',
+      summary:'Let database storage grow within a safe ceiling and protect data with automated backups and snapshots.',
+      explanation:['RDS storage autoscaling increases allocated storage when sustained free space becomes low, up to a maximum threshold you configure. It helps unpredictable growth but does not shrink storage or replace capacity monitoring.','Automated backups combine periodic snapshots with transaction logs for point-in-time recovery during the retention window. Manual snapshots persist until deleted, and restoring either type creates a new database instance rather than overwriting the source.'],
+      takeaways:['Storage autoscaling grows toward a configured maximum.','Automated backups enable point-in-time recovery.','Manual snapshots support user-controlled retention.'],
+      examTip:'A restore creates a new endpoint, so applications must be redirected after recovery.'
+    },
+    {
+      ready:true,title:'RDS read replicas',
+      summary:'Offload read-heavy work through asynchronous copies without confusing read scaling with failover.',
+      explanation:['A read replica receives changes asynchronously from a source database and serves read-only application traffic. Applications must explicitly connect read workloads to replica endpoints; RDS does not automatically split queries for them.','Replica lag means recently committed data may not yet be visible. Replicas can be placed across AZs or Regions and promoted into independent databases, making them useful for reporting, geographic reads, or some recovery strategies.'],
+      takeaways:['Read replicas scale SELECT workloads.','Asynchronous replication can produce stale reads.','Promotion creates an independent writable database.'],
+      examTip:'Use read replicas for performance; use Multi-AZ when the primary requirement is automatic database failover.'
+    },
+    {
+      ready:true,title:'RDS Multi-AZ high availability',
+      summary:'Maintain a synchronous standby and one stable endpoint for automatic failover.',
+      explanation:['A Multi-AZ deployment synchronously replicates to standby capacity in another Availability Zone. The standby is not the application read-scaling target; it exists to take over after infrastructure, storage, or AZ failure.','RDS manages failover behind the database DNS name so applications can reconnect without choosing a new endpoint. Converting a supported Single-AZ database builds and synchronizes the standby through a managed modification workflow.'],
+      takeaways:['Multi-AZ uses synchronous replication.','The standby provides failover, not ordinary read scaling.','One DNS endpoint follows the active database.'],
+      examTip:'“Highly available relational database with automatic failover” points to Multi-AZ, not a read replica alone.'
+    },
+    {
+      ready:true,title:'RDS Custom for host-level control',
+      summary:'Retain managed-service assistance while customizing supported Oracle or SQL Server hosts and database software.',
+      explanation:['RDS Custom exposes the underlying operating system and database environment for specialized applications that require privileged configuration, native features, or vendor software. Administrators can connect through controlled management paths.','Customization increases responsibility. Automation must be paused for some changes and snapshots should protect the database before invasive work; ordinary RDS remains preferable when host access is not a hard requirement.'],
+      takeaways:['RDS Custom supports specialized Oracle and SQL Server needs.','It permits OS and database customization.','Greater control creates greater operational responsibility.'],
+      examTip:'A supported commercial database requiring OS-level agents or settings suggests RDS Custom; routine SQL workloads should stay on standard RDS.'
+    },
+    {
+      ready:true,title:'Aurora cluster architecture and endpoints',
+      summary:'Use cloud-optimized shared storage, one writer, and multiple low-lag readers for MySQL- or PostgreSQL-compatible applications.',
+      explanation:['Amazon Aurora separates compute instances from a distributed storage layer replicated across multiple Availability Zones. A cluster has one writer and can add Aurora Replicas for reads and failover candidates.','The writer endpoint follows the current writer after failover. The reader endpoint balances new read connections across replicas, while instance endpoints support explicit placement when an application needs one particular member.'],
+      takeaways:['Aurora compute shares a distributed multi-AZ storage volume.','The writer endpoint targets the active writer.','The reader endpoint distributes read connections.'],
+      examTip:'Use cluster endpoints rather than hard-coded instance endpoints when the application should follow failover or reader scaling automatically.'
+    },
+    {
+      ready:true,title:'Aurora replicas, custom endpoints, and Serverless',
+      summary:'Scale readers for demand, isolate specialized queries, or let Aurora adjust compute for intermittent workloads.',
+      explanation:['Aurora Auto Scaling adjusts replica count from demand metrics. Custom endpoints group selected replicas, such as larger instances reserved for analytics, so specialized queries do not compete with ordinary reads.','Aurora Serverless adjusts database compute capacity without fixed instance planning and suits variable, intermittent, or unpredictable usage. Confirm engine version and feature requirements before selecting the serverless deployment model.'],
+      takeaways:['Replica Auto Scaling changes read capacity.','Custom endpoints isolate workloads on selected replicas.','Aurora Serverless targets variable capacity needs.'],
+      examTip:'Infrequent unpredictable database usage with minimal capacity management suggests Aurora Serverless.'
+    },
+    {
+      ready:true,title:'Aurora global and specialized capabilities',
+      summary:'Extend Aurora for cross-Region reads and recovery, SQL-driven ML predictions, or selected SQL Server migrations.',
+      explanation:['Aurora Global Database replicates from one read/write primary Region to read-only secondary Regions with low lag. It supports local read latency and fast cross-Region recovery through secondary promotion.','Aurora ML integrates supported prediction services through SQL, while Babelfish helps some SQL Server applications communicate with Aurora PostgreSQL using familiar protocol and T-SQL behavior. These are specialized features, not default requirements for every cluster.'],
+      takeaways:['Global Database provides low-lag cross-Region replication.','Secondary Regions serve reads and can be promoted.','Aurora ML and Babelfish solve specialized integration or migration needs.'],
+      examTip:'For global Aurora reads plus rapid Region-level recovery, Global Database is more purpose-built than a single cross-Region replica.'
+    },
+    {
+      ready:true,title:'RDS and Aurora restore and cloning options',
+      summary:'Recover to new databases and create fast Aurora test environments without altering production.',
+      explanation:['Restoring an automated backup or manual snapshot creates a new RDS instance or Aurora cluster. Supported MySQL backup formats can also be imported from S3 for migration into new managed databases.','Aurora cloning uses copy-on-write storage so a new cluster initially shares unchanged data blocks with its source. It creates development or staging databases faster and with less initial storage than a full snapshot copy.'],
+      takeaways:['Backup restore creates a new database.','S3 backup import supports selected MySQL migrations.','Aurora cloning uses copy-on-write.'],
+      examTip:'A fast, cost-efficient staging copy of a large Aurora production cluster points to database cloning.'
+    },
+    {
+      ready:true,title:'RDS and Aurora security',
+      summary:'Combine network isolation, KMS encryption, TLS, authentication, and audit logging around managed databases.',
+      explanation:['Place databases in private subnets and restrict security-group ingress to application sources. KMS-backed encryption protects storage, snapshots, and replicas when enabled, while TLS protects client connections in transit.','Database credentials can be stored in Secrets Manager, and supported engines can use IAM database authentication for short-lived tokens. Export database logs to CloudWatch when retention, investigation, or centralized monitoring requires it.'],
+      takeaways:['Security groups control database network reachability.','KMS and TLS protect data at rest and in transit.','IAM authentication can replace long-lived passwords for supported connections.'],
+      examTip:'To encrypt an existing unencrypted database, snapshot it and restore an encrypted copy; encryption is not simply toggled in place.'
+    },
+    {
+      ready:true,title:'Amazon RDS Proxy',
+      summary:'Pool database connections and improve application behavior during traffic spikes and failover.',
+      explanation:['RDS Proxy maintains and reuses connections to supported RDS and Aurora engines. Many short-lived application clients—especially functions—can share a smaller controlled database connection pool.','The managed proxy scales across Availability Zones, integrates with Secrets Manager and IAM authentication, and can reduce failover disruption. It is reached inside a VPC and does not make a private database publicly accessible.'],
+      takeaways:['RDS Proxy pools and reuses database connections.','It protects databases from connection storms.','It supports managed secrets and IAM authentication.'],
+      examTip:'A burst of Lambda invocations exhausting relational database connections is a classic RDS Proxy scenario.'
+    },
+    {
+      ready:true,title:'ElastiCache architecture and common uses',
+      summary:'Place managed in-memory storage between applications and slower systems for low-latency reads or shared sessions.',
+      explanation:['Amazon ElastiCache manages Redis- or Memcached-compatible caches. A cache-aside pattern reads the cache first, loads missing data from the database, and stores the result with an expiration and invalidation strategy.','A shared session cache lets stateless application servers retrieve the same login state regardless of which instance receives a request. Caching requires application changes and must tolerate misses, eviction, and stale data.'],
+      takeaways:['ElastiCache provides managed in-memory data access.','Database caching reduces repeated backend reads.','Shared session storage supports stateless application tiers.'],
+      examTip:'Use a cache for repeated low-latency reads; do not treat it as the only durable system of record unless the design explicitly supports that risk.'
+    },
+    {
+      ready:true,title:'Redis, Memcached, and cache security',
+      summary:'Choose Redis features or Memcached simplicity and protect the cache at network, transport, and authentication layers.',
+      explanation:['Redis supports replication, failover, persistence options, backups, and rich structures such as sorted sets. Memcached offers a simple multi-threaded distributed cache and client-side sharding without the same native replication model.','Keep cache nodes private and restrict their security groups to application clients. Use supported TLS and authentication mechanisms; IAM permissions for managing cache resources are distinct from data-plane authentication to the engine.'],
+      takeaways:['Redis provides replication and advanced data structures.','Memcached provides a simple distributed memory cache.','Network controls and engine authentication protect data-plane access.'],
+      examTip:'Automatic failover, backups, or sorted sets suggest Redis; a disposable simple multi-threaded object cache may fit Memcached.'
+    },
+    {
+      ready:true,title:'Caching patterns and Redis decision rules',
+      summary:'Select lazy loading, write-through, session storage, or sorted sets while planning invalidation explicitly.',
+      explanation:['Lazy loading caches data after a miss and avoids storing unused records, but a miss adds latency and cached values can become stale. Write-through updates cache during database writes, improving freshness at the cost of extra writes and potentially unused cached data.','TTL-based session data should be disposable, while Redis sorted sets maintain unique ordered scores for leaderboards and rankings. Every cache design needs behavior for eviction, failure, and invalidation.'],
+      takeaways:['Lazy loading fills the cache on demand.','Write-through updates cache with database writes.','Redis sorted sets support real-time rankings.'],
+      examTip:'A gaming leaderboard requiring unique members ordered by score is a direct Redis sorted-set use case.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -766,4 +867,5 @@
   window.AWS_COURSE_CURRICULUM[5].lectures=sectionSixLectures;
   window.AWS_COURSE_CURRICULUM[6].lectures=sectionSevenLectures;
   window.AWS_COURSE_CURRICULUM[7].lectures=sectionEightLectures;
+  window.AWS_COURSE_CURRICULUM[8].lectures=sectionNineLectures;
 })();
