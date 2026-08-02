@@ -4350,6 +4350,71 @@
 
   sectionSeventeenLectures.forEach(lecture=>Object.assign(lecture,sectionSeventeenSlideOverrides[lecture.title]||{}));
 
+  const sectionEighteenSlideOverrides={
+    'Package applications as container images':{
+      sourcePages:'414–420',summary:'Build portable Docker images from Dockerfiles, store them in a registry, and run isolated containers that share the host operating system.',
+      explanation:['Docker packages an application and its dependencies into a container image that runs consistently across environments. Multiple containers share a host OS and Docker daemon, making them lighter than virtual machines that each include a guest OS.','A Dockerfile builds an image; a registry such as Docker Hub or Amazon ECR stores it; a runtime pulls the image and starts containers. The deck lists microservices, lift-and-shift application packaging, and consistent development/production behavior as benefits.'],
+      slideTopics:[{heading:'Image lifecycle',bullets:['Write a Dockerfile.','Build an immutable image.','Push image to a repository.','Pull and run one or more containers.']},{heading:'Containers versus VMs',bullets:['Containers share the host OS kernel.','Virtual machines include separate guest operating systems.','Many containers fit on one host.','Isolation is process-oriented rather than full-machine virtualization.']}],
+      takeaways:['Images package application dependencies.','Containers are image instances.','Registries store and distribute images.','Containers share host resources.'],examTip:'A container image is the deployable artifact; ECS or EKS provides the orchestration layer that schedules it.'
+    },
+    'Run ECS tasks on EC2 or Fargate':{
+      sourcePages:'420–422',summary:'Choose ECS EC2 launch type when managing cluster instances is acceptable or Fargate when AWS should supply serverless task capacity.',
+      explanation:['Amazon ECS is AWS’s container platform. A task is a running container workload in a cluster. With EC2 launch type, the customer provisions and maintains EC2 instances, and each host runs the ECS agent to register with the cluster.','With Fargate, no EC2 infrastructure is managed. The customer supplies task CPU and memory requirements, and Fargate runs each task with the required capacity. Billing follows task resource use rather than an owned host fleet.'],
+      slideTopics:[{heading:'ECS on EC2',bullets:['Customer manages EC2 container instances.','ECS agent registers hosts and starts tasks.','Customer controls instance families, AMIs, and capacity.']},{heading:'ECS on Fargate',bullets:['No EC2 instances to provision or maintain.','Specify CPU and memory per task.','AWS runs task infrastructure.','Pay for task resources used.']}],
+      takeaways:['ECS schedules tasks.','EC2 launch type exposes host management.','Fargate removes host management.','Task definition remains the workload specification.'],examTip:'Choose Fargate when the scenario emphasizes no server management; choose EC2 when host control or specialized capacity is required.'
+    },
+    'Separate ECS infrastructure and application IAM':{
+      sourcePages:'423',summary:'Use the EC2 instance profile for ECS agent infrastructure calls and a task role for permissions used by application containers.',
+      explanation:['The EC2 instance profile exists only for EC2 launch type and is used by the ECS agent for ECS API calls, CloudWatch log delivery, ECR image pulls, and Secrets Manager or SSM references.','The ECS task role is assigned to the task definition and gives each task application-specific AWS permissions. Different ECS services can therefore run on one cluster while receiving different roles and least-privilege access.'],
+      slideTopics:[{heading:'EC2 instance profile',bullets:['Used by the ECS agent on EC2 hosts.','Registers and manages cluster infrastructure.','Pulls images and sends logs on behalf of the platform.']},{heading:'Task role',bullets:['Used by application code inside a task.','Defined per task definition.','Grants service-specific permissions such as S3 or DynamoDB.']}],
+      takeaways:['Host role and task role are separate.','Instance profile serves ECS infrastructure.','Task role serves application code.','Per-task roles enable least privilege.'],examTip:'When a containerized application needs S3 access, grant it through the ECS task role, not the EC2 host profile.'
+    },
+    'Connect and persist ECS services':{
+      sourcePages:'424–425',summary:'Front ECS services with ALB or NLB and mount EFS when tasks across EC2 or Fargate need shared persistent files.',
+      explanation:['The deck recommends Application Load Balancer for most ECS HTTP use cases and Network Load Balancer for very high throughput, very low latency, or AWS PrivateLink integration. Classic Load Balancer is supported but not recommended for advanced features.','EFS can mount into ECS tasks on both EC2 and Fargate. Tasks in different AZs share the same EFS data, providing serverless persistent storage; S3 cannot be mounted as a file system through this ECS volume feature.'],
+      slideTopics:[{heading:'Load balancing',bullets:['ALB fits most HTTP ECS services.','NLB fits high-throughput/low-latency or PrivateLink needs.','Load balancer distributes requests across running tasks.']},{heading:'Persistent files',bullets:['EFS mounts into EC2 or Fargate tasks.','Tasks across AZs share one file system.','EFS provides persistent serverless file storage.']}],
+      takeaways:['ALB is the general ECS load-balancer choice.','NLB serves transport/performance needs.','EFS persists shared task files.','Tasks remain replaceable.'],examTip:'Choose EFS when multiple ECS tasks need a shared POSIX filesystem, including on Fargate.'
+    },
+    'Scale ECS services and cluster capacity':{
+      sourcePages:'426–428, 431',summary:'Scale task count through Application Auto Scaling and, for EC2 launch type, separately scale the underlying container-instance capacity.',
+      explanation:['ECS Service Auto Scaling changes desired task count from average CPU, average memory, ALB request count per target, or custom metrics. It supports target tracking, step, and scheduled policies. Fargate has no host-fleet scaling layer.','EC2 launch type must also add or remove EC2 instances. Capacity Providers integrate ECS with an Auto Scaling Group and are preferred over raw ASG policies; queue depth can drive ECS service scaling for worker tasks.'],
+      slideTopics:[{heading:'Service scaling',bullets:['Adjust desired ECS task count.','Use CPU, memory, request count, queue depth, or custom metrics.','Target tracking, step, and scheduled policies are available.']},{heading:'EC2 capacity scaling',bullets:['Underlying EC2 instances must fit the tasks.','Capacity Providers manage ASG capacity for ECS.','Task scaling and host scaling are distinct control loops.']}],
+      takeaways:['Service scaling changes tasks.','Cluster scaling changes EC2 hosts.','Fargate removes host-capacity scaling.','Capacity Providers coordinate EC2 capacity.'],examTip:'For ECS on EC2, verify both desired task count and available cluster host capacity.'
+    },
+    'Launch and observe event-driven ECS tasks':{
+      sourcePages:'429–432',summary:'Start Fargate tasks from EventBridge object events or schedules, process SQS backlogs with services, and alert when tasks stop.',
+      explanation:['EventBridge can react to an S3 object event by starting a new ECS/Fargate task and passing object information for processing. A scheduled EventBridge rule can run a periodic ECS task, such as hourly S3 batch processing.','An ECS service can poll SQS and scale with backlog. EventBridge also captures stopped-task events; an event pattern can route those events to SNS so administrators receive failure notifications.'],
+      slideTopics:[{heading:'Task triggers',bullets:['S3 event enters EventBridge.','Rule starts a new Fargate task.','Scheduled rule starts periodic tasks.','Task processes the referenced S3 object or batch.']},{heading:'Operations',bullets:['Long-running ECS service polls SQS.','Service task count scales with work.','Stopped-task event reaches EventBridge.','SNS sends an administrator notification.']}],
+      takeaways:['EventBridge starts one-off ECS tasks.','Schedules replace cron hosts.','SQS supports worker services.','Stopped-task events enable alerting.'],examTip:'Use EventBridge plus Fargate for event-driven work that exceeds Lambda’s runtime or container requirements.'
+    },
+    'Store and govern images with Amazon ECR':{
+      sourcePages:'417, 419, 433',summary:'Store public or private Docker images in a managed AWS registry with IAM, image scanning, versioning, and lifecycle controls.',
+      explanation:['Amazon Elastic Container Registry stores and manages Docker images. ECS/EKS runtimes pull images from private ECR repositories or the ECR Public Gallery.','ECR integrates with IAM for access control, supports image vulnerability scanning, image versioning and tags, lifecycle rules, and KMS encryption. The service replicates repository storage for availability as managed infrastructure.'],
+      slideTopics:[{heading:'Registry workflow',bullets:['Build an image from a Dockerfile.','Authenticate and push to ECR.','Reference repository/image tag in the orchestrator.','ECS or EKS pulls the image at launch.']},{heading:'Governance',bullets:['Private and public repositories.','IAM-controlled access.','Image vulnerability scanning.','Lifecycle rules, tagging/versioning, and KMS encryption.']}],
+      takeaways:['ECR is AWS’s image registry.','IAM controls repository access.','Scanning detects image vulnerabilities.','Lifecycle rules clean old images.'],examTip:'ECR stores images; ECS and EKS run them. Do not confuse registry with orchestrator.'
+    },
+    'Operate Kubernetes with Amazon EKS':{
+      sourcePages:'420, 434–435',summary:'Run managed Kubernetes control planes with worker nodes in public or private subnets across multiple AZs.',
+      explanation:['Amazon Elastic Kubernetes Service runs managed Kubernetes clusters on AWS. Kubernetes is an open-source system for automatic deployment, scaling, and management of containerized applications and is cloud-agnostic.','EKS is an alternative to ECS when Kubernetes APIs and ecosystem compatibility are required. The diagram places a managed EKS control plane across AZs and worker nodes in VPC subnets; services can be exposed with CLB, NLB, or ALB as appropriate.'],
+      slideTopics:[{heading:'Managed Kubernetes',bullets:['AWS operates the EKS control plane.','Kubernetes schedules Pods onto worker nodes.','Standard Kubernetes tooling supports portability.']},{heading:'AWS architecture',bullets:['Worker nodes run in customer VPC subnets.','Nodes span AZs for availability.','Load balancers expose Kubernetes services.','Control plane remains managed by EKS.']}],
+      takeaways:['EKS is managed Kubernetes.','Kubernetes portability differentiates it from ECS.','Workers run in the customer data plane.','Multi-AZ nodes improve availability.'],examTip:'Choose EKS when the requirement explicitly names Kubernetes or cross-cloud Kubernetes portability.'
+    },
+    'Choose EKS compute and node management':{
+      sourcePages:'436',summary:'Select managed node groups, self-managed nodes, or Fargate based on host control and operational responsibility.',
+      explanation:['Managed node groups create and manage EC2 worker nodes in an EKS-managed Auto Scaling Group and support On-Demand or Spot Instances. Self-managed nodes give the customer direct responsibility for node creation and lifecycle.','Fargate runs Pods without managing EC2 nodes. The slide lists AWS Outposts for on-premises EKS node deployment.'],
+      slideTopics:[{heading:'EC2 node choices',bullets:['Managed node group: EKS creates/manages nodes and ASG.','Self-managed node: customer owns the full node lifecycle.','On-Demand and Spot can supply node capacity.']},{heading:'Other placement',bullets:['Fargate runs serverless Pods.','Outposts can place EKS nodes on premises.','Choice follows control, operations, and placement needs.']}],
+      takeaways:['Managed node groups reduce node operations.','Self-managed nodes maximize control.','Fargate removes nodes from customer management.','Outposts serves on-premises placement.'],examTip:'Choose Fargate for no node management and managed node groups when Kubernetes needs EC2-level features with reduced operations.'
+    },
+    'Attach persistent storage to EKS Pods':{
+      sourcePages:'437',summary:'Install a CSI-compliant driver and declare a Kubernetes StorageClass for EBS, EFS, FSx for Lustre, or FSx for NetApp ONTAP.',
+      explanation:['EKS persistent storage uses the Container Storage Interface. A cluster installs the appropriate CSI driver and a Kubernetes StorageClass manifest describes how volumes are provisioned for Pods.','The slide lists EBS, EFS, FSx for Lustre, and FSx for NetApp ONTAP drivers. EBS is block storage with AZ attachment constraints; EFS and supported FSx systems provide shared file interfaces with different workload characteristics.'],
+      slideTopics:[{heading:'Kubernetes integration',bullets:['Install a CSI-compliant storage driver.','Define a StorageClass manifest.','PersistentVolumeClaim requests storage.','Driver provisions/attaches the AWS resource.']},{heading:'AWS storage choices',bullets:['EBS block volumes.','EFS shared NFS files.','FSx for Lustre parallel files.','FSx for NetApp ONTAP multiprotocol files.']}],
+      takeaways:['CSI connects EKS to storage.','StorageClass defines provisioning behavior.','EBS is AZ-bound block storage.','File services fit shared access.'],examTip:'Match the Pod’s access mode and AZ behavior to the storage service before selecting a CSI driver.'
+    }
+  };
+
+  sectionEighteenLectures.forEach(lecture=>Object.assign(lecture,sectionEighteenSlideOverrides[lecture.title]||{}));
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
