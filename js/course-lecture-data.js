@@ -1438,6 +1438,121 @@
     }
   ];
 
+  const sectionSeventeenLectures=[
+    {
+      ready:true,title:'Decouple application communication',
+      summary:'Replace fragile chains of synchronous calls with buffers, pub/sub delivery, or replayable streams when workloads need independent scale.',
+      explanation:['A synchronous request makes the caller wait for the downstream service and often propagates latency, errors, and traffic spikes through the architecture. Asynchronous messaging accepts work quickly and lets producers and consumers operate, fail, deploy, and scale more independently.','Choose the interaction model before the product: SQS is a work queue with competing consumers, SNS pushes one publication to multiple subscribers, and Kinesis Data Streams stores an ordered event log for real-time processing and replay. Decoupling improves resilience but introduces eventual processing, retries, duplicate handling, and observability requirements.'],
+      takeaways:['Synchronous dependencies can amplify failures and traffic spikes.','A queue buffers work between independently scaled tiers.','Pub/sub and streams solve different multi-consumer needs.'],
+      examTip:'A sudden burst overwhelms a slower backend: place SQS between the tiers and scale workers from queue backlog.'
+    },
+    {
+      ready:true,title:'Process work with an SQS Standard queue',
+      summary:'Persist messages until competing consumers successfully process and explicitly delete them.',
+      explanation:['A producer calls SendMessage and SQS durably retains the message until it is deleted or reaches its retention limit. Consumers poll for batches, process the work, and call DeleteMessage with the receipt handle only after the business operation succeeds.','Standard queues offer very high, automatically scaling throughput with at-least-once delivery and best-effort ordering. Consumers must therefore be idempotent: processing the same order or event more than once should not create an incorrect second outcome. Messages can be up to 1 MiB; larger payload patterns store data in S3 and queue a reference.'],
+      takeaways:['Messages remain until deleted or expired.','Multiple consumers compete for queued work.','Standard queues can duplicate or reorder delivery.'],
+      examTip:'When order is unimportant but massive elastic throughput and reliable buffering matter, choose an SQS Standard queue.'
+    },
+    {
+      ready:true,title:'Scale workers from SQS backlog',
+      summary:'Use queue depth and message age to match consumer capacity to buffered demand without dropping requests.',
+      explanation:['SQS separates admission rate from processing rate. A front end can enqueue work through a spike while an Auto Scaling group, ECS service, or Lambda event source adds consumers and drains the backlog at a safe rate for downstream databases and APIs.','ApproximateNumberOfMessagesVisible measures queued work, while ApproximateAgeOfOldestMessage reveals whether latency is becoming unacceptable. Scaling only from raw queue length can be misleading; a useful target relates backlog to active consumer capacity and the business processing-time objective.'],
+      takeaways:['SQS absorbs short-lived producer spikes.','Consumers can scale horizontally and independently.','Backlog age often expresses user impact better than depth alone.'],
+      examTip:'To protect a database from burst writes, enqueue requests and let a controlled worker fleet write at sustainable concurrency.'
+    },
+    {
+      ready:true,title:'Secure an SQS queue',
+      summary:'Combine identity permissions, queue resource policies, encryption, and private connectivity for controlled messaging.',
+      explanation:['IAM identity policies govern which SQS API calls a principal may make. A queue policy supplies resource-based authorization, which is especially important for cross-account consumers or allowing an AWS service such as SNS or S3 to send messages. Conditions should constrain the expected source resource and account.','HTTPS protects messages in transit, server-side encryption protects queue contents at rest with SQS-managed or KMS keys, and client-side encryption protects payloads before they reach the service. A VPC endpoint can keep API traffic on private AWS networking, but its endpoint policy becomes another authorization layer.'],
+      takeaways:['Queue policies enable cross-account and service-to-service access.','KMS encryption adds key-policy and request considerations.','Resource conditions prevent confused-deputy access.'],
+      examTip:'For SNS fan-out into SQS, the queue policy must allow that SNS topic to call SendMessage.'
+    },
+    {
+      ready:true,title:'Tune the SQS visibility timeout',
+      summary:'Hide in-flight work long enough to finish while still recovering promptly from failed consumers.',
+      explanation:['ReceiveMessage makes a message temporarily invisible; it does not remove it. If the consumer deletes the message before the visibility timeout expires, processing is complete. Otherwise the message becomes visible again so another consumer can retry it.','A timeout shorter than normal processing causes concurrent duplicate work, while an excessively long timeout delays recovery after a crash. Consumers with variable job duration can call ChangeMessageVisibility as progress continues. Pair retries with a dead-letter queue so repeatedly failing messages do not circulate forever.'],
+      takeaways:['Visibility is a processing lease, not deletion.','Expired leases make messages available again.','ChangeMessageVisibility can extend a running job.'],
+      examTip:'If healthy workers receive the same long-running job before completion, increase or dynamically extend the visibility timeout.'
+    },
+    {
+      ready:true,title:'Reduce empty receives with SQS long polling',
+      summary:'Wait briefly for messages instead of repeatedly issuing empty short-poll requests.',
+      explanation:['Short polling returns immediately from a subset of SQS servers and may produce an empty response even when messages exist elsewhere. Long polling waits for a message for up to the configured receive wait time and queries the queue more broadly.','Long polling lowers empty responses and API cost while often reducing the delay between arrival and consumption. Configure it as a queue default or per ReceiveMessage request, and make the client HTTP timeout longer than the polling wait so the connection is not aborted first.'],
+      takeaways:['Long polling can wait up to 20 seconds.','It reduces empty API responses and cost.','Client timeouts must exceed the wait time.'],
+      examTip:'The preferred optimization for consumers making many empty ReceiveMessage calls is long polling, not a shorter loop interval.'
+    },
+    {
+      ready:true,title:'Preserve ordered work with SQS FIFO',
+      summary:'Group related messages for strict ordering and deduplicate producer retries when sequence correctness matters.',
+      explanation:['A FIFO queue preserves order within each MessageGroupId. One group is processed sequentially, while independent groups can be processed in parallel, so partitioning work by customer, account, or entity provides both correctness and throughput.','A MessageDeduplicationId or content-based deduplication suppresses repeated sends within the deduplication interval. FIFO provides exactly-once processing semantics at the queue layer, but consumers must still make downstream side effects idempotent. High-throughput FIFO mode and batching can substantially exceed the original per-queue transaction rate.'],
+      takeaways:['Ordering is scoped to a message group.','Deduplication protects against repeated sends.','More groups allow greater parallel processing.'],
+      examTip:'Transactions for each account must stay ordered while different accounts run concurrently: use SQS FIFO with account ID as MessageGroupId.'
+    },
+    {
+      ready:true,title:'Publish one event to many SNS subscribers',
+      summary:'Fan a message out from one topic to queues, functions, webhooks, notifications, and delivery streams.',
+      explanation:['With Amazon SNS, a producer publishes once to a topic and SNS pushes a copy to every matching subscription. Supported endpoints include SQS, Lambda, HTTP/S, email, SMS, mobile push, and Amazon Data Firehose, subject to topic type and regional feature support.','SNS removes direct producer-to-consumer integrations, making it easy to add subscribers later. Standard topics prioritize high-throughput fan-out and may deliver more than once or out of order, so downstream processing must tolerate those semantics.'],
+      takeaways:['Publishers target a topic rather than each receiver.','Subscriptions define independent delivery endpoints.','Standard topics favor broad elastic fan-out.'],
+      examTip:'One business event must immediately notify several unlike destinations: publish it to an SNS Standard topic.'
+    },
+    {
+      ready:true,title:'Control SNS publishing and delivery',
+      summary:'Authorize topic use, protect message data, and connect AWS service events without broad access.',
+      explanation:['Publishers use the SNS Publish API or supported service integrations, while topic resource policies allow cross-account principals and AWS services to publish or subscribe. Combine the topic ARN with source-account and source-resource conditions when granting a service access.','HTTPS protects API traffic, server-side encryption can use KMS for stored message data, and client-side encryption protects application payloads end to end. Delivery retries vary by endpoint type, and an SNS subscription dead-letter queue can retain messages that exhaust their retry policy.'],
+      takeaways:['Topic policies provide resource-based authorization.','Many AWS services publish events directly to SNS.','Subscription DLQs capture exhausted deliveries.'],
+      examTip:'If S3 must publish to an SNS topic, authorize the bucket in the topic policy; an IAM role on S3 is not the normal mechanism.'
+    },
+    {
+      ready:true,title:'Build durable fan-out with SNS and SQS',
+      summary:'Give each subscriber an independent persistent backlog, retry policy, and processing rate.',
+      explanation:['Subscribing multiple SQS queues to one SNS topic combines push fan-out with durable pull-based processing. SNS copies each publication to every permitted queue, and each consumer fleet drains its own backlog without delaying or competing with the others.','The SQS queue policy must allow the topic to send messages. Add per-queue dead-letter handling and monitoring, and enable raw message delivery only when consumers should receive the original body without the SNS envelope. Cross-Region SNS-to-SQS delivery is available for supported configurations.'],
+      takeaways:['Each queue receives its own durable message copy.','Subscribers scale and retry independently.','The queue resource policy authorizes SNS delivery.'],
+      examTip:'Fraud, shipping, and analytics must all process every order at different speeds: fan out SNS to one SQS queue per consumer.'
+    },
+    {
+      ready:true,title:'Filter and order SNS fan-out',
+      summary:'Route only relevant messages per subscription and use FIFO topics when ordered publication must reach queues.',
+      explanation:['An SNS subscription filter policy evaluates message attributes or the message body and delivers only matching publications. Subscriptions without a filter receive every message, so one topic can support placed, cancelled, and declined workflows without forcing each consumer to discard irrelevant events.','SNS FIFO topics add message groups and deduplication. They can deliver to SQS FIFO or standard queues, but strict end-to-end ordering and deduplication require FIFO queues. Different message groups can move in parallel, and filtering still applies to FIFO subscriptions.'],
+      takeaways:['Filters operate independently for each subscription.','FIFO topics preserve order within message groups.','A standard subscriber gives up FIFO delivery guarantees.'],
+      examTip:'For ordered fan-out to several independently processed queues, use an SNS FIFO topic with SQS FIFO subscriptions.'
+    },
+    {
+      ready:true,title:'Store replayable events in Kinesis Data Streams',
+      summary:'Capture continuously produced records for multiple real-time consumers that can reread retained history.',
+      explanation:['Kinesis Data Streams is a durable streaming log for clickstreams, telemetry, metrics, logs, and other ongoing event sources. Producers append records and consumers read them in real time without deleting them, allowing independent applications to process or replay the same retained sequence.','A partition key maps a record to a shard and guarantees ordering only among records with the same key. Retention starts at 24 hours and can extend to 365 days. Records are encrypted in transit and can use KMS at rest; the current maximum data payload is 10 MiB, though streams are optimized for frequent smaller events.'],
+      takeaways:['Consumers do not delete stream records.','Retention enables replay and new consumers.','Ordering is scoped to the partition key and shard.'],
+      examTip:'Multiple analytics applications need real-time events plus the ability to replay yesterday\'s data: choose Kinesis Data Streams.'
+    },
+    {
+      ready:true,title:'Plan Kinesis capacity and consumers',
+      summary:'Choose provisioned shards or on-demand scaling and isolate high-throughput readers when necessary.',
+      explanation:['Provisioned mode exposes shards as capacity units, so operators choose and reshard capacity according to record count and byte rate. On-demand mode automatically manages shards and is appropriate for uncertain or rapidly changing traffic, with pricing based on stream use and transferred data.','Shared-throughput consumers poll shards and share each shard\'s read capacity. Enhanced fan-out registers consumers and gives each one dedicated per-shard throughput with push-style delivery. A well-distributed partition key prevents one hot shard from throttling an otherwise underused stream.'],
+      takeaways:['Provisioned mode requires shard capacity planning.','On-demand mode adapts capacity automatically.','Enhanced fan-out isolates registered consumer throughput.'],
+      examTip:'One partition key causes throttling while other shards are idle: redesign the key distribution before simply adding consumers.'
+    },
+    {
+      ready:true,title:'Deliver streams with Amazon Data Firehose',
+      summary:'Buffer, transform, convert, and load streaming records into managed analytics destinations without consumer code.',
+      explanation:['Amazon Data Firehose is a fully managed delivery service that accepts records directly or from sources such as Kinesis Data Streams, then batches them into S3, Redshift through S3 staging, OpenSearch, supported partners, or HTTP endpoints. It scales automatically and delivers near real time according to buffering conditions.','Firehose can invoke Lambda transformations, compress data, convert JSON into columnar formats such as Parquet or ORC, and back up all or failed records to S3. Unlike Kinesis Data Streams, Firehose is a delivery pipeline rather than a replayable retained log.'],
+      takeaways:['Firehose delivers to configured storage and analytics targets.','Buffering makes delivery near real time, not record-by-record real time.','The service does not provide stream replay.'],
+      examTip:'To load application events into S3 as compressed Parquet with minimal operations, choose Amazon Data Firehose.'
+    },
+    {
+      ready:true,title:'Choose SQS, SNS, or Kinesis',
+      summary:'Match work distribution, immediate fan-out, or ordered replayable streaming to the application contract.',
+      explanation:['Use SQS when each message represents work normally handled by one competing consumer and persistence should bridge producer and worker speed. Use SNS when one publication must be pushed to many independent subscribers, especially across multiple endpoint types.','Use Kinesis Data Streams when records form a time-ordered stream that multiple consumers read independently and may replay. SNS-to-SQS combines broadcast with durable per-consumer queues, while Data Firehose is the managed delivery choice when the destination matters more than custom stream consumption.'],
+      takeaways:['SQS distributes queued work.','SNS broadcasts notifications.','Kinesis retains ordered records for independent readers.'],
+      examTip:'Ask whether the scenario needs one worker, every subscriber, or many replaying readers; that distinction usually selects SQS, SNS, or Kinesis.'
+    },
+    {
+      ready:true,title:'Preserve broker protocols with Amazon MQ',
+      summary:'Migrate ActiveMQ or RabbitMQ applications without immediately rewriting them for AWS-native messaging APIs.',
+      explanation:['Amazon MQ is a managed message broker service for Apache ActiveMQ and RabbitMQ. It supports established broker protocols and APIs used by traditional applications, making it a compatibility bridge when changing application messaging code to SQS and SNS would be costly or risky.','Unlike the serverless scale model of SQS and SNS, brokers run on provisioned instances and require capacity choices. High-availability deployments use redundant brokers across Availability Zones with engine-appropriate replicated storage or quorum behavior, while client libraries must reconnect to the available endpoint during failover.'],
+      takeaways:['Amazon MQ supports ActiveMQ and RabbitMQ engines.','It preserves common open messaging protocols.','Broker capacity and failover still require design attention.'],
+      examTip:'A lift-and-shift application depends on JMS, AMQP, MQTT, STOMP, or OpenWire: choose Amazon MQ instead of rewriting it for SQS/SNS.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -1463,4 +1578,5 @@
   window.AWS_COURSE_CURRICULUM[13].lectures=sectionFourteenLectures;
   window.AWS_COURSE_CURRICULUM[14].lectures=sectionFifteenLectures;
   window.AWS_COURSE_CURRICULUM[15].lectures=sectionSixteenLectures;
+  window.AWS_COURSE_CURRICULUM[16].lectures=sectionSeventeenLectures;
 })();
