@@ -25,6 +25,7 @@ body.course-lecture-page{margin:0;background:#fff;color:var(--lecture-ink);font-
 .lecture-slide-topics{display:grid;gap:12px}
 .lecture-slide-topics article{padding:18px 20px;border:1px solid var(--lecture-line);border-left:3px solid #7b61df;border-radius:5px;background:#fbfbfe}
 .lecture-slide-topics h3{margin:0 0 10px;color:#222e47;font-size:15px;line-height:1.4}
+.lecture-slide-topics h3:only-child{margin-bottom:0}
 .lecture-slide-topics ul{display:grid;gap:7px;margin:0;padding-left:19px;color:var(--lecture-text);font-size:13.5px;line-height:1.55}
 .lecture-takeaways{margin-top:29px;padding:23px 24px;background:var(--lecture-soft);border:1px solid var(--lecture-line);border-radius:6px}
 .lecture-takeaways ol{list-style:none;counter-reset:takeaway;display:grid;gap:13px;margin:0;padding:0}

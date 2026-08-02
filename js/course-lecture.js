@@ -51,10 +51,14 @@
     lecture.slideTopics.forEach(topic=>{
       const card=document.createElement('article');
       const heading=document.createElement('h3');
-      const list=document.createElement('ul');
-      heading.textContent=topic.heading;
-      (topic.bullets||[]).forEach(copy=>{const item=document.createElement('li');item.textContent=copy;list.appendChild(item)});
-      card.append(heading,list);
+      const isTextTopic=typeof topic==='string';
+      heading.textContent=isTextTopic?topic:topic.heading;
+      card.appendChild(heading);
+      if(!isTextTopic&&Array.isArray(topic.bullets)&&topic.bullets.length){
+        const list=document.createElement('ul');
+        topic.bullets.forEach(copy=>{const item=document.createElement('li');item.textContent=copy;list.appendChild(item)});
+        card.appendChild(list);
+      }
       slideTopics.appendChild(card);
     });
     slideOutline.hidden=false;
