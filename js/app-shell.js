@@ -6,11 +6,14 @@
   const examPages=new Set(['exam.html','exam-guide.html','exam-strategy.html','architecture-practice.html','mock-exams.html']);
   const area=(inCourse||studyPages.has(current))?'study':examPages.has(current)?'exam':'home';
   const currentSection=Number(document.body.dataset.section||0);
+  const currentLecture=Number(new URLSearchParams(location.search).get('lecture')||(current==='lecture.html'?1:0));
   const courseProgressKey='aws-beginner-section-progress-v2';
-  const sectionTitles=['Introduction','Code & slides','Getting started with AWS','IAM & CLI','EC2 fundamentals','EC2 architecture','EC2 storage','Load balancing & Auto Scaling','RDS, Aurora & ElastiCache','Route 53','Architecture patterns','Amazon S3','Advanced S3','S3 security','CloudFront & Global Accelerator','Storage extras','SQS, SNS, Kinesis & MQ','Containers','Serverless','Serverless architectures','Databases','Data & analytics','Machine learning','Monitoring & audit','Advanced IAM','Security & encryption','VPC networking','Disaster recovery & migrations','More architectures','Other AWS services','Well-Architected review','Exam preparation','Finish & next steps'];
-  const groups=[{name:'Start here',from:1,to:4},{name:'Compute & architecture',from:5,to:11},{name:'Storage & delivery',from:12,to:16},{name:'Apps, serverless & data',from:17,to:23},{name:'Operations & security',from:24,to:28},{name:'Architecture & exam',from:29,to:33}];
+  const lectureProgressKey='aws-course-lecture-progress-v1';
+  const sectionTitles=['Introduction - AWS Certified Solutions Architect Associate','Code & Slides Download','Getting started with AWS','IAM & AWS CLI','EC2 Fundamentals','EC2 - Solutions Architect Associate Level','EC2 Instance Storage','High Availability and Scalability: ELB & ASG','AWS Fundamentals: RDS + Aurora + ElastiCache','Route 53','Classic Solutions Architecture Discussions','Amazon S3 Introduction','Advanced Amazon S3','Amazon S3 Security','CloudFront & AWS Global Accelerator','AWS Storage Extras','Decoupling applications: SQS, SNS, Kinesis, Active MQ','Containers on AWS: ECS, Fargate, ECR & EKS','Serverless Overviews from a Solution Architect Perspective','Serverless Solution Architecture Discussions','Databases in AWS','Data & Analytics','Machine Learning','AWS Monitoring & Audit: CloudWatch, CloudTrail & Config','Identity and Access Management (IAM) - Advanced','AWS Security & Encryption: KMS, SSM Parameter Store, Shield, WAF','Networking - VPC','Disaster Recovery & Migrations','More Solution Architectures','Other Services','WhitePapers and Architectures - AWS Certified Solutions Architect Associate','Preparing for the Exam + Practice Exam - AWS Certified Solutions Architect Associate','Congratulations - AWS Certified Solutions Architect Associate'];
+  const fallbackMeta=[[6,'15 min'],[1,'1 min'],[3,'13 min'],[20,'57 min'],[16,'1 hr 38 min'],[9,'34 min'],[14,'59 min'],[17,'1 hr 34 min'],[14,'1 hr 10 min'],[20,'1 hr 25 min'],[7,'43 min'],[14,'50 min'],[8,'30 min'],[15,'53 min'],[7,'33 min'],[10,'37 min'],[16,'1 hr 21 min'],[10,'49 min'],[18,'1 hr 23 min'],[4,'16 min'],[10,'25 min'],[12,'48 min'],[12,'26 min'],[18,'1 hr 19 min'],[10,'49 min'],[21,'1 hr 26 min'],[38,'2 hr 40 min'],[11,'44 min'],[5,'27 min'],[15,'48 min'],[4,'15 min'],[8,'17 min'],[3,'9 min']];
   const readCourseDone=()=>{try{return JSON.parse(localStorage.getItem(courseProgressKey)||'[]').map(Number)}catch(e){return[]}};
-  const sectionHref=n=>n<=2?`${rootPrefix}course/lecture.html?section=${n}&lecture=1`:`${rootPrefix}course/section-${String(n).padStart(2,'0')}.html`;
+  const readLectureDone=()=>{try{const value=JSON.parse(localStorage.getItem(lectureProgressKey)||'[]');return Array.isArray(value)?value.map(String):[]}catch(e){return[]}};
+  const sectionHref=n=>{const readyIndex=window.AWS_COURSE_CURRICULUM?.[n-1]?.lectures.findIndex(lecture=>lecture.ready)??-1;return readyIndex>=0?`${rootPrefix}course/lecture.html?section=${n}&lecture=${readyIndex+1}`:`${rootPrefix}course/section-${String(n).padStart(2,'0')}.html`};
   const firstIncomplete=()=>{const done=new Set(readCourseDone());for(let i=1;i<=33;i++)if(!done.has(i))return i;return 33};
 
   // Remove any previously injected shells before drawing the current one.
@@ -65,10 +68,10 @@
     const side=document.createElement('aside');
     side.className='rw-context-sidebar rw-study-sidebar';
     side.setAttribute('aria-label','Study navigation and progress');
-    side.innerHTML=`<div class="rw-context-head">Study</div><div class="rw-context-scroll">
-      <a class="rw-context-link ${current==='study.html'?'active':''}" href="${rootPrefix}study.html">${icon.home}<span>Course overview</span></a>
-      <div class="rw-progress-card"><div class="rw-progress-top"><span>Course progress</span><strong id="rwProgressCount">0 / 33</strong></div><div class="rw-progress-track"><i id="rwProgressBar"></i></div><a id="rwContinueLink" href="${sectionHref(firstIncomplete())}"><div><small>CONTINUE</small><b id="rwContinueTitle"></b></div><span>→</span></a></div>
-      <div class="rw-context-label">Sections</div><div class="rw-course-groups" id="rwCourseGroups"></div>
+    side.innerHTML=`<div class="rw-context-head">Course content</div><div class="rw-context-scroll">
+      <a class="rw-context-link ${current==='study-guide.html'?'active':''}" href="${rootPrefix}study-guide.html">${icon.home}<span>Course overview</span></a>
+      <div class="rw-progress-card"><div class="rw-progress-top"><span>Course progress</span><strong id="rwProgressCount">0 / 396</strong></div><div class="rw-progress-track"><i id="rwProgressBar"></i></div><a id="rwContinueLink" href="${sectionHref(firstIncomplete())}"><div><small>CONTINUE</small><b id="rwContinueTitle"></b></div><span>→</span></a></div>
+      <div class="rw-context-label">33 sections &middot; 396 lectures</div><div class="rw-course-outline" id="rwCourseGroups"></div>
     </div>`;
     document.body.appendChild(side);return side;
   }
@@ -100,15 +103,44 @@
 
   function renderStudyProgress(){
     if(area!=='study')return;
-    const done=new Set(readCourseDone()),count=done.size,pct=Math.round(count/33*100);
-    const countEl=document.getElementById('rwProgressCount'),barEl=document.getElementById('rwProgressBar');if(countEl)countEl.textContent=`${count} / 33`;if(barEl)barEl.style.width=`${pct}%`;
-    const next=firstIncomplete(),continueLink=document.getElementById('rwContinueLink'),continueTitle=document.getElementById('rwContinueTitle');if(continueLink)continueLink.href=sectionHref(next);if(continueTitle)continueTitle.textContent=count===33?'Review the course':`Section ${next} · ${sectionTitles[next-1]}`;
+    const curriculum=window.AWS_COURSE_CURRICULUM||[];
+    const done=new Set(readCourseDone()),lectureDone=new Set(readLectureDone());
+    const totalLectures=curriculum.length?curriculum.reduce((sum,section)=>sum+section.count,0):396;
+    const completedLectures=fallbackMeta.reduce((total,[fallbackCount],index)=>{
+      const count=curriculum[index]?.count||fallbackCount;
+      if(done.has(index+1))return total+count;
+      return total+[...lectureDone].filter(id=>id.startsWith(`${index+1}-`)).length;
+    },0);
+    const pct=Math.round(completedLectures/totalLectures*100);
+    const countEl=document.getElementById('rwProgressCount'),barEl=document.getElementById('rwProgressBar');if(countEl)countEl.textContent=`${completedLectures} / ${totalLectures}`;if(barEl)barEl.style.width=`${pct}%`;
+    let nextSection=firstIncomplete(),nextLecture=0;
+    for(let sectionIndex=0;sectionIndex<curriculum.length;sectionIndex++){
+      if(done.has(sectionIndex+1))continue;
+      const lectureIndex=curriculum[sectionIndex].lectures.findIndex((lecture,index)=>lecture.ready&&!lectureDone.has(`${sectionIndex+1}-${index+1}`));
+      if(lectureIndex>=0){nextSection=sectionIndex+1;nextLecture=lectureIndex+1;break}
+    }
+    const continueLink=document.getElementById('rwContinueLink'),continueTitle=document.getElementById('rwContinueTitle');
+    if(continueLink)continueLink.href=nextLecture?`${rootPrefix}course/lecture.html?section=${nextSection}&lecture=${nextLecture}`:sectionHref(nextSection);
+    if(continueTitle)continueTitle.textContent=completedLectures===totalLectures?'Review the course':`Section ${nextSection} · ${sectionTitles[nextSection-1]}`;
     const host=document.getElementById('rwCourseGroups');if(!host)return;
-    const activeGroupIndex=groups.findIndex(g=>currentSection>=g.from&&currentSection<=g.to);const nextGroupIndex=groups.findIndex(g=>{for(let n=g.from;n<=g.to;n++)if(!done.has(n))return true;return false});const defaultOpen=activeGroupIndex>=0?activeGroupIndex:(nextGroupIndex>=0?nextGroupIndex:0);
-    host.innerHTML=groups.map((g,gi)=>{let groupDone=0;for(let n=g.from;n<=g.to;n++)if(done.has(n))groupDone++;const open=gi===defaultOpen;const lessons=[];for(let n=g.from;n<=g.to;n++){const isDone=done.has(n),isCurrent=n===currentSection;lessons.push(`<a class="rw-section-link ${isCurrent?'active':''} ${isDone?'done':''}" href="${sectionHref(n)}"><span class="rw-section-state">${isDone?'✓':String(n).padStart(2,'0')}</span><span>${sectionTitles[n-1]}</span></a>`)}return `<section class="rw-course-group ${open?'open':''}"><button class="rw-group-toggle" type="button" aria-expanded="${open}"><span class="rw-group-chevron">›</span><span>${g.name}</span><small>${groupDone}/${g.to-g.from+1}</small></button><div class="rw-group-lessons">${lessons.join('')}</div></section>`}).join('');
-    host.querySelectorAll('.rw-group-toggle').forEach(btn=>btn.addEventListener('click',()=>{const group=btn.closest('.rw-course-group'),willOpen=!group.classList.contains('open');group.classList.toggle('open',willOpen);btn.setAttribute('aria-expanded',String(willOpen))}));
+    const defaultOpen=currentSection||nextSection||1;
+    host.innerHTML=sectionTitles.map((title,index)=>{
+      const sectionNumber=index+1,data=curriculum[index],count=data?.count||fallbackMeta[index][0],duration=data?.duration||fallbackMeta[index][1];
+      const sectionComplete=done.has(sectionNumber),completed=sectionComplete?count:[...lectureDone].filter(id=>id.startsWith(`${sectionNumber}-`)).length,open=sectionNumber===defaultOpen;
+      const lectureRows=data?data.lectures.map((lecture,lectureIndex)=>{
+        const number=lectureIndex+1,id=`${sectionNumber}-${number}`,isDone=sectionComplete||lectureDone.has(id),isCurrent=sectionNumber===currentSection&&number===currentLecture;
+        const copy=`<span class="rw-lecture-state">${isDone?'✓':number}</span><span><b>${lecture.title}</b><small>Lecture ${number}</small></span>`;
+        return lecture.ready?`<a class="rw-outline-lecture ${isCurrent?'active':''} ${isDone?'done':''}" href="${rootPrefix}course/lecture.html?section=${sectionNumber}&lecture=${number}">${copy}</a>`:`<div class="rw-outline-lecture ${isDone?'done':''}">${copy}</div>`;
+      }).join(''):'';
+      return `<section class="rw-outline-section ${open?'open':''}"><button class="rw-outline-toggle" type="button" aria-expanded="${open}"><span class="rw-group-chevron">›</span><span class="rw-outline-title">Section ${sectionNumber}: ${title}<small>${completed} / ${count} | ${duration}</small></span></button><div class="rw-outline-lectures">${lectureRows}</div></section>`;
+    }).join('');
+    host.querySelectorAll('.rw-outline-toggle').forEach(btn=>btn.addEventListener('click',()=>{const section=btn.closest('.rw-outline-section'),willOpen=!section.classList.contains('open');section.classList.toggle('open',willOpen);btn.setAttribute('aria-expanded',String(willOpen))}));
   }
-  renderStudyProgress();window.addEventListener('aws-study-progress-changed',renderStudyProgress);window.addEventListener('storage',e=>{if(e.key===courseProgressKey)renderStudyProgress()});
+  renderStudyProgress();window.addEventListener('aws-study-progress-changed',renderStudyProgress);window.addEventListener('storage',e=>{if(e.key===courseProgressKey||e.key===lectureProgressKey)renderStudyProgress()});
+
+  if(area==='study'&&!window.AWS_COURSE_CURRICULUM){
+    const curriculumScript=document.createElement('script');curriculumScript.src=`${rootPrefix}js/course-lecture-data.js`;curriculumScript.addEventListener('load',renderStudyProgress);document.head.appendChild(curriculumScript);
+  }
 
   // Ctrl+K focuses the global search. Enter takes the learner to the Study overview with the query.
   const shellSearch=document.getElementById('rwGlobalSearch');
