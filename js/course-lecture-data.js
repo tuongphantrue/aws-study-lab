@@ -850,6 +850,149 @@
     }
   ];
 
+  const sectionTenLectures=[
+    {
+      ready:true,title:'DNS hierarchy and name resolution',
+      summary:'Follow a hostname from the client cache through recursive and authoritative DNS servers to an address.',
+      explanation:['The Domain Name System translates hierarchical names into records applications can use. A fully qualified name is built from labels such as host, subdomain, registered domain, top-level domain, and the DNS root.','A recursive resolver follows referrals from root and TLD servers to the authoritative name servers for the domain, caches the answer, and returns it to the client. DNS supplies connection information; it does not carry the application traffic.'],
+      takeaways:['DNS uses a hierarchical namespace.','Recursive resolvers query authoritative servers and cache answers.','DNS resolution precedes, but does not route, application traffic.'],
+      examTip:'Route 53 routing policies choose DNS answers; a load balancer distributes the traffic that arrives after resolution.'
+    },
+    {
+      ready:true,title:'Route 53 records and core record types',
+      summary:'Describe a DNS answer with a name, type, value, routing policy, and cache lifetime.',
+      explanation:['An A record returns IPv4 addresses, an AAAA record returns IPv6 addresses, and an NS record delegates a zone to authoritative name servers. A CNAME makes one non-apex hostname an alias of another hostname.','Route 53 supports many additional standards-based record types for mail, verification, service discovery, and delegation. Record name and type determine which set is evaluated for a query.'],
+      takeaways:['A maps a name to IPv4 and AAAA to IPv6.','CNAME points a non-apex name to another name.','NS records identify authoritative name servers.'],
+      examTip:'A CNAME cannot be used at the zone apex, which is why AWS Alias records matter for root-domain AWS endpoints.'
+    },
+    {
+      ready:true,title:'Public and private hosted zones',
+      summary:'Keep internet DNS and VPC-only DNS records in the correct authoritative container.',
+      explanation:['A public hosted zone contains records resolvable through the public DNS hierarchy. A private hosted zone associates with one or more VPCs and answers only through Route 53 Resolver for those networks.','The same domain can exist in public and private zones to provide different internal and external answers. VPC DNS settings and zone association must be correct for private names to resolve.'],
+      takeaways:['Public zones serve internet-visible DNS records.','Private zones serve associated VPCs.','Split-view DNS can return different internal and external answers.'],
+      examTip:'Private application hostnames that should resolve only inside selected VPCs belong in a private hosted zone.'
+    },
+    {
+      ready:true,title:'DNS caching and TTL',
+      summary:'Balance resolver traffic and change speed by choosing an appropriate record time to live.',
+      explanation:['TTL tells recursive resolvers and clients how long they may cache a DNS answer. A long TTL reduces query volume and improves cache efficiency but delays adoption of record changes.','A low TTL increases authoritative queries and cost but shortens stale-answer duration. Lower the TTL before a planned migration, wait for old caches to expire, make the change, and raise it again after stability.'],
+      takeaways:['TTL controls DNS cache duration.','High TTL favors efficiency and stability.','Low TTL favors faster changes.'],
+      examTip:'Changing a record cannot force every resolver to discard an answer it already cached before the TTL expires.'
+    },
+    {
+      ready:true,title:'CNAME and Route 53 Alias records',
+      summary:'Point friendly names to managed AWS endpoints, including the zone apex, without tracking changing IP addresses.',
+      explanation:['A CNAME can point a subdomain to any hostname but cannot exist at the zone apex. A Route 53 Alias is an AWS extension that returns an A or AAAA-style answer for supported AWS resources and can be used at the apex.','Alias targets include load balancers, CloudFront, API Gateway, S3 website endpoints, Global Accelerator, interface endpoints, and records in the same zone. Route 53 tracks the underlying managed endpoint and does not expose a user-set TTL for the Alias.'],
+      takeaways:['CNAME works for non-apex names.','Alias works at the apex and subdomains.','Alias supports a defined set of AWS targets.'],
+      examTip:'For example.com pointing to an ALB, create an Alias A/AAAA record rather than a CNAME.'
+    },
+    {
+      ready:true,title:'Routing policies and simple routing',
+      summary:'Understand that policies choose DNS responses and use simple routing when no traffic logic is required.',
+      explanation:['A routing policy controls how Route 53 selects values from records with the same name and type. The client then connects to the returned endpoint; Route 53 is not a proxy in that data path.','Simple routing returns one value or a set of values without health-check-based selection. A client or resolver may choose among multiple returned addresses, so simple routing is not a managed replacement for a load balancer.'],
+      takeaways:['Routing policies select DNS answers.','Simple routing has no health evaluation.','Multiple simple values do not equal load balancing.'],
+      examTip:'Use simple routing for one endpoint when no weighting, location, latency, or failover logic is required.'
+    },
+    {
+      ready:true,title:'Weighted routing',
+      summary:'Split DNS responses by relative weight for gradual releases, experiments, or multi-endpoint distribution.',
+      explanation:['Weighted records share a name and type and receive relative numeric weights. Route 53 selects each answer according to its fraction of the total; weights do not need to sum to one hundred.','A zero weight can remove an endpoint from normal selection, while health checks can keep unhealthy weighted records out. Because DNS answers are cached, the observed short-term traffic ratio is approximate rather than per-request exact.'],
+      takeaways:['Weights are relative, not percentages that must total 100.','Weighted records can use health checks.','DNS caching makes distribution statistical.'],
+      examTip:'A controlled 90/10 DNS rollout between two application versions is a weighted-routing design.'
+    },
+    {
+      ready:true,title:'Latency-based routing',
+      summary:'Direct a user toward the deployed AWS Region that currently offers the lowest measured network latency.',
+      explanation:['Latency records associate endpoints with AWS Regions. Route 53 uses latency measurements between the resolver location and those Regions to select an answer; the geographically closest Region is not always the lowest-latency one.','Health checks can remove an unhealthy regional endpoint, combining performance routing with failover. The application and data layers must still support users arriving in any selected Region.'],
+      takeaways:['Latency routing uses measured Region latency.','It differs from geographic location rules.','Health checks can exclude failed endpoints.'],
+      examTip:'“Best network latency to multiple regional deployments” points to latency routing, not geolocation.'
+    },
+    {
+      ready:true,title:'Route 53 endpoint health checks',
+      summary:'Monitor public HTTP, HTTPS, or TCP endpoints from distributed checkers and feed health into DNS decisions.',
+      explanation:['Route 53 health checkers probe a public endpoint at a configured interval and apply healthy and unhealthy thresholds. HTTP checks expect successful status codes and can optionally search an initial portion of the response body.','Firewalls must allow the published checker address ranges. A shallow port check proves reachability, while an application health path can verify dependencies; choose a test that reflects whether serving traffic is safe.'],
+      takeaways:['Direct health checks require publicly reachable endpoints.','Thresholds reduce sensitivity to one failed probe.','Health status integrates with supported routing policies.'],
+      examTip:'Route 53 public checkers cannot directly reach a private-subnet-only endpoint.'
+    },
+    {
+      ready:true,title:'Calculated checks and private-resource health',
+      summary:'Combine child checks or bridge private application metrics into DNS failover through CloudWatch alarms.',
+      explanation:['A calculated health check evaluates the status of multiple child checks with AND, OR, NOT, or a required healthy count. It can model a composite service or provide controlled maintenance behavior.','For private endpoints that public checkers cannot reach, publish a CloudWatch metric, evaluate it with an alarm, and create a health check that follows the alarm state. This separates private monitoring from public DNS control.'],
+      takeaways:['Calculated checks combine child health states.','CloudWatch alarm checks can represent private resources.','The monitored signal should reflect application health.'],
+      examTip:'A private RDS or internal service needs alarm-based health integration, not a direct public Route 53 endpoint check.'
+    },
+    {
+      ready:true,title:'Failover routing',
+      summary:'Implement active-passive DNS by returning a secondary endpoint when the primary fails health evaluation.',
+      explanation:['Failover record sets label one endpoint primary and another secondary. Route 53 normally returns the healthy primary and switches to the secondary according to the configured health behavior.','DNS caching means failover is not an instantaneous connection migration. TTL, detection thresholds, application recovery time, and the readiness of the standby all contribute to the observed recovery time.'],
+      takeaways:['Failover routing is active-passive.','Primary health controls secondary selection.','TTL and detection intervals affect recovery.'],
+      examTip:'A warm standby site used only when the primary endpoint fails is a failover-routing scenario.'
+    },
+    {
+      ready:true,title:'Geolocation routing',
+      summary:'Return content or endpoints according to the user location for localization, licensing, or regional policy.',
+      explanation:['Geolocation routing matches the origin of a DNS query to configured continents, countries, or US states. More specific matching records take precedence over broader ones.','Create a default record for users who match no location rule. Geolocation expresses business geography; it does not promise the chosen endpoint has the lowest network latency.'],
+      takeaways:['Geolocation matches the user location.','The most specific applicable location wins.','A default record handles unmatched users.'],
+      examTip:'Country-specific content or legal distribution rules suggest geolocation routing.'
+    },
+    {
+      ready:true,title:'Geoproximity routing and bias',
+      summary:'Route by the geographic relationship between users and resources, then expand or shrink a resource influence area.',
+      explanation:['Geoproximity routing places AWS resources by Region and external resources by coordinates. Traffic Flow calculates geographic boundaries that normally direct users toward nearby resources.','A positive bias expands one resource region so it receives more traffic; a negative bias shrinks it. Bias allows controlled shifts that pure geolocation or latency policies do not express.'],
+      takeaways:['Geoproximity considers user and resource geography.','Bias changes the size of a resource influence area.','Traffic Flow is used to configure this policy.'],
+      examTip:'Shifting a geographic boundary toward one Region without fixed country rules points to geoproximity bias.'
+    },
+    {
+      ready:true,title:'IP-based routing',
+      summary:'Map known client CIDR ranges to specific endpoints for network-aware optimization or cost control.',
+      explanation:['IP-based routing uses a CIDR collection that associates source networks with locations. Records then return different endpoints for clients whose resolver source matches those mappings.','This is useful when organizations know customer, office, or ISP address ranges and want deterministic network-based choices. Maintain mappings carefully as client networks change.'],
+      takeaways:['IP routing matches configured client CIDRs.','CIDR locations map to record endpoints.','It differs from inferred geographic location.'],
+      examTip:'Routing a known ISP or corporate address block to a preferred endpoint is an IP-based policy.'
+    },
+    {
+      ready:true,title:'Multi-value answer routing',
+      summary:'Return several healthy DNS records while recognizing that clients—not Route 53—choose the connection target.',
+      explanation:['Multi-value routing associates health checks with multiple records and returns a subset of healthy values for each query. It can improve simple client-side distribution and avoid publishing failed endpoints.','It does not provide connection-level balancing, draining, TLS termination, or application-aware routing. Use an Elastic Load Balancer when those managed data-plane capabilities are required.'],
+      takeaways:['Multi-value returns multiple healthy answers.','Resolvers and clients choose among returned values.','It is not a substitute for ELB.'],
+      examTip:'Choose multi-value only for DNS-level healthy-answer distribution, not when the scenario asks for a managed load balancer.'
+    },
+    {
+      ready:true,title:'Domain registration and DNS delegation',
+      summary:'Separate ownership of a domain from the authoritative DNS service that hosts its records.',
+      explanation:['A registrar records domain ownership and manages delegation information with the registry. The authoritative DNS provider hosts the zone records; the registrar and DNS provider can be different companies.','To use Route 53 for a domain registered elsewhere, create a public hosted zone and update the registrar delegation to the Route 53 name-server set. Keep registrar contacts, renewal, and transfer controls secure.'],
+      takeaways:['Registrar and authoritative DNS are separate roles.','NS delegation points a domain to its DNS provider.','A third-party registration can use Route 53 hosted zones.'],
+      examTip:'Changing name servers at the registrar delegates DNS; copying records alone does not make Route 53 authoritative.'
+    },
+    {
+      ready:true,title:'Route 53 Resolver and hybrid DNS',
+      summary:'Resolve public, VPC, and on-premises names across networks connected by VPN or Direct Connect.',
+      explanation:['The VPC Route 53 Resolver answers AWS-provided names, private hosted-zone records, and recursive public DNS queries. Hybrid DNS extends resolution between that resolver and DNS servers in other networks.','Network connectivity must already exist through VPN, Direct Connect, or supported VPC paths. Resolver endpoints provide managed query entry and exit points; forwarding rules decide which domain suffix goes where.'],
+      takeaways:['Route 53 Resolver serves VPC DNS queries.','Hybrid DNS requires network connectivity.','Endpoints and rules connect separate DNS namespaces.'],
+      examTip:'A VPN transports the DNS packets, but Resolver endpoints and forwarding rules provide the hybrid DNS behavior.'
+    },
+    {
+      ready:true,title:'Resolver inbound endpoints',
+      summary:'Let on-premises or other connected DNS clients resolve private AWS names through managed VPC addresses.',
+      explanation:['An inbound Resolver endpoint creates IP addresses in selected VPC subnets that receive DNS queries from connected networks. The VPC resolver then answers private hosted-zone and AWS names available to that VPC.','On-premises DNS servers conditionally forward the AWS private domain toward those endpoint addresses. Security groups, network routes, and redundant endpoint placement must allow DNS over the required transport.'],
+      takeaways:['Inbound endpoints receive queries into AWS.','External DNS servers forward AWS private zones to them.','Deploy endpoint addresses redundantly across AZs.'],
+      examTip:'On-premises clients resolving app.aws.private need a Resolver inbound endpoint.'
+    },
+    {
+      ready:true,title:'Resolver outbound endpoints and forwarding rules',
+      summary:'Forward selected VPC DNS queries to authoritative resolvers in on-premises or other connected networks.',
+      explanation:['An outbound Resolver endpoint sends queries from the VPC resolver toward configured external DNS server addresses. A forwarding rule associates a domain suffix with those targets and can be shared across accounts.','Rules should be specific enough to avoid loops and unexpected resolution paths. The destination resolvers must permit queries from the endpoint addresses and routes must carry traffic in both directions.'],
+      takeaways:['Outbound endpoints send VPC queries outward.','Rules match domain suffixes to target DNS servers.','Routing and DNS-server ACLs must permit the path.'],
+      examTip:'AWS workloads resolving onpremises.private need an outbound endpoint plus a forwarding rule.'
+    },
+    {
+      ready:true,title:'Route 53 architecture decision rules',
+      summary:'Choose records, policies, health checks, and Resolver direction from the exact DNS requirement.',
+      explanation:['Start with scope: public internet, associated VPCs, or hybrid networks. Then choose record behavior: one answer, weighted release, lowest latency, active-passive failover, user geography, known client CIDR, or multiple healthy answers.','Add health only where it improves the decision, and include TTL in recovery expectations. Use inbound endpoints for queries entering AWS and outbound endpoints for queries leaving AWS; neither replaces routing connectivity.'],
+      takeaways:['Hosted-zone scope determines who can resolve names.','Routing policy expresses the answer-selection rule.','Resolver endpoint direction follows query direction.'],
+      examTip:'Translate scenario wording directly: percentage, latency, location, failover, CIDR, or hybrid direction usually names the Route 53 feature.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -868,4 +1011,5 @@
   window.AWS_COURSE_CURRICULUM[6].lectures=sectionSevenLectures;
   window.AWS_COURSE_CURRICULUM[7].lectures=sectionEightLectures;
   window.AWS_COURSE_CURRICULUM[8].lectures=sectionNineLectures;
+  window.AWS_COURSE_CURRICULUM[9].lectures=sectionTenLectures;
 })();
