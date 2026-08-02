@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en" data-root-prefix="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Original AWS Solutions Architect Associate study lecture.">
+  <title>Course lecture | AWS Study Lab</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link href="../css/course-lecture.css" rel="stylesheet">
+  <link href="../css/navigation.css" rel="stylesheet">
+</head>
+<body class="course-lecture-page">
+  <script>
+    document.body.dataset.section = new URLSearchParams(location.search).get('section') || '1';
+  </script>
+  <main class="lecture-main">
+    <div class="lecture-loading" id="lectureLoading">Loading lecture...</div>
+    <article class="lecture-article" id="lectureArticle" hidden>
+      <header class="lecture-hero">
+        <a class="lecture-back" id="lectureBack" href="../study-guide.html?section=1">&#8592; Course content</a>
+        <span class="lecture-eyebrow" id="lectureEyebrow"></span>
+        <h1 id="lectureTitle"></h1>
+        <p id="lectureSummary"></p>
+        <div class="lecture-meta"><span id="lecturePosition"></span><span>Original study notes</span></div>
+      </header>
+
+      <div class="lecture-body">
+        <section class="lecture-copy" aria-labelledby="explanationTitle">
+          <span class="lecture-label">CONCEPT</span>
+          <h2 id="explanationTitle">Understand the idea</h2>
+          <div id="lectureExplanation"></div>
+        </section>
+
+        <section class="lecture-takeaways" aria-labelledby="takeawaysTitle">
+          <span class="lecture-label">KEY TAKEAWAYS</span>
+          <h2 id="takeawaysTitle">What to remember</h2>
+          <ol id="lectureTakeaways"></ol>
+        </section>
+
+        <aside class="lecture-exam" aria-labelledby="examTitle">
+          <span class="lecture-exam-icon" aria-hidden="true">!</span>
+          <div><span class="lecture-label">EXAM FOCUS</span><h2 id="examTitle">How this appears in a scenario</h2><p id="lectureExamTip"></p></div>
+        </aside>
+
+        <p class="lecture-source-note">This is an original study summary based on the course slides supplied by the learner. It is not an official AWS or Udemy transcript.</p>
+      </div>
+
+      <footer class="lecture-footer">
+        <a class="lecture-nav-link previous" id="previousLecture" href="#"><small>PREVIOUS</small><b></b></a>
+        <button class="lecture-complete" id="completeLecture" type="button"><span class="complete-check" aria-hidden="true">&#10003;</span><span class="complete-label">Mark complete</span></button>
+        <a class="lecture-nav-link next" id="nextLecture" href="#"><small>NEXT</small><b></b></a>
+      </footer>
+    </article>
+    <section class="lecture-error" id="lectureError" hidden>
+      <h1>Lecture not available yet</h1>
+      <p>Section 1 is ready now. The remaining sections will be expanded from the supplied course slides.</p>
+      <a href="../study-guide.html?section=1">Return to Section 1</a>
+    </section>
+  </main>
+  <script src="../js/course-lecture-data.js"></script>
+  <script src="../js/course-lecture.js"></script>
+  <script src="../js/app-shell.js"></script>
+</body>
+</html>

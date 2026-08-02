@@ -1,9 +1,12 @@
 (function(){
   const KEY='aws-beginner-section-progress-v2';
+  const LECTURE_KEY='aws-course-lecture-progress-v1';
   const TOTAL_LECTURES=396;
   const curriculum=window.AWS_COURSE_CURRICULUM||[];
   const read=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'[]').map(Number)}catch(e){return[]}};
+  const readLectures=()=>{try{return JSON.parse(localStorage.getItem(LECTURE_KEY)||'[]')}catch(e){return[]}};
   const done=new Set(read());
+  const lectureDone=new Set(readLectures());
 
   // Turn the original section links into compact, accessible disclosure rows.
   // The original href, search copy, and description remain the source of truth.
@@ -15,14 +18,27 @@
     if(!sectionData)return;
     const {count:lectureCount,duration,lectures}=sectionData;
     const sectionComplete=done.has(section);
+    const completedInSection=sectionComplete?lectureCount:lectures.filter((_,index)=>lectureDone.has(`${section}-${index+1}`)).length;
+    const firstReadyLecture=lectures.findIndex(lecture=>lecture.ready);
+    const firstIncompleteReadyLecture=lectures.findIndex((lecture,index)=>lecture.ready&&!lectureDone.has(`${section}-${index+1}`));
+    const sectionActionHref=firstReadyLecture>=0
+      ?`course/lecture.html?section=${section}&lecture=${(firstIncompleteReadyLecture>=0?firstIncompleteReadyLecture:firstReadyLecture)+1}`
+      :link.getAttribute('href');
     const article=document.createElement('article');
     const panelId=`course-section-${section}-details`;
-    const lectureRows=lectures.map((lecture,index)=>`
-      <div class="course-lecture-row" data-lecture="${index+1}">
-        <span class="lecture-status ${sectionComplete?'complete':''}" aria-hidden="true">${sectionComplete?'\u2713':''}</span>
+    const lectureRows=lectures.map((lecture,index)=>{
+      const lectureId=`${section}-${index+1}`;
+      const lectureComplete=sectionComplete||lectureDone.has(lectureId);
+      const tag=lecture.ready?'a':'div';
+      const destination=lecture.ready?` href="course/lecture.html?section=${section}&lecture=${index+1}"`:'';
+      return `
+      <${tag} class="course-lecture-row ${lecture.ready?'ready':''}" data-lecture="${index+1}"${destination}>
+        <span class="lecture-status ${lectureComplete?'complete':''}" aria-hidden="true">${lectureComplete?'\u2713':''}</span>
         <svg class="lecture-icon" viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="3" width="12" height="14" rx="1.5"/><path d="M7 7h6M7 10h6M7 13h4"/></svg>
         <span class="lecture-copy"><b>${lecture.title}</b><small><span>Lecture ${index+1}</span>${lecture.summary}</small></span>
-      </div>`).join('');
+        ${lecture.ready?'<span class="lecture-open" aria-hidden="true">\u2192</span>':''}
+      </${tag}>`;
+    }).join('');
     article.className='course-section-row';
     article.dataset.section=String(section);
     article.dataset.search=link.dataset.search||`${title} ${description}`.toLowerCase();
@@ -30,12 +46,12 @@
       <button class="course-section-toggle" type="button" aria-expanded="false" aria-controls="${panelId}">
         <span class="section-row-copy">
           <b>Section ${section}: ${title}</b>
-          <small><span class="section-completion">${sectionComplete?lectureCount:0} / ${lectureCount}</span><span aria-hidden="true">|</span><span>${duration}</span></small>
+          <small><span class="section-completion">${completedInSection} / ${lectureCount}</span><span aria-hidden="true">|</span><span>${duration}</span></small>
         </span>
         <svg class="section-chevron" viewBox="0 0 20 20" aria-hidden="true"><path d="m6.5 8 3.5 3.5L13.5 8"/></svg>
       </button>
       <div class="course-section-detail" id="${panelId}" hidden>
-        <div class="course-section-intro"><p>${description}</p><a href="${link.getAttribute('href')}">${sectionComplete?'Review section':'Open section'} <span aria-hidden="true">\u2192</span></a></div>
+        <div class="course-section-intro"><p>${description}</p><a href="${sectionActionHref}">${firstReadyLecture>=0?(completedInSection?'Continue lectures':'Start lectures'):(sectionComplete?'Review section':'Open section')} <span aria-hidden="true">\u2192</span></a></div>
         <div class="course-lecture-list" aria-label="${lectureCount} lectures in Section ${section}">${lectureRows}</div>
       </div>`;
     link.replaceWith(article);
@@ -59,7 +75,10 @@
     rows.find(row=>Number(row.dataset.section)===requestedSection)?.querySelector('.course-section-toggle')?.click();
   }
 
-  const completedLectures=curriculum.reduce((total,section,index)=>total+(done.has(index+1)?section.count:0),0);
+  const completedLectures=curriculum.reduce((total,section,index)=>{
+    if(done.has(index+1))return total+section.count;
+    return total+section.lectures.filter((_,lectureIndex)=>lectureDone.has(`${index+1}-${lectureIndex+1}`)).length;
+  },0);
   const pct=Math.round(completedLectures/TOTAL_LECTURES*100);
   const progressText=document.getElementById('courseProgressText');
   const progressBar=document.getElementById('courseProgressBar');
@@ -68,7 +87,8 @@
   const next=Math.min(33,Math.max(1,[...Array(33)].map((_,i)=>i+1).find(i=>!done.has(i))||33));
   const resume=document.getElementById('resumeSection');
   if(resume){
-    resume.href=`course/section-${String(next).padStart(2,'0')}.html`;
+    const nextReadyLecture=curriculum[next-1]?.lectures.findIndex((lecture,index)=>lecture.ready&&!lectureDone.has(`${next}-${index+1}`))??-1;
+    resume.href=nextReadyLecture>=0?`course/lecture.html?section=${next}&lecture=${nextReadyLecture+1}`:`course/section-${String(next).padStart(2,'0')}.html`;
     resume.textContent=done.size?'Continue course \u2192':'Start Section 1 \u2192';
   }
 

@@ -61,6 +61,75 @@
     ['Review',topic=>`Summarize the decision rules and key facts to remember about ${topic}.`]
   ];
 
+  const sectionOneLectures=[
+    {
+      ready:true,
+      title:'Welcome to the SAA-C03 journey',
+      summary:'Set realistic expectations for the certification and understand what this course is designed to teach.',
+      explanation:[
+        'The Solutions Architect Associate journey is about learning to turn business requirements into sensible AWS designs. You do not need previous AWS experience, but basic familiarity with servers, networking, storage, and databases will make the vocabulary easier to absorb.',
+        'Treat the course as a guided architecture practice rather than a race through service names. The valuable skill is being able to explain why a design is secure, resilient, performant, cost-aware, and manageable.'
+      ],
+      takeaways:['Expect broad coverage across many AWS services.','Learn service relationships, not isolated definitions.','Build understanding gradually and revisit difficult topics.'],
+      examTip:'The exam rewards requirement matching. Start every scenario by identifying the main constraint before considering a service.'
+    },
+    {
+      ready:true,
+      title:'How to study a long AWS course',
+      summary:'Use a repeatable learning loop that turns a large syllabus into manageable decisions.',
+      explanation:[
+        'A long certification course becomes manageable when each study session has a small goal. Learn one concept, restate it in your own words, compare it with a nearby alternative, and then test the decision with a short scenario.',
+        'Pause when a diagram or term is unclear. Speed is useful only after the underlying idea makes sense. Notes should capture decision rules and contrasts rather than copying every detail.'
+      ],
+      takeaways:['Study in short, focused blocks.','Write comparison notes such as Multi-AZ versus read replica.','Use quizzes to find weak reasoning, not merely to collect scores.'],
+      examTip:'When reviewing a missed question, explain why every distractor fails. That produces knowledge you can transfer to unseen scenarios.'
+    },
+    {
+      ready:true,
+      title:'What Amazon Web Services provides',
+      summary:'Understand AWS as on-demand technology building blocks that can be created, scaled, and removed through APIs.',
+      explanation:[
+        'AWS is a cloud provider. Instead of purchasing and maintaining every physical server yourself, you request compute, storage, networking, database, security, and application services when you need them.',
+        'Cloud resources are programmable. You can create them through the console, command-line tools, software development kits, or infrastructure-as-code templates. This makes environments repeatable and allows capacity to change with demand.'
+      ],
+      takeaways:['AWS supplies services on demand.','Most resources can be controlled through APIs.','Elastic capacity helps match infrastructure to changing workloads.'],
+      examTip:'Cloud does not remove operational responsibility. Always ask which responsibilities AWS manages and which remain with the customer.'
+    },
+    {
+      ready:true,
+      title:'Build a mental map of AWS services',
+      summary:'Organize the large AWS catalog by architectural job instead of memorizing a flat list of products.',
+      explanation:[
+        'The AWS catalog is easier to navigate when services are grouped by the job they perform. EC2 and Lambda provide compute; S3, EBS, and EFS store data; RDS and DynamoDB manage different database models; VPC and Route 53 control network paths; IAM and KMS protect access and data.',
+        'An architecture normally combines several of these categories. A user request may pass through DNS and content delivery, enter a load balancer, reach compute, read a database, publish a message, and generate monitoring data.'
+      ],
+      takeaways:['Group services into compute, storage, database, networking, security, integration, and operations.','Learn the normal job of each service before advanced features.','Trace complete request paths across service categories.'],
+      examTip:'If an answer uses many services, verify that each one solves a stated requirement. Extra components are not automatically better architecture.'
+    },
+    {
+      ready:true,
+      title:'Think like a solutions architect',
+      summary:'Move from recognizing service names to making defensible architecture decisions.',
+      explanation:[
+        'A solutions architect begins with constraints: availability, latency, throughput, security, compliance, recovery objectives, operational effort, and cost. Services are selected only after those constraints are understood.',
+        'More than one design may work technically. The preferred answer is usually the simplest managed design that satisfies every important requirement without introducing unnecessary operations or cost.'
+      ],
+      takeaways:['Translate business language into technical constraints.','Eliminate choices that violate any hard requirement.','Compare remaining choices using explicit tradeoffs.'],
+      examTip:'Words such as “most cost-effective,” “highly available,” and “least operational overhead” often determine the final choice.'
+    },
+    {
+      ready:true,
+      title:'Prepare for the first AWS building blocks',
+      summary:'Know what comes next and establish a safe, deliberate learning environment.',
+      explanation:[
+        'The next lessons move from the course overview into AWS global infrastructure, the management console, identity, compute, storage, and networking. These foundations appear repeatedly in later architecture sections.',
+        'When following hands-on work, use clear resource names, select the intended Region, enable cost awareness, and remove resources after practice. Keep credentials private and prefer temporary role-based access whenever possible.'
+      ],
+      takeaways:['Regions and Availability Zones shape resilience and latency.','IAM should be understood before creating workloads.','Cost and credential hygiene begin with the first lab.'],
+      examTip:'Foundation topics are cumulative. A later database or serverless question may still depend on Region, IAM, networking, or encryption knowledge.'
+    }
+  ];
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
@@ -70,4 +139,5 @@
     });
     return {count,duration,lectures};
   });
+  window.AWS_COURSE_CURRICULUM[0].lectures=sectionOneLectures;
 })();
