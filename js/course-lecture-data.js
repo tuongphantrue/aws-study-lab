@@ -5457,6 +5457,100 @@
   };
   sectionTwentyNineLectures.forEach(lecture=>Object.assign(lecture,sectionTwentyNineSlideOverrides[lecture.title]||{}));
 
+  const sectionThirtySlideOverrides={
+    'Model infrastructure with AWS CloudFormation':{
+      sourcePages:'825–827',summary:'Declare AWS resources in a template so CloudFormation creates them in dependency order with the specified configuration.',
+      explanation:['The slides define CloudFormation as a declarative description of infrastructure. A template can request a security group, EC2 instances, S3 bucket, and load balancer; CloudFormation determines the creation order.','Infrastructure as code makes changes reviewable, resources reproducible, and stack costs identifiable through tags. Environments can be destroyed and recreated, diagrams can be generated, and custom resources cover unsupported operations.'],
+      slideTopics:['Declarative infrastructure','Template resource example','Infrastructure as code','Cost and productivity benefits','Custom resources'],
+      takeaways:['Templates describe desired resources.','CloudFormation manages ordering and orchestration.','Versioned infrastructure improves review and repeatability.'],examTip:'A repeatable, reviewed AWS environment described as code points to CloudFormation.'
+    },
+    'Control CloudFormation changes and drift':{
+      sourcePages:'826–827',summary:'Use infrastructure as code to review intended changes and recreate environments consistently; the supplied slides do not explicitly cover change sets or drift detection.',
+      explanation:['The deck emphasizes that resources should not be created manually and that infrastructure changes are reviewed through code. This establishes the desired template as the controlled definition of the environment.','It also highlights safe recreation and declarative orchestration. Change sets and drift detection extend that control in AWS, but those mechanisms are not shown on pages 826–827, so they should not be mistaken for slide content.'],
+      slideTopics:['Code-reviewed infrastructure changes','Avoiding manual creation','Destroy and recreate','Declarative orchestration'],
+      takeaways:['The template is the reviewed source of intended configuration.','Manual edits weaken infrastructure-as-code control.','Recreation tests whether infrastructure is truly repeatable.'],examTip:'When an exam asks for governed, repeatable changes, start with CloudFormation; preview and drift features are supporting controls beyond this slide’s detail.'
+    },
+    'Delegate and visualize CloudFormation deployment':{
+      sourcePages:'828–829',summary:'Visualize template relationships with Infrastructure Composer and delegate stack operations through a CloudFormation service role.',
+      explanation:['Infrastructure Composer displays the resources and relationships in a CloudFormation stack; the slide uses a WordPress stack as its example. This helps architects understand how template components connect.','A CloudFormation service role grants the service permission to create, update, and delete stack resources. Users can operate the stack without direct permissions on every resource, but they need permission to pass the role, making iam:PassRole a key least-privilege control.'],
+      slideTopics:['Infrastructure Composer','Resource relationship diagram','CloudFormation service role','Least privilege','iam:PassRole'],
+      takeaways:['Composer visualizes stack relationships.','The service role performs resource operations.','Users require iam:PassRole to delegate that role.'],examTip:'Let a deployment user manage a stack without broad S3 or EC2 permissions by assigning a scoped CloudFormation service role.'
+    },
+    'Send transactional email with Amazon SES':{
+      sourcePages:'830',summary:'Send inbound or outbound email at scale through the SES API or SMTP while monitoring reputation and delivery outcomes.',
+      explanation:['Amazon Simple Email Service supports transactional, marketing, and bulk email from applications through the console, APIs, or SMTP. It provides delivery, bounce, feedback-loop, and open statistics plus reputation and performance insights.','The slide calls out DKIM and SPF along with shared, dedicated, or customer-owned IP deployment. These capabilities help authenticate mail and manage sender reputation.'],
+      slideTopics:['Inbound and outbound email','API and SMTP sending','Reputation dashboard','Delivery and bounce statistics','DKIM, SPF, and IP choices'],
+      takeaways:['SES is the managed email-sending service.','Applications can use API or SMTP.','Authentication and reputation influence deliverability.'],examTip:'Application-generated transactional or bulk email at scale is an SES use case.'
+    },
+    'Transition from Amazon Pinpoint messaging':{
+      sourcePages:'831',summary:'Understand the slide-era Amazon Pinpoint campaign model and separate it from per-message SNS or SES workflows.',
+      explanation:['The supplied slide presents Pinpoint as two-way marketing communication across email, SMS, push, voice, and in-app channels, with audience segments, templates, personalization, schedules, campaigns, and replies. It contrasts this with SNS and SES, where the application manages each message’s audience, content, and schedule.','Pinpoint events can stream to SNS, Kinesis Data Firehose, or CloudWatch Logs. This is source-era material: confirm current AWS messaging service availability and migration guidance before designing a new production campaign platform.'],
+      slideTopics:['Slide-era Amazon Pinpoint','Multi-channel campaigns','Segments and templates','Pinpoint versus SNS and SES','Event streaming'],
+      takeaways:['Pinpoint organized targeted campaigns in the deck.','SNS and SES operate at a more direct message level.','The service status must be checked for current designs.'],examTip:'For the supplied course, targeted multi-channel segments and campaign schedules identify Pinpoint; treat it as dated service material.'
+    },
+    'Open managed sessions with Session Manager':{
+      sourcePages:'832',summary:'Open audited shells to managed EC2 or on-premises servers without inbound SSH, bastions, or SSH keys.',
+      explanation:['Session Manager uses the SSM Agent and IAM permissions to establish a secure session to Linux, macOS, or Windows managed nodes. Port 22 does not need to be open, reducing exposed administrative paths.','Session logs can be sent to S3 or CloudWatch Logs. IAM determines who may start sessions, while the agent and Systems Manager connectivity must be available on the target.'],
+      slideTopics:['SSM Session Manager','No SSH or bastion host','No port 22','SSM Agent and IAM','S3 and CloudWatch session logs'],
+      takeaways:['No inbound SSH rule is required.','IAM authorizes sessions.','Session activity can be centrally logged.'],examTip:'Secure shell access to private instances without keys or a bastion points to Session Manager.'
+    },
+    'Execute fleet tasks with Systems Manager Run Command':{
+      sourcePages:'833',summary:'Run commands or SSM documents across groups of managed instances without opening SSH.',
+      explanation:['Run Command targets multiple SSM-managed instances, including through resource groups, and executes a command or document. Output can appear in the console or be delivered to S3 and CloudWatch Logs.','SNS can report in-progress, success, or failure status; IAM and CloudTrail provide authorization and auditing. EventBridge can invoke Run Command in response to an event.'],
+      slideTopics:['Run Command','SSM documents','Resource-group targeting','S3 and CloudWatch output','SNS, IAM, CloudTrail, and EventBridge'],
+      takeaways:['Run Command executes fleet operations without SSH.','Outputs and statuses integrate with AWS services.','CloudTrail records API activity.'],examTip:'Execute the same administrative command on many managed instances without logging into each one: use Run Command.'
+    },
+    'Patch fleets with Patch Manager policies':{
+      sourcePages:'834',summary:'Scan and patch operating systems and applications across EC2 and on-premises managed instances.',
+      explanation:['Patch Manager automates operating-system, application, and security updates on Linux, macOS, and Windows managed nodes. It can patch on demand or according to a Maintenance Window.','The slide’s workflow uses Run Command with the AWS-RunPatchBaseline document. Scanning also produces compliance information that identifies missing patches.'],
+      slideTopics:['Patch Manager','EC2 and on-premises servers','On-demand and scheduled patching','AWS-RunPatchBaseline','Patch compliance reports'],
+      takeaways:['Patch Manager supports hybrid managed nodes.','Maintenance Windows schedule patch work.','Compliance scans reveal missing patches.'],examTip:'Centralized OS patching and compliance reporting for EC2 and on-premises servers points to Patch Manager.'
+    },
+    'Schedule and automate Systems Manager operations':{
+      sourcePages:'835–836',summary:'Use Maintenance Windows for controlled schedules and Automation runbooks for repeatable multi-step maintenance and remediation.',
+      explanation:['A Maintenance Window defines a schedule, duration, registered instances, and registered tasks for actions such as patching, driver updates, or software installation. It can trigger Run Command against managed instances.','Systems Manager Automation uses predefined or custom runbook documents for tasks such as restarting EC2, creating an AMI, or taking an EBS snapshot. Runbooks can start manually, from EventBridge, through Maintenance Windows, or as AWS Config remediation.'],
+      slideTopics:['Maintenance Window schedule and duration','Registered targets and tasks','Automation runbooks','EventBridge triggers','AWS Config remediation'],
+      takeaways:['Maintenance Windows control when work runs.','Automation runbooks define repeatable actions.','Several AWS services can trigger automation.'],examTip:'Use a Maintenance Window for timing and an Automation runbook for the multi-step action.'
+    },
+    'Analyze spend with AWS Cost Explorer':{
+      sourcePages:'837–841',summary:'Explore historical cost and usage at multiple granularities, evaluate Savings Plans, and forecast future usage.',
+      explanation:['Cost Explorer visualizes and reports AWS cost and usage over time across accounts. The slides show monthly cost by service plus hourly and resource-level analysis.','It can recommend an optimal Savings Plan based on observed usage and forecast usage from historical patterns; the deck states a forecast horizon of up to 18 months. Treat exact horizons and recommendation behavior as slide-era details that may change.'],
+      slideTopics:['Cost and usage visualization','Custom reports','Monthly, hourly, and resource granularity','Savings Plans','Usage forecast'],
+      takeaways:['Cost Explorer analyzes historical spend.','Granularity can narrow the cost driver.','Forecasts and Savings Plan analysis support planning.'],examTip:'To investigate which service or resource drove a bill increase, begin with Cost Explorer.'
+    },
+    'Detect unusual spend automatically':{
+      sourcePages:'842',summary:'Use machine learning to identify spending behavior that differs from historical patterns and notify stakeholders.',
+      explanation:['AWS Cost Anomaly Detection learns historical spend patterns and identifies one-time spikes or continuing increases without requiring a fixed threshold. Cost monitors can focus on services, member accounts, allocation tags, or cost categories.','Reports provide root-cause analysis and estimated impact. Notifications can be immediate or summarized daily or weekly through SNS.'],
+      slideTopics:['Machine-learning cost monitoring','One-time spikes and continuous increases','Cost monitors','Root-cause analysis','SNS alerts and summaries'],
+      takeaways:['The detector learns normal spending patterns.','Monitors define analysis scope.','Alerts include cause and financial impact.'],examTip:'Unexpected cost detection without manually chosen thresholds points to Cost Anomaly Detection.'
+    },
+    'Run AWS infrastructure on premises with Outposts':{
+      sourcePages:'843–844',summary:'Extend AWS-managed infrastructure, services, APIs, and tools into an on-premises facility for hybrid requirements.',
+      explanation:['Outposts racks bring an extension of AWS infrastructure into a customer data center, reducing the split between cloud and local operating models. AWS sets up and manages the rack, while the customer remains responsible for its physical security.','The slides list low-latency access to on-premises systems, local processing, data residency, and easier migration as benefits. Example services include EC2, EBS, S3, EKS, ECS, RDS, and EMR, subject to the actual Outposts configuration and current availability.'],
+      slideTopics:['Hybrid cloud extension','Outposts racks','Customer physical security','Low latency and data residency','Supported-service examples'],
+      takeaways:['Outposts places AWS infrastructure on premises.','AWS manages the service; the customer secures the site.','Local processing supports latency and residency needs.'],examTip:'AWS APIs and managed infrastructure must run inside the customer facility: choose Outposts.'
+    },
+    'Run containerized batch jobs with AWS Batch':{
+      sourcePages:'845–847',summary:'Submit finite container jobs while AWS Batch provisions and scales suitable compute, including Spot capacity.',
+      explanation:['AWS Batch runs large numbers of jobs that have a defined start and end. Jobs are packaged as container images and can run through ECS, EKS, or Fargate while Batch provisions appropriate compute and memory.','The slide example triggers processing for S3 data and writes the result back. Compared with Lambda, Batch has no Lambda-style execution-time limit, accepts any containerized runtime, and can use EBS or instance-store disk, though it relies on managed compute underneath.'],
+      slideTopics:['Managed batch processing','EC2 and Spot provisioning','Container job definitions','S3 processing example','Batch versus Lambda'],
+      takeaways:['Batch is for finite queued jobs.','Container images define the runtime.','Batch supports longer and more resource-intensive work than Lambda.'],examTip:'A long-running containerized computation that can use Spot instances is an AWS Batch workload.'
+    },
+    'Transfer SaaS data with Amazon AppFlow':{
+      sourcePages:'848–849',summary:'Move and transform data securely between supported SaaS applications and AWS or third-party destinations without custom connectors.',
+      explanation:['AppFlow is a managed integration service with slide examples such as Salesforce, SAP, Zendesk, Slack, and ServiceNow as sources, and S3, Redshift, Snowflake, or Salesforce as destinations.','Flows run on demand, on a schedule, or in response to events. They can filter and validate data, encrypt transfers over the public internet, or use AWS PrivateLink for supported private connectivity.'],
+      slideTopics:['Managed SaaS integration','Sources and destinations','Scheduled, event, and on-demand flows','Filtering and validation','Encryption and PrivateLink'],
+      takeaways:['AppFlow reduces custom integration code.','Flows can transform data in transit.','Supported connections can stay private with PrivateLink.'],examTip:'Scheduled Salesforce-to-S3 transfer without writing integration code points to AppFlow.'
+    },
+    'Build front ends and schedule resources economically':{
+      sourcePages:'850–851',summary:'Use Amplify for full-stack web and mobile delivery, and the CloudFormation-deployed Instance Scheduler solution for tag-driven start and stop schedules.',
+      explanation:['Amplify combines front-end hosting and CI/CD with backend capabilities such as authentication, storage, REST or GraphQL APIs, analytics, and AI integrations. The slide connects source repositories to Amplify Console and a CloudFront deployment while backend resources can include Cognito, AppSync, API Gateway, DynamoDB, Lambda, and others.','Instance Scheduler on AWS is a solution deployed by CloudFormation, not an AWS service. It uses schedules in DynamoDB, resource tags, and Lambda to start or stop EC2 instances, Auto Scaling groups, and RDS resources across accounts and Regions; the deck’s “up to 70%” savings is a source-era claim, not a guarantee.'],
+      slideTopics:['AWS Amplify','Frontend CI/CD and CloudFront','Amplify backend services','Instance Scheduler solution','Tag-based cross-account schedules'],
+      takeaways:['Amplify accelerates full-stack web and mobile development.','Instance Scheduler is a deployable solution, not a standalone service.','Stopping nonproduction resources outside business hours can reduce cost.'],examTip:'Choose Amplify for integrated web/mobile delivery; choose Instance Scheduler for recurring tag-based resource start and stop times.'
+    }
+  };
+  sectionThirtyLectures.forEach(lecture=>Object.assign(lecture,sectionThirtySlideOverrides[lecture.title]||{}));
+
   window.AWS_COURSE_CURRICULUM=sectionTopics.map((topics,sectionIndex)=>{
     const [count,duration]=meta[sectionIndex];
     const lectures=Array.from({length:count},(_,index)=>{
